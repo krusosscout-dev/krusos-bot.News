@@ -3,7 +3,6 @@ export default async function handler(req, res) {
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
   const LINE_USER_ID = process.env.LINE_USER_ID;
 
-  // ตัดฟังก์ชันค้นหาเว็บออก เพื่อให้ Gemini ดึงข้อมูลจากคลังความรู้มาตอบทันทีโดยไม่ติดปัญหาโครงสร้างข้อมูล
   const prompt = `เขียนข้อความทักทายยามเช้าสั้นๆ 1 ย่อหน้า เพื่อให้กำลังใจครูสังคมศึกษาที่มีอุดมการณ์ 'ครูเพื่อศิษย์'
 
 จากนั้น ให้สรุปเหตุการณ์หรือประเด็นความรู้เด่นระดับโลกล่าสุด มาทั้งหมด 5 เรื่อง โดยทั้ง 5 เรื่องต้องเป็นคนละประเด็นกันอย่างชัดเจน:
@@ -20,7 +19,8 @@ export default async function handler(req, res) {
 ปิดท้ายด้วยประโยคว่า:
 "หากครูสนใจรายละเอียดข่าวไหน พิมพ์โต้ตอบถามผมต่อได้เลยครับ!"`;
 
-  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+  // อัปเดตชื่อโมเดลเป็น gemini-2.5-flash ตามมาตรฐานปัจจุบัน
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
   try {
     const geminiRes = await fetch(geminiUrl, {
