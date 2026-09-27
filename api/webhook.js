@@ -39,8 +39,20 @@ export default async function handler(req, res) {
   }
 
   const event = events[0];
-  if (event.type === 'message' && event.message?.type === 'text') {
-    const userMessage = event.message.text.trim();
+
+  // ตรวจจับข้อความและสติกเกอร์
+  if (event.type === 'message') {
+    let userMessage = '';
+
+    if (event.message?.type === 'text') {
+      userMessage = event.message.text.trim();
+    } else if (event.message?.type === 'sticker') {
+      userMessage = '(ผู้ใช้ส่งสติกเกอร์มา ให้ทักทายกลับอย่างสุภาพ เป็นกันเอง และพร้อมให้ความช่วยเหลือ)';
+    } else {
+      // ข้ามกรณีส่งรูปภาพ หรือไฟล์ประเภทอื่นที่ยังไม่รองรับ
+      return res.status(200).send('OK');
+    }
+
     const replyToken = event.replyToken;
     const userId = event.source.userId;
     const currentHost = req.headers.host;
@@ -52,8 +64,9 @@ export default async function handler(req, res) {
     const systemPromptText = `คุณคือผู้ช่วยส่วนตัวของครูสังคมศึกษาที่ยึดมั่นในอุดมการณ์ 'ครูเพื่อศิษย์'
 ขณะนี้เวลาปัจจุบันในประเทศไทยคือ: ${thaiTimeString} (Unix timestamp ปัจจุบัน: ${nowTimestamp} วินาที)
 
-หากข้อความของผู้ใช้เป็นการสั่งให้ "เตือนความจำ", "จัดคิวงาน", หรือ "บันทึกเวลาสอน/ตารางสอน":
-ให้ตอบกลับเป็นรูปแบบ JSON เพียงอย่างเดียวเท่านั้น โดยไม่มี markdown หรือข้อความอื่นปน ดังนี้:
+คำแนะนำในการตอบ:
+1. หากเป็นการสั่ง "เตือนความจำ", "จัดคิวงาน", หรือ "บันทึกเวลาสอน":
+ให้ตอบกลับเป็น JSON เท่านั้น โดยไม่มี markdown หรือข้อความอื่นปน ดังนี้:
 {
   "isReminder": true,
   "taskDescription": "สรุปภารกิจหรือวิชาที่ต้องทำ",
@@ -61,10 +74,13 @@ export default async function handler(req, res) {
   "confirmationMessage": "ข้อความยืนยันการตั้งเตือนแบบสุภาพ กระชับ แจ้งเวลาที่จะเตือนชัดเจน"
 }
 
-หากไม่ใช่การสั่งเตือนความจำ:
-ให้ตอบกลับเป็นข้อความสนทนาปกติ ตอบเป็นข้อความธรรมดา (Plain text) เค้าโครงชัดเจน พร้อมนำไปใช้งานได้ทันที หากมีการออกแบบกิจกรรมการเรียนรู้ ให้ใช้รูปแบบ 4 คิด (1. คิดตั้งคำถาม 2. คิดวิเคราะห์ 3. คิดสังเคราะห์ 4. คิดนำไปใช้)`;
+2. หากเป็นการสั่ง "ออกแบบแผนการสอน" หรือ "ออกแบบกิจกรรมการเรียนรู้ Active Learning" โดยตรง:
+ให้จัดกระบวนการเรียนรู้ตามโมเดล 4 คิด (1. คิดตั้งคำถาม 2. คิดวิเคราะห์ 3. คิดสังเคราะห์ 4. คิดนำไปใช้)
 
-    // ใช้โมเดล gemini-3.1-pro-preview ตามที่ Google กำหนดสำหรับบัญชีใหม่
+3. สำหรับคำถามทั่วไป ข่าวสาร ความรู้ การทักทาย หรือการช่วยงานอื่นๆ:
+ให้ตอบตรงประเด็น ชัดเจน กระชับ เป็นข้อความธรรมดา (Plain text) โดยไม่ต้องนำรูปแบบ 4 คิดมาใส่เด็ดขาด`;
+
+    // โมเดลที่ใช้งานตามลำดับ
     const candidateModels = ['gemini-3.1-pro-preview', 'gemini-2.5-flash'];
     let replyRaw = '';
 
@@ -78,7 +94,7 @@ export default async function handler(req, res) {
             contents: [
               {
                 role: 'user',
-                parts: [{ text: `${systemPromptText}\n\nคำถามจากผู้ใช้: ${userMessage}` }]
+                parts: [{ text: `${systemPromptText}\n\nข้อความจากผู้ใช้: ${userMessage}` }]
               }
             ]
           })
@@ -102,6 +118,7 @@ export default async function handler(req, res) {
 
     let finalReplyText = replyRaw;
 
+    // ตรวจสอบกรณีเป็นคำสั่งตั้งเตือนผ่าน QStash
     if (replyRaw.includes('"isReminder": true') || replyRaw.includes('"isReminder":true')) {
       try {
         const cleanedJsonStr = replyRaw.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -133,6 +150,7 @@ export default async function handler(req, res) {
       }
     }
 
+    // ส่งข้อความตอบกลับไปยัง LINE
     await fetch('https://api.line.me/v2/bot/message/reply', {
       method: 'POST',
       headers: {
