@@ -1,4 +1,4 @@
-// ปิด bodyParser ของ Vercel เพื่อให้อ่าน Stream จาก LINE Webhook ได้โดยตรง
+// ปิด bodyParser ของ Vercel เพื่อให้อ่าน Stream จาก LINE Webhook ได้ครบถ้วน
 export const config = {
   api: {
     bodyParser: false,
@@ -6,6 +6,7 @@ export const config = {
   maxDuration: 60,
 };
 
+// ฟังก์ชันสำหรับแปลง Stream Data จาก LINE ให้อ่านเป็น Text
 async function getRawBody(readable) {
   const chunks = [];
   for await (const chunk of readable) {
@@ -36,7 +37,6 @@ export default async function handler(req, res) {
 
   const events = bodyJson.events;
   if (!events || events.length === 0) {
-    console.log('No events found in payload. Raw body was:', bodyText);
     return res.status(200).send('OK');
   }
 
@@ -49,6 +49,7 @@ export default async function handler(req, res) {
 
     console.log(`Received user message: "${userMessage}" from user: ${userId}`);
 
+    // คำนวณเวลาปัจจุบันของประเทศไทย
     const now = new Date();
     const nowTimestamp = Math.floor(now.getTime() / 1000);
     const thaiTimeString = now.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
@@ -68,7 +69,8 @@ export default async function handler(req, res) {
 หากไม่ใช่การสั่งเตือนความจำ (เป็นการสอบถามข้อมูล ปรึกษาแผนการสอน พูดคุยทั่วไป):
 ให้ตอบกลับเป็นข้อความสนทนาปกติ ตอบเป็นข้อความธรรมดา (Plain text) เค้าโครงชัดเจน พร้อมนำไปใช้งานได้ทันที`;
 
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    // ใช้โมเดล gemini-1.5-flash-latest เพื่อรองรับ API v1beta
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
 
     try {
       console.log('Calling Gemini API...');
@@ -91,6 +93,7 @@ export default async function handler(req, res) {
       const replyRaw = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัยครับ ระบบไม่สามารถสร้างคำตอบได้ในขณะนี้";
       let finalReplyText = replyRaw;
 
+      // กรณีที่ผู้ใช้สั่งตั้งเตือนเวลา
       if (replyRaw.includes('"isReminder": true') || replyRaw.includes('"isReminder":true')) {
         try {
           const cleanedJsonStr = replyRaw.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -126,6 +129,7 @@ export default async function handler(req, res) {
         }
       }
 
+      // ส่งข้อความตอบกลับไปยัง LINE
       console.log('Sending reply to LINE...');
       const lineRes = await fetch('https://api.line.me/v2/bot/message/reply', {
         method: 'POST',
