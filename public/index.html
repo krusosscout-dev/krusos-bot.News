@@ -1,94 +1,964 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>คลังสรุปข่าว & นวัตกรรมย้อนหลัง</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KruSos Cortex | The Intelligent Core for Next-Gen Teaching</title>
+  
+  <!-- Tailwind CSS & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            heritage: {
+              bg: '#F7F5F0',         // สีกระดาษข่อยนวลตา
+              surface: '#FFFFFF',    // สีพื้นผิวการ์ด
+              border: '#E8E4DC',     // สีขอบเทาฝุ่นหินอ่อน
+              primary: '#4A6B82',    // สีครามครามตุ่น
+              primaryHover: '#3C576B',
+              terracotta: '#B88E72', // สีศิลาแลงพาสเทล
+              celadon: '#7D9D85',    // สีเขียวศิลาดล
+              ochre: '#C49E64',      // สีทองทึบ/ดินเหลือง
+              text: '#2D3436',       // สีถ่านชาร์โคลนุ่ม
+              muted: '#737D84'       // ข้อความรองสีฝุ่น
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Google Fonts: Niramit (หัวข้อไทยประยุกต์) + Sarabun (เนื้อหาคลาสสิกอ่านง่าย) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Niramit:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
-    body { font-family: 'Sarabun', sans-serif; }
+    body { 
+      font-family: 'Sarabun', sans-serif; 
+      background-color: #F7F5F0; 
+      color: #2D3436; 
+    }
+    h1, h2, h3, h4, .font-heading {
+      font-family: 'Niramit', sans-serif;
+    }
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-slate-100 min-h-screen p-4 sm:p-6 text-slate-800">
-  <div class="max-w-2xl mx-auto">
-    <header class="text-center mb-6">
-      <div class="inline-flex items-center justify-center p-3 bg-blue-600 text-white rounded-2xl shadow-md mb-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-        </svg>
-      </div>
-      <h1 class="text-2xl font-bold text-slate-800">คลังสาระ & สรุปข่าวย้อนหลัง</h1>
-      <p class="text-sm text-slate-500 mt-1">ฐานข้อมูลสื่อ นวัตกรรมการสอน และประเด็นรอบโลกเพื่อครูเพื่อศิษย์</p>
-    </header>
+<body class="min-h-screen antialiased selection:bg-[#B88E72] selection:text-white">
 
-    <div id="loading" class="text-center py-12">
-      <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent mb-2"></div>
-      <p class="text-sm text-slate-500">กำลังเชื่อมต่อฐานข้อมูล...</p>
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 bg-[#F7F5F0]/95 backdrop-blur-md border-b border-[#E8E4DC]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="h-16 flex items-center justify-between gap-3">
+        <!-- Brand Logo -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="switchMainTab('home')">
+          <div class="w-10 h-10 rounded-xl bg-[#4A6B82] flex items-center justify-center text-white shadow-xs">
+            <i data-lucide="cpu" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h1 class="text-base sm:text-lg font-bold text-heritage-text leading-tight">KruSos Cortex</h1>
+            <p class="text-xs text-heritage-terracotta font-medium">The Intelligent Core for Next-Gen Teaching</p>
+          </div>
+        </div>
+
+        <!-- Desktop Navigation Tabs -->
+        <nav class="hidden xl:flex items-center gap-1 bg-[#ECE8E0] p-1.5 rounded-2xl border border-[#DFDAD0] text-xs font-semibold">
+          <button onclick="switchMainTab('home')" id="tab-btn-home" class="main-tab-btn px-3 py-1.5 rounded-xl transition bg-white text-heritage-primary shadow-xs flex items-center gap-1.5">
+            🏠 หน้าแรก
+          </button>
+          <button onclick="switchMainTab('tasks')" id="tab-btn-tasks" class="main-tab-btn px-3 py-1.5 rounded-xl transition text-heritage-muted hover:text-heritage-text flex items-center gap-1.5">
+            📋 หมวด 1: ตารางคิวงาน
+          </button>
+          <button onclick="switchMainTab('news')" id="tab-btn-news" class="main-tab-btn px-3 py-1.5 rounded-xl transition text-heritage-muted hover:text-heritage-text flex items-center gap-1.5">
+            🌍 หมวด 2: ข่าวเด่น 5 ด้าน
+          </button>
+          <button onclick="switchMainTab('pedagogy')" id="tab-btn-pedagogy" class="main-tab-btn px-3 py-1.5 rounded-xl transition text-heritage-muted hover:text-heritage-text flex items-center gap-1.5">
+            💡 หมวด 3: นวัตกรรม & 4 คิด
+          </button>
+          <button onclick="switchMainTab('chat')" id="tab-btn-chat" class="main-tab-btn px-3 py-1.5 rounded-xl transition text-heritage-muted hover:text-heritage-text flex items-center gap-1.5">
+            💬 ถาม-ตอบ LINE
+          </button>
+          <button onclick="switchMainTab('sources')" id="tab-btn-sources" class="main-tab-btn px-3 py-1.5 rounded-xl transition text-heritage-muted hover:text-heritage-text flex items-center gap-1.5">
+            🔗 แหล่งข้อมูลจริง
+          </button>
+        </nav>
+
+        <!-- Right Side: Saved Items Button -->
+        <div class="flex items-center gap-2">
+          <button onclick="toggleSavedFilter()" id="savedFilterBtn" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#ECE8E0] text-heritage-text hover:bg-white flex items-center gap-1.5 border border-[#DFDAD0] transition">
+            <i data-lucide="bookmark" class="w-4 h-4 text-heritage-terracotta"></i>
+            <span class="hidden sm:inline">รายการโปรด</span>
+            <span id="savedCountBadge" class="bg-heritage-terracotta text-white rounded-full px-1.5 py-0.2 text-[10px]">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Navigation Horizontal Scroll -->
+      <div class="xl:hidden flex items-center border-t border-[#E8E4DC] py-2 overflow-x-auto gap-2 text-xs font-semibold no-scrollbar">
+        <button onclick="switchMainTab('home')" id="mtab-home" class="mobile-tab-btn px-3 py-1 rounded-lg whitespace-nowrap bg-[#ECE8E0] text-heritage-primary">🏠 หน้าแรก</button>
+        <button onclick="switchMainTab('tasks')" id="mtab-tasks" class="mobile-tab-btn px-3 py-1 rounded-lg whitespace-nowrap text-heritage-muted">📋 คิวงาน</button>
+        <button onclick="switchMainTab('news')" id="mtab-news" class="mobile-tab-btn px-3 py-1 rounded-lg whitespace-nowrap text-heritage-muted">🌍 ข่าว 5 ด้าน</button>
+        <button onclick="switchMainTab('pedagogy')" id="mtab-pedagogy" class="mobile-tab-btn px-3 py-1 rounded-lg whitespace-nowrap text-heritage-muted">💡 นวัตกรรมสอน</button>
+        <button onclick="switchMainTab('chat')" id="mtab-chat" class="mobile-tab-btn px-3 py-1 rounded-lg whitespace-nowrap text-heritage-muted">💬 ถาม-ตอบ LINE</button>
+        <button onclick="switchMainTab('sources')" id="mtab-sources" class="mobile-tab-btn px-3 py-1 rounded-lg whitespace-nowrap text-heritage-muted">🔗 แหล่งข้อมูล</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- Global Search & Research Bar -->
+    <div class="mb-6 flex flex-col sm:flex-row gap-2">
+      <div class="relative flex-1">
+        <i data-lucide="search" class="w-4 h-4 text-heritage-muted absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="ค้นคว้าประเด็นข่าว ไอเดียนวัตกรรม หรือคำสำคัญ..." 
+          class="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-heritage-border rounded-2xl focus:outline-none focus:ring-2 focus:ring-heritage-primary shadow-xs"
+        />
+      </div>
+      <button onclick="searchExternalScholar()" class="px-4 py-2.5 bg-[#4A6B82] hover:bg-[#3C576B] text-white rounded-2xl text-xs font-semibold transition flex items-center justify-center gap-1.5 shadow-xs">
+        <i data-lucide="sparkles" class="w-4 h-4 text-[#D8B485]"></i> ค้นคว้างานวิจัย Scholar
+      </button>
     </div>
 
-    <div id="items-container" class="space-y-4"></div>
+    <!-- ============================================== -->
+    <!-- เมนูหน้าแรกสุด: ศูนย์รวมสาระและภาพรวม (HOME) -->
+    <!-- ============================================== -->
+    <section id="view-home" class="main-view">
+      <!-- Modern Heritage Banner -->
+      <div class="bg-[#4A6B82] rounded-3xl p-6 sm:p-8 text-white shadow-sm mb-8 relative overflow-hidden border border-[#3C576B]">
+        <div class="relative z-10 max-w-2xl">
+          <span class="px-3 py-1 rounded-full bg-white/15 text-xs font-medium backdrop-blur-sm inline-block mb-3 border border-white/10 text-[#EAE5D9]">KruSos Cortex • Modern Heritage Hub</span>
+          <h2 class="text-xl sm:text-3xl font-extrabold leading-tight text-[#FBF9F5]">ศูนย์กลางองค์ความรู้และนวัตกรรมเพื่อครู</h2>
+          <p class="text-[#D8E2E8] text-xs sm:text-sm mt-2 font-light">เชื่อมโยงสาระร่วมสมัย 5 ด้าน ขับเคลื่อนกระบวนการเรียนรู้ 4 คิด และบันทึกบทสนทนาอัจฉริยะจาก LINE ในบรรยากาศละมุนสบายตา</p>
+          
+          <div class="mt-5 flex flex-wrap gap-2">
+            <button onclick="switchMainTab('tasks')" class="px-4 py-2 bg-[#F7F5F0] text-heritage-primary hover:bg-white font-semibold rounded-xl text-xs transition shadow-xs flex items-center gap-1.5">
+              <i data-lucide="check-square" class="w-4 h-4 text-heritage-terracotta"></i> ตรวจสอบคิวงานวันนี้
+            </button>
+            <button onclick="switchMainTab('chat')" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl text-xs transition border border-white/20 flex items-center gap-1.5">
+              <i data-lucide="message-circle" class="w-4 h-4"></i> กล่องข้อความ LINE
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Cards Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div onclick="switchMainTab('tasks')" class="p-4 bg-white rounded-2xl border border-heritage-border hover:border-heritage-terracotta transition cursor-pointer flex items-center gap-3.5 shadow-xs">
+          <div class="w-12 h-12 rounded-xl bg-[#F0EBE1] text-heritage-terracotta flex items-center justify-center shrink-0">
+            <i data-lucide="calendar" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-heritage-text">หมวด 1: ตารางคิวงาน</h4>
+            <p class="text-[11px] text-heritage-muted mt-0.5">จัดการแผนสอน & ภารกิจ</p>
+          </div>
+        </div>
+
+        <div onclick="switchMainTab('news')" class="p-4 bg-white rounded-2xl border border-heritage-border hover:border-heritage-primary transition cursor-pointer flex items-center gap-3.5 shadow-xs">
+          <div class="w-12 h-12 rounded-xl bg-[#E8EEF2] text-heritage-primary flex items-center justify-center shrink-0">
+            <i data-lucide="globe-2" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-heritage-text">หมวด 2: ข่าวเด่น 5 ด้าน</h4>
+            <p class="text-[11px] text-heritage-muted mt-0.5">สถานการณ์รอบโลกทันสมัย</p>
+          </div>
+        </div>
+
+        <div onclick="switchMainTab('pedagogy')" class="p-4 bg-white rounded-2xl border border-heritage-border hover:border-heritage-celadon transition cursor-pointer flex items-center gap-3.5 shadow-xs">
+          <div class="w-12 h-12 rounded-xl bg-[#EBF0EC] text-heritage-celadon flex items-center justify-center shrink-0">
+            <i data-lucide="lightbulb" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-heritage-text">หมวด 3: นวัตกรรม & 4 คิด</h4>
+            <p class="text-[11px] text-heritage-muted mt-0.5">โมเดลสอนเชิงรุก & กิจกรรม</p>
+          </div>
+        </div>
+
+        <div onclick="switchMainTab('chat')" class="p-4 bg-white rounded-2xl border border-heritage-border hover:border-heritage-ochre transition cursor-pointer flex items-center gap-3.5 shadow-xs">
+          <div class="w-12 h-12 rounded-xl bg-[#F5EFE6] text-heritage-ochre flex items-center justify-center shrink-0">
+            <i data-lucide="bot" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-heritage-text">Cortex Assistant</h4>
+            <p class="text-[11px] text-heritage-muted mt-0.5">ซิงก์ถาม-ตอบ LINE อัตโนมัติ</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Home 2-Column Overview -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Highlights Column (2 Cols) -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-heritage-text flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-heritage-primary"></span> ประเด็นวิเคราะห์เด่นประจำวัน
+            </h3>
+            <button onclick="switchMainTab('news')" class="text-xs text-heritage-primary hover:underline font-medium">ดูทั้งหมด →</button>
+          </div>
+
+          <div id="homeFeaturedNews" class="space-y-3"></div>
+        </div>
+
+        <!-- Today's Quick Tasks Widget (1 Col) -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-heritage-text flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-heritage-terracotta"></span> ภารกิจที่ต้องดำเนินการ
+            </h3>
+            <button onclick="switchMainTab('tasks')" class="text-xs text-heritage-primary hover:underline font-medium">เปิดตารางงาน →</button>
+          </div>
+
+          <div id="homeTasksGlance" class="bg-white p-4 rounded-2xl border border-heritage-border shadow-xs space-y-2"></div>
+
+          <!-- Daily Reflection Box -->
+          <div class="p-4 bg-[#F2EDE4] rounded-2xl border border-[#E2DBD0] text-xs text-[#5C5449] leading-relaxed">
+            <div class="font-bold flex items-center gap-1.5 text-heritage-terracotta mb-1">
+              <i data-lucide="sparkles" class="w-4 h-4"></i> ปณิธานครูเพื่อศิษย์
+            </div>
+            "การสร้างกระบวนการคิดให้ผู้เรียนตั้งคำถาม วิเคราะห์ สังเคราะห์ และนำไปใช้ คือรากฐานสำคัญของการสร้างพลเมืองที่มีคุณภาพ"
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- หมวดที่ 1: ตารางคิวงานและภารกิจประจำวัน (TASKS) -->
+    <!-- ============================================== -->
+    <section id="view-tasks" class="main-view hidden">
+      <div class="mb-5">
+        <h2 class="text-lg font-bold text-heritage-text flex items-center gap-2">
+          <span>📋</span> หมวดที่ 1: ตารางคิวงานและภารกิจประจำวัน (Daily Tasks)
+        </h2>
+        <p class="text-xs text-heritage-muted">บันทึกเตือนความจำภารกิจเตรียมสอน งานโรงเรียน/เวร และภารกิจวิจัย ป.โท</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Task Form -->
+        <div class="bg-white rounded-2xl border border-heritage-border p-5 h-fit shadow-xs">
+          <h3 class="text-sm font-bold text-heritage-text mb-3 flex items-center gap-1.5">
+            <i data-lucide="plus-circle" class="w-4 h-4 text-heritage-primary"></i> เพิ่มภารกิจใหม่
+          </h3>
+          <div class="space-y-3">
+            <div>
+              <label class="text-[11px] font-semibold text-heritage-muted">ชื่องาน / ภารกิจ</label>
+              <input type="text" id="taskInputTitle" placeholder="เช่น ออกแบบใบงาน ป.4, ส่งแบบ PA, วิเคราะห์ข้อมูลวิจัย" class="w-full mt-1 p-2 text-xs bg-[#FAF8F5] border border-heritage-border rounded-xl focus:ring-2 focus:ring-heritage-primary" />
+            </div>
+            <div>
+              <label class="text-[11px] font-semibold text-heritage-muted">กำหนดส่ง / วันที่</label>
+              <input type="date" id="taskInputDate" class="w-full mt-1 p-2 text-xs bg-[#FAF8F5] border border-heritage-border rounded-xl focus:ring-2 focus:ring-heritage-primary" />
+            </div>
+            <div>
+              <label class="text-[11px] font-semibold text-heritage-muted">ประเภทงาน</label>
+              <select id="taskInputCategory" class="w-full mt-1 p-2 text-xs bg-[#FAF8F5] border border-heritage-border rounded-xl focus:ring-2 focus:ring-heritage-primary">
+                <option value="เตรียมสอน / สื่อ">เตรียมสอน / สื่อ</option>
+                <option value="งานโรงเรียน / เวร">งานโรงเรียน / เวร</option>
+                <option value="ภารกิจวิจัย / ป.โท">ภารกิจวิจัย / ป.โท</option>
+                <option value="สภานักเรียน / คุณธรรม">สภานักเรียน / คุณธรรม</option>
+              </select>
+            </div>
+            <button onclick="createNewTask()" class="w-full mt-2 py-2.5 bg-heritage-primary hover:bg-heritage-primaryHover text-white rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5">
+              <i data-lucide="save" class="w-4 h-4"></i> บันทึกลงตาราง
+            </button>
+          </div>
+        </div>
+
+        <!-- Task Checklist View -->
+        <div class="lg:col-span-2 space-y-2">
+          <div id="tasksListContainer" class="space-y-2"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- หมวดที่ 2: สรุปข่าวเด่นรอบโลกและประเด็นร่วมสมัย (NEWS) -->
+    <!-- ============================================== -->
+    <section id="view-news" class="main-view hidden">
+      <div class="mb-5 flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-bold text-heritage-text flex items-center gap-2">
+            <span>🌍</span> หมวดที่ 2: สรุปข่าวเด่นรอบโลกและประเด็นร่วมสมัย (5 ด้าน)
+          </h2>
+          <p class="text-xs text-heritage-muted">เทคโนโลยี/AI • สิ่งแวดล้อม • เศรษฐกิจ • สังคม/สิทธิมนุษยชน • นวัตกรรมการศึกษา</p>
+        </div>
+        <div id="savedNoticeTag" class="hidden text-xs bg-[#F5EFE6] text-heritage-ochre border border-[#E8DEC8] px-3 py-1 rounded-full flex items-center gap-1.5">
+          <span>กำลังแสดงเฉพาะรายการโปรด</span>
+          <button onclick="toggleSavedFilter()" class="hover:underline font-bold">✕ ยกเลิก</button>
+        </div>
+      </div>
+
+      <div id="newsCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+      <div id="emptyNewsBox" class="hidden text-center py-16 bg-white rounded-2xl border border-heritage-border">
+        <i data-lucide="inbox" class="w-10 h-10 text-heritage-muted mx-auto mb-2 opacity-50"></i>
+        <p class="text-xs font-semibold text-heritage-muted">ยังไม่พบข้อมูลข่าวที่ค้นหา</p>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- หมวดที่ 3: นวัตกรรมการเรียนรู้และงานวิจัย (PEDAGOGY) -->
+    <!-- ============================================== -->
+    <section id="view-pedagogy" class="main-view hidden">
+      <div class="mb-5">
+        <h2 class="text-lg font-bold text-heritage-text flex items-center gap-2">
+          <span>💡</span> หมวดที่ 3: นวัตกรรมการเรียนรู้และงานวิจัยเพื่อการประยุกต์ใช้
+        </h2>
+        <p class="text-xs text-heritage-muted">เทรนด์การสอนสังคมศึกษา ประวัติศาสตร์ และโมเดลกระบวนการ 4 คิด (คิดตั้งคำถาม, คิดวิเคราะห์, คิดสังเคราะห์, คิดนำไปใช้)</p>
+      </div>
+
+      <div id="pedagogyGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- เมนูถาม-ตอบ LINE (CHAT & Q&A) -->
+    <!-- ============================================== -->
+    <section id="view-chat" class="main-view hidden">
+      <div class="mb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div>
+          <h2 class="text-lg font-bold text-heritage-text flex items-center gap-2">
+            <span>💬</span> บันทึกบทสนทนาถาม-ตอบจาก LINE & Cortex Assistant
+          </h2>
+          <p class="text-xs text-heritage-muted">ซิงก์ประวัติคำถาม-คำตอบจาก LINE โดยตรง และสามารถพิมพ์คุยต่อในหน้านี้ได้</p>
+        </div>
+        <button onclick="loadLineChatHistory()" class="px-3 py-1.5 bg-[#ECE8E0] hover:bg-[#E2DDD3] text-heritage-text rounded-xl text-xs font-medium flex items-center gap-1 w-fit transition">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> รีเฟรชข้อความ
+        </button>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-heritage-border shadow-xs max-w-4xl mx-auto flex flex-col h-[600px] overflow-hidden">
+        <!-- Chat History List -->
+        <div id="chatMessageHistory" class="flex-1 p-4 overflow-y-auto space-y-4 bg-[#FAF8F5]">
+          <div class="text-center py-8 text-heritage-muted text-xs">
+            กำลังโหลดข้อมูลบทสนทนา...
+          </div>
+        </div>
+
+        <!-- Chat Input Bar -->
+        <div class="p-3 border-t border-heritage-border bg-white flex gap-2">
+          <input 
+            type="text" 
+            id="chatUserQuestion" 
+            placeholder="พิมพ์คำถาม ปรึกษาแผนสอน หรือบันทึกภารกิจ..." 
+            class="flex-1 px-4 py-2.5 text-xs bg-[#FAF8F5] border border-heritage-border rounded-xl focus:outline-none focus:ring-2 focus:ring-heritage-primary focus:bg-white transition"
+            onkeypress="if(event.key === 'Enter') sendWebChatMessage()"
+          />
+          <button onclick="sendWebChatMessage()" class="px-5 py-2.5 bg-heritage-primary hover:bg-heritage-primaryHover text-white rounded-xl text-xs font-semibold shadow-xs flex items-center gap-1.5 transition">
+            <i data-lucide="send" class="w-4 h-4"></i> ส่ง
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- เมนูแหล่งข้อมูลจริง (SOURCES) -->
+    <!-- ============================================== -->
+    <section id="view-sources" class="main-view hidden">
+      <div class="mb-5">
+        <h2 class="text-lg font-bold text-heritage-text flex items-center gap-2">
+          <span>🔗</span> แหล่งข้อมูลจริงและลิงก์ทางการ (Official Sources)
+        </h2>
+        <p class="text-xs text-heritage-muted">ศูนย์รวมลิงก์อ้างอิงจากหน่วยงานทางการและวารสารวิชาการ</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <a href="https://www.moe.go.th" target="_blank" rel="noopener noreferrer" class="p-5 bg-white rounded-2xl border border-heritage-border hover:border-heritage-primary hover:shadow-xs transition group block">
+          <div class="flex items-start justify-between">
+            <div class="w-10 h-10 rounded-xl bg-[#E8EEF2] text-heritage-primary flex items-center justify-center font-bold text-sm">ศธ</div>
+            <i data-lucide="external-link" class="w-4 h-4 text-heritage-muted group-hover:text-heritage-primary"></i>
+          </div>
+          <h4 class="mt-3 font-bold text-heritage-text text-sm group-hover:text-heritage-primary">กระทรวงศึกษาธิการ</h4>
+          <p class="text-xs text-heritage-muted mt-1">ประกาศกระทรวง นโยบายการศึกษา และข่าวประชาสัมพันธ์</p>
+        </a>
+
+        <a href="https://www.obec.go.th" target="_blank" rel="noopener noreferrer" class="p-5 bg-white rounded-2xl border border-heritage-border hover:border-heritage-terracotta hover:shadow-xs transition group block">
+          <div class="flex items-start justify-between">
+            <div class="w-10 h-10 rounded-xl bg-[#F0EBE1] text-heritage-terracotta flex items-center justify-center font-bold text-sm">สพฐ</div>
+            <i data-lucide="external-link" class="w-4 h-4 text-heritage-muted group-hover:text-heritage-terracotta"></i>
+          </div>
+          <h4 class="mt-3 font-bold text-heritage-text text-sm group-hover:text-heritage-terracotta">สำนักงานคณะกรรมการการศึกษาขั้นพื้นฐาน (สพฐ.)</h4>
+          <p class="text-xs text-heritage-muted mt-1">หนังสือสั่งการ หลักสูตรแกนกลาง และเอกสารการจัดการเรียนรู้</p>
+        </a>
+
+        <a href="https://otepc.go.th" target="_blank" rel="noopener noreferrer" class="p-5 bg-white rounded-2xl border border-heritage-border hover:border-heritage-celadon hover:shadow-xs transition group block">
+          <div class="flex items-start justify-between">
+            <div class="w-10 h-10 rounded-xl bg-[#EBF0EC] text-heritage-celadon flex items-center justify-center font-bold text-sm">PA</div>
+            <i data-lucide="external-link" class="w-4 h-4 text-heritage-muted group-hover:text-heritage-celadon"></i>
+          </div>
+          <h4 class="mt-3 font-bold text-heritage-text text-sm group-hover:text-heritage-celadon">สำนักงาน ก.ค.ศ. (วิทยฐานะ & PA)</h4>
+          <p class="text-xs text-heritage-muted mt-1">เกณฑ์การประเมินตำแหน่ง ข้อตกลง PA และการพัฒนาวิชาชีพ</p>
+        </a>
+
+        <a href="https://scholar.google.com" target="_blank" rel="noopener noreferrer" class="p-5 bg-white rounded-2xl border border-heritage-border hover:border-heritage-ochre hover:shadow-xs transition group block">
+          <div class="flex items-start justify-between">
+            <div class="w-10 h-10 rounded-xl bg-[#F5EFE6] text-heritage-ochre flex items-center justify-center font-bold text-sm">วิจัย</div>
+            <i data-lucide="external-link" class="w-4 h-4 text-heritage-muted group-hover:text-heritage-ochre"></i>
+          </div>
+          <h4 class="mt-3 font-bold text-heritage-text text-sm group-hover:text-heritage-ochre">Google Scholar ฐานข้อมูลงานวิจัย</h4>
+          <p class="text-xs text-heritage-muted mt-1">คลังสืบค้นงานวิจัยทางการศึกษาและนวัตกรรมระดับสากล</p>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Comment Drawer Modal -->
+  <div id="commentModal" class="fixed inset-0 z-50 bg-[#2D3436]/40 backdrop-blur-xs hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl w-full max-w-lg shadow-xl overflow-hidden flex flex-col max-h-[85vh] border border-heritage-border">
+      <div class="p-4 border-b border-heritage-border flex items-center justify-between bg-[#FAF8F5]">
+        <div class="flex items-center gap-2">
+          <i data-lucide="message-square" class="w-4 h-4 text-heritage-primary"></i>
+          <h3 class="font-bold text-heritage-text text-sm">บันทึกความคิดเห็น & ไอเดียต่อยอดการสอน</h3>
+        </div>
+        <button onclick="closeCommentModal()" class="text-heritage-muted hover:text-heritage-text text-sm">✕</button>
+      </div>
+
+      <div id="commentsContainer" class="p-4 overflow-y-auto flex-1 space-y-2.5 min-h-[160px] bg-[#FAF8F5]"></div>
+
+      <div class="p-3 border-t border-heritage-border bg-white flex gap-2">
+        <input type="text" id="commentTextInput" placeholder="พิมพ์ไอเดีย หรือบันทึกเพื่อนำไปสอน..." class="flex-1 px-3 py-2 text-xs bg-[#FAF8F5] border border-heritage-border rounded-xl focus:outline-none focus:ring-2 focus:ring-heritage-primary" />
+        <button onclick="submitCommentText()" class="px-4 py-2 bg-heritage-primary text-white rounded-xl text-xs font-semibold hover:bg-heritage-primaryHover transition">บันทึก</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 px-4 py-2.5 bg-[#2D3436] text-white text-xs font-medium rounded-xl shadow-md transform translate-y-16 opacity-0 transition duration-300 flex items-center gap-2">
+    <i data-lucide="check-circle" class="w-4 h-4 text-heritage-celadon"></i>
+    <span id="toastMessage">เรียบร้อย</span>
   </div>
 
   <script>
-    async function fetchHistory() {
-      const container = document.getElementById('items-container');
-      const loader = document.getElementById('loading');
+    // State Stores
+    let taskList = JSON.parse(localStorage.getItem('krusos_tasks_data') || '[]');
+    let savedBookmarks = JSON.parse(localStorage.getItem('krusos_saved_bookmarks') || '[]');
+    let itemComments = JSON.parse(localStorage.getItem('krusos_item_comments') || '{}');
+    let isFilterSavedOnly = false;
+    let activeCommentId = null;
 
-      try {
-        const res = await fetch('/api/get-history');
-        const json = await res.json();
-        loader.classList.add('hidden');
-
-        if (!json.success || !json.data || json.data.length === 0) {
-          container.innerHTML = `
-            <div class="bg-white p-8 rounded-2xl shadow-sm text-center border border-slate-200 text-slate-400">
-              ยังไม่มีบันทึกข้อมูลในฐานข้อมูล (จะเริ่มแสดงผลหลังจากบอทยิงรอบถัดไป)
-            </div>
-          `;
-          return;
-        }
-
-        container.innerHTML = json.data.map(item => {
-          let bodyHtml = '';
-          if (item.sections && Array.isArray(item.sections)) {
-            bodyHtml = item.sections.map(sec => `
-              <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 whitespace-pre-line text-xs sm:text-sm text-slate-700 leading-relaxed mb-2">
-                ${sec}
-              </div>
-            `).join('');
-          } else {
-            bodyHtml = `<div class="whitespace-pre-line text-xs sm:text-sm text-slate-700 leading-relaxed">${item.rawContent || item.content || ''}</div>`;
-          }
-
-          return `
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-              <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                  ${item.date || 'ประจำวัน'}
-                </span>
-                <span class="text-xs text-slate-400">
-                  ${item.createdAt ? new Date(item.createdAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.' : ''}
-                </span>
-              </div>
-              <h2 class="text-base font-bold text-slate-800 mb-3">${item.title || 'สรุปประจำวัน'}</h2>
-              <div>${bodyHtml}</div>
-            </div>
-          `;
-        }).join('');
-      } catch (err) {
-        loader.innerHTML = `
-          <div class="bg-red-50 p-4 rounded-xl border border-red-200 text-red-600 text-sm">
-            เกิดข้อผิดพลาดในการโหลดข้อมูล: ${err.message}
-          </div>
-        `;
+    // หมวด 2: สรุปข่าวเด่น 5 ด้าน
+    const newsData = [
+      {
+        id: "news_ai",
+        category: "เทคโนโลยี / AI",
+        title: "📌 หัวข้อ: การประยุกต์ใช้ Generative AI สร้างแบบทดสอบจำแนกความคิดขั้นสูง",
+        summary: "📝 สรุปสาระสำคัญ: การนำ AI มาช่วยวิเคราะห์ตัวชี้วัดและสังเคราะห์สถานการณ์จำลอง เพื่อวัดทักษะการคิดวิเคราะห์ของนักเรียน แทนการวัดความจำ",
+        linkText: "สำนักข่าวนวัตกรรมการศึกษา",
+        linkUrl: "https://www.moe.go.th"
+      },
+      {
+        id: "news_env",
+        category: "สิ่งแวดล้อม",
+        title: "📌 หัวข้อ: วิกฤตการณ์การเปลี่ยนแปลงสภาพภูมิอากาศกับผลกระทบต่อเศรษฐกิจชุมชน",
+        summary: "📝 สรุปสาระสำคัญ: การเปลี่ยนแปลงสภาพอากาศส่งผลต่อผลผลิตเกษตรท้องถิ่น เหมาะสำหรับนำไปตั้งคำถามชวนคิดในวิชาภูมิศาสตร์และหน้าที่พลเมือง",
+        linkText: "รายงานสิ่งแวดล้อมโลก",
+        linkUrl: "https://www.obec.go.th"
+      },
+      {
+        id: "news_econ",
+        category: "เศรษฐกิจ",
+        title: "📌 หัวข้อ: เศรษฐกิจหมุนเวียน (Circular Economy) ในบริบทโรงเรียนและชุมชน",
+        summary: "📝 สรุปสาระสำคัญ: การปลูกฝังความรู้ทางการเงินและการบริหารจัดการทรัพยากรให้เกิดประโยชน์สูงสุดผ่านกิจกรรมธนาคารขยะและสหกรณ์นักเรียน",
+        linkText: "ศูนย์ข่าวเศรษฐกิจ",
+        linkUrl: "https://www.moe.go.th"
+      },
+      {
+        id: "news_soc",
+        category: "สังคม / สิทธิมนุษยชน",
+        title: "📌 หัวข้อ: การขับเคลื่อนบทบาทสภานักเรียนกับการสร้างวัฒนธรรมเคารพความแตกต่าง",
+        summary: "📝 สรุปสาระสำคัญ: เสริมสร้างความเป็นพลเมืองดิจิทัลที่รับผิดชอบ (Digital Citizenship) และการรับฟังเสียงสะท้อนของเยาวชนในสถานศึกษา",
+        linkText: "วารสารการพัฒนาสังคม",
+        linkUrl: "https://www.obec.go.th"
+      },
+      {
+        id: "news_edu",
+        category: "นวัตกรรมการศึกษา",
+        title: "📌 หัวข้อ: โมเดลการประเมินแบบ Paperless เพื่อลดภาระงานเอกสารของครู",
+        summary: "📝 สรุปสาระสำคัญ: นวัตกรรมการนิเทศและการประเมินเพื่อนครูผ่านระบบออนไลน์ ช่วยให้ครูมีเวลาโฟกัสกับการพัฒนาศักยภาพผู้เรียนอย่างเต็มที่",
+        linkText: "ศูนย์นวัตกรรมการเรียนรู้",
+        linkUrl: "https://otepc.go.th"
       }
+    ];
+
+    // หมวด 3: นวัตกรรม & 4 คิด
+    const pedagogyData = [
+      {
+        id: "ped_1",
+        title: "🎯 ชื่อแนวคิด/งานวิจัย: การจัดการเรียนรู้ประวัติศาสตร์ท้องถิ่นด้วยกระบวนการสืบสอบ",
+        essence: "🔍 แก่นสำคัญ: ให้นักเรียนเป็นนักสืบประวัติศาสตร์ ค้นคว้าหลักฐานจริงในชุมชนเพื่อสร้างองค์ความรู้ด้วยตนเอง",
+        fourSteps: "🏫 ไอเดียนำไปสอนจริง (กระบวนการ 4 คิด):\n• 1. คิดตั้งคำถาม: ทำไมชุมชนของเราจึงมีชื่อนี้ และมีความเป็นมาอย่างไร?\n• 2. คิดวิเคราะห์: จำแนกหลักฐานโบราณคดี เรื่องเล่า และเอกสารลายลักษณ์อักษร\n• 3. คิดสังเคราะห์: สรุปลำดับเหตุการณ์สำคัญที่หล่อหลอมวิถีชีวิตชุมชน\n• 4. คิดนำไปใช้: จัดทำสื่อดิจิทัลหรือนิทรรศการเล่าเรื่องของดีประจำตำบล",
+        mediaGuide: "🛠 แนวทางการนำไปสร้างสื่อ: ใบงานสืบสวนร่องรอยประวัติศาสตร์, สไลด์ Interactive Timeline, และการ์ดสถานการณ์จำลอง",
+        refText: "วารสารสังคมศึกษาและหลักสูตร",
+        refUrl: "https://scholar.google.com"
+      },
+      {
+        id: "ped_2",
+        title: "🎯 ชื่อแนวคิด/งานวิจัย: การปลูกฝังคุณธรรมเชิงบวกผ่านโครงงานฐานคุณธรรม",
+        essence: "🔍 แก่นสำคัญ: พัฒนาคุณลักษณะที่พึงประสงค์โดยให้นักเรียนสำรวจปัญหาในโรงเรียนแล้วร่วมกันวางกติกาแก้ไขด้วยตนเอง",
+        fourSteps: "🏫 ไอเดียนำไปสอนจริง (กระบวนการ 4 คิด):\n• 1. คิดตั้งคำถาม: ปัญหาใดในห้องเรียนที่สร้างผลกระทบต่อการเรียนรู้ของเพื่อนมากที่สุด?\n• 2. คิดวิเคราะห์: วิเคราะห์สาเหตุและพฤติกรรมที่เป็นต้นตอของปัญหา\n• 3. คิดสังเคราะห์: ออกแบบมาตรการเชิงบวกหรือแนวปฏิบัติร่วมกันในชั้นเรียน\n• 4. คิดนำไปใช้: ลงมือทำโครงงานความดีและประเมินผลผ่านบันทึกสะท้อนคิด",
+        mediaGuide: "🛠 แนวทางการนำไปสร้างสื่อ: ตารางบันทึกพฤติกรรมเชิงบวกดิจิทัล, บอร์ดเกมสะท้อนบทบาทสมมติ",
+        refText: "โครงการโรงเรียนคุณธรรม",
+        refUrl: "https://www.obec.go.th"
+      }
+    ];
+
+    function init() {
+      renderHomeOverview();
+      renderTasks();
+      renderNews();
+      renderPedagogy();
+      updateSavedBadge();
+      lucide.createIcons();
     }
 
-    fetchHistory();
+    function renderHomeOverview() {
+      const newsContainer = document.getElementById('homeFeaturedNews');
+      const featured = newsData.slice(0, 2);
+      newsContainer.innerHTML = featured.map(item => `
+        <div class="p-4 bg-white rounded-2xl border border-heritage-border shadow-xs hover:border-heritage-primary transition">
+          <div class="flex items-center justify-between mb-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#E8EEF2] text-heritage-primary">${item.category}</span>
+            <a href="${item.linkUrl}" target="_blank" class="text-xs text-heritage-primary hover:underline flex items-center gap-1 font-medium">อ่านต่อ <i data-lucide="arrow-right" class="w-3 h-3"></i></a>
+          </div>
+          <h4 class="text-xs sm:text-sm font-bold text-heritage-text">${item.title}</h4>
+          <p class="text-xs text-heritage-muted mt-1 line-clamp-2">${item.summary}</p>
+        </div>
+      `).join('');
+
+      const taskContainer = document.getElementById('homeTasksGlance');
+      const pendingTasks = taskList.filter(t => !t.completed).slice(0, 3);
+      if (pendingTasks.length === 0) {
+        taskContainer.innerHTML = `<div class="text-center py-4 text-heritage-muted text-xs">ไม่มีภารกิจค้างส่ง เรียบร้อยดีมากครับ 🍃</div>`;
+      } else {
+        taskContainer.innerHTML = pendingTasks.map(t => `
+          <div class="flex items-center justify-between text-xs py-1 border-b border-[#FAF8F5] last:border-0">
+            <span class="font-medium text-heritage-text truncate max-w-[180px]">• ${t.title}</span>
+            <span class="text-[10px] text-heritage-muted font-semibold">${t.dueDate}</span>
+          </div>
+        `).join('');
+      }
+
+      lucide.createIcons();
+    }
+
+    window.switchMainTab = function(tabName) {
+      document.querySelectorAll('.main-view').forEach(el => el.classList.add('hidden'));
+      const targetView = document.getElementById(`view-${tabName}`);
+      if (targetView) targetView.classList.remove('hidden');
+
+      document.querySelectorAll('.main-tab-btn').forEach(btn => {
+        btn.className = 'main-tab-btn px-3 py-1.5 rounded-xl transition text-heritage-muted hover:text-heritage-text flex items-center gap-1.5';
+      });
+      const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+      if (activeBtn) {
+        activeBtn.className = 'main-tab-btn px-3 py-1.5 rounded-xl transition bg-white text-heritage-primary shadow-xs flex items-center gap-1.5';
+      }
+
+      document.querySelectorAll('.mobile-tab-btn').forEach(btn => {
+        btn.className = 'mobile-tab-btn px-3 py-1 rounded-lg whitespace-nowrap text-heritage-muted';
+      });
+      const activeMBtn = document.getElementById(`mtab-${tabName}`);
+      if (activeMBtn) {
+        activeMBtn.className = 'mobile-tab-btn px-3 py-1 rounded-lg whitespace-nowrap bg-[#ECE8E0] text-heritage-primary';
+      }
+
+      if (tabName === 'chat') loadLineChatHistory();
+      if (tabName === 'home') renderHomeOverview();
+
+      lucide.createIcons();
+    };
+
+    window.createNewTask = function() {
+      const title = document.getElementById('taskInputTitle').value.trim();
+      const date = document.getElementById('taskInputDate').value;
+      const cat = document.getElementById('taskInputCategory').value;
+
+      if (!title) {
+        showToast('กรุณากรอกรายการงาน');
+        return;
+      }
+
+      taskList.unshift({
+        id: 'task_' + Date.now(),
+        title,
+        dueDate: date || 'ไม่ระบุวัน',
+        category: cat,
+        completed: false
+      });
+
+      localStorage.setItem('krusos_tasks_data', JSON.stringify(taskList));
+      document.getElementById('taskInputTitle').value = '';
+      document.getElementById('taskInputDate').value = '';
+      renderTasks();
+      renderHomeOverview();
+      showToast('บันทึกงานเรียบร้อย');
+    };
+
+    window.toggleTaskStatus = function(id) {
+      taskList = taskList.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+      localStorage.setItem('krusos_tasks_data', JSON.stringify(taskList));
+      renderTasks();
+      renderHomeOverview();
+    };
+
+    window.deleteTaskItem = function(id) {
+      taskList = taskList.filter(t => t.id !== id);
+      localStorage.setItem('krusos_tasks_data', JSON.stringify(taskList));
+      renderTasks();
+      renderHomeOverview();
+      showToast('ลบรายการงานแล้ว');
+    };
+
+    function renderTasks() {
+      const container = document.getElementById('tasksListContainer');
+      if (taskList.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 bg-white rounded-2xl border border-heritage-border">
+            <i data-lucide="check-circle-2" class="w-8 h-8 text-heritage-muted mx-auto mb-1 opacity-40"></i>
+            <p class="text-xs text-heritage-muted font-medium">ยังไม่มีรายการงานที่ต้องทำ</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = taskList.map(t => `
+        <div class="p-3.5 bg-white rounded-xl border border-heritage-border flex items-center justify-between gap-3 shadow-xs">
+          <div class="flex items-center gap-3">
+            <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTaskStatus('${t.id}')" class="w-4 h-4 rounded text-heritage-primary focus:ring-heritage-primary cursor-pointer accent-[#4A6B82]" />
+            <div>
+              <p class="text-xs font-bold ${t.completed ? 'line-through text-heritage-muted opacity-60' : 'text-heritage-text'}">${t.title}</p>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#FAF8F5] text-heritage-muted border border-heritage-border font-medium">${t.category}</span>
+                <span class="text-[10px] text-heritage-muted">กำหนดส่ง: ${t.dueDate}</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="deleteTaskItem('${t.id}')" class="text-heritage-muted hover:text-red-600 p-1">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </button>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderNews() {
+      const container = document.getElementById('newsCardsGrid');
+      const emptyBox = document.getElementById('emptyNewsBox');
+      const searchKey = document.getElementById('searchInput').value.trim().toLowerCase();
+
+      let filtered = newsData.filter(item => {
+        const matches = item.title.toLowerCase().includes(searchKey) || 
+                        item.summary.toLowerCase().includes(searchKey) || 
+                        item.category.toLowerCase().includes(searchKey);
+        return isFilterSavedOnly ? (matches && savedBookmarks.includes(item.id)) : matches;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        emptyBox.classList.remove('hidden');
+        return;
+      }
+
+      emptyBox.classList.add('hidden');
+      container.innerHTML = filtered.map(item => {
+        const isSaved = savedBookmarks.includes(item.id);
+        const commentList = itemComments[item.id] || [];
+
+        return `
+          <article class="bg-white rounded-2xl border border-heritage-border shadow-xs hover:border-heritage-primary transition flex flex-col justify-between overflow-hidden">
+            <div class="p-5">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#E8EEF2] text-heritage-primary inline-block mb-2">
+                ${item.category}
+              </span>
+              <h4 class="text-sm font-bold text-heritage-text leading-snug">${item.title}</h4>
+              <p class="text-xs text-heritage-muted mt-2 leading-relaxed whitespace-pre-line">${item.summary}</p>
+              
+              <div class="mt-4 pt-3 border-t border-[#FAF8F5] flex items-center justify-between text-xs">
+                <span class="text-heritage-muted">🔗 แหล่งข้อมูล:</span>
+                <a href="${item.linkUrl}" target="_blank" rel="noopener noreferrer" class="text-heritage-primary hover:underline font-medium inline-flex items-center gap-1">
+                  ${item.linkText} <i data-lucide="external-link" class="w-3 h-3"></i>
+                </a>
+              </div>
+            </div>
+
+            <div class="px-5 py-2.5 bg-[#FAF8F5] border-t border-heritage-border flex items-center justify-between text-xs text-heritage-muted">
+              <div class="flex items-center gap-3">
+                <button onclick="toggleBookmark('${item.id}')" class="flex items-center gap-1 font-medium ${isSaved ? 'text-heritage-terracotta font-bold' : 'hover:text-heritage-primary'}">
+                  <i data-lucide="bookmark" class="w-4 h-4 ${isSaved ? 'fill-current' : ''}"></i>
+                  <span>${isSaved ? 'บันทึกแล้ว' : 'บันทึก'}</span>
+                </button>
+                <button onclick="openCommentModal('${item.id}')" class="flex items-center gap-1 hover:text-heritage-primary font-medium">
+                  <i data-lucide="message-square" class="w-4 h-4"></i>
+                  <span>${commentList.length > 0 ? commentList.length : 'ความคิดเห็น'}</span>
+                </button>
+              </div>
+              <button onclick="copyCardContent('${item.id}', 'news')" class="p-1 text-heritage-muted hover:text-heritage-text" title="คัดลอกข้อความ">
+                <i data-lucide="copy" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderPedagogy() {
+      const container = document.getElementById('pedagogyGrid');
+      container.innerHTML = pedagogyData.map(item => {
+        const isSaved = savedBookmarks.includes(item.id);
+        const commentList = itemComments[item.id] || [];
+
+        return `
+          <article class="bg-white rounded-2xl border border-heritage-border shadow-xs p-6 flex flex-col justify-between">
+            <div class="space-y-3">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#EBF0EC] text-heritage-celadon inline-block">
+                นวัตกรรม & เทรนด์การสอน
+              </span>
+              <h4 class="text-base font-bold text-heritage-text leading-snug">${item.title}</h4>
+              <p class="text-xs text-heritage-text font-medium">${item.essence}</p>
+              
+              <div class="bg-[#FAF8F5] p-4 rounded-xl border border-heritage-border text-xs text-heritage-text leading-relaxed whitespace-pre-line">
+                ${item.fourSteps}
+              </div>
+
+              <p class="text-xs text-heritage-muted leading-relaxed">${item.mediaGuide}</p>
+            </div>
+
+            <div class="mt-5 pt-3 border-t border-[#FAF8F5] flex items-center justify-between text-xs text-heritage-muted">
+              <a href="${item.refUrl}" target="_blank" rel="noopener noreferrer" class="text-heritage-primary hover:underline font-medium inline-flex items-center gap-1">
+                📖 ${item.refText} <i data-lucide="external-link" class="w-3 h-3"></i>
+              </a>
+
+              <div class="flex items-center gap-3">
+                <button onclick="toggleBookmark('${item.id}')" class="flex items-center gap-1 ${isSaved ? 'text-heritage-terracotta font-bold' : 'hover:text-heritage-primary'}">
+                  <i data-lucide="bookmark" class="w-4 h-4 ${isSaved ? 'fill-current' : ''}"></i>
+                </button>
+                <button onclick="openCommentModal('${item.id}')" class="flex items-center gap-1 hover:text-heritage-primary">
+                  <i data-lucide="message-square" class="w-4 h-4"></i>
+                  <span>${commentList.length > 0 ? commentList.length : ''}</span>
+                </button>
+                <button onclick="copyCardContent('${item.id}', 'pedagogy')" class="p-1 text-heritage-muted hover:text-heritage-text">
+                  <i data-lucide="copy" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    window.toggleBookmark = function(id) {
+      if (savedBookmarks.includes(id)) {
+        savedBookmarks = savedBookmarks.filter(item => item !== id);
+        showToast('ลบออกจากรายการโปรดแล้ว');
+      } else {
+        savedBookmarks.push(id);
+        showToast('บันทึกลงในรายการโปรดเรียบร้อย');
+      }
+      localStorage.setItem('krusos_saved_bookmarks', JSON.stringify(savedBookmarks));
+      updateSavedBadge();
+      renderNews();
+      renderPedagogy();
+    };
+
+    function updateSavedBadge() {
+      document.getElementById('savedCountBadge').innerText = savedBookmarks.length;
+    }
+
+    window.toggleSavedFilter = function() {
+      isFilterSavedOnly = !isFilterSavedOnly;
+      document.getElementById('savedNoticeTag').classList.toggle('hidden', !isFilterSavedOnly);
+      switchMainTab('news');
+      renderNews();
+    };
+
+    window.copyCardContent = function(id, type) {
+      let text = '';
+      if (type === 'news') {
+        const item = newsData.find(n => n.id === id);
+        if (item) text = `${item.title}\n${item.summary}\nแหล่งข้อมูล: ${item.linkUrl}`;
+      } else {
+        const item = pedagogyData.find(p => p.id === id);
+        if (item) text = `${item.title}\n${item.essence}\n${item.fourSteps}\n${item.mediaGuide}`;
+      }
+      if (text) {
+        navigator.clipboard.writeText(text).then(() => showToast('คัดลอกข้อความแล้ว'));
+      }
+    };
+
+    window.searchExternalScholar = function() {
+      const q = document.getElementById('searchInput').value.trim();
+      if (!q) {
+        showToast('กรุณากรอกคำค้นคว้า');
+        return;
+      }
+      window.open(`https://scholar.google.com/scholar?q=${encodeURIComponent(q)}`, '_blank');
+    };
+
+    document.getElementById('searchInput').addEventListener('input', () => {
+      renderNews();
+    });
+
+    window.loadLineChatHistory = async function() {
+      const container = document.getElementById('chatMessageHistory');
+      try {
+        const res = await fetch('/api/get-chats');
+        if (res.ok) {
+          const result = await res.json();
+          if (result.data && result.data.length > 0) {
+            const chats = result.data.reverse();
+            container.innerHTML = chats.map(c => `
+              <div class="space-y-2 mb-4">
+                <div class="flex justify-end gap-2">
+                  <div class="bg-heritage-primary text-white p-3 rounded-2xl rounded-tr-none text-xs max-w-[85%] leading-relaxed shadow-xs">
+                    <div class="text-[10px] text-[#D8E2E8] mb-0.5 font-medium flex items-center gap-1 justify-end">
+                      <span>📱 ถามผ่าน LINE</span> • <span>${new Date(c.timestamp).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} น.</span>
+                    </div>
+                    ${c.question}
+                  </div>
+                </div>
+
+                <div class="flex gap-2.5">
+                  <div class="w-8 h-8 rounded-xl bg-white border border-heritage-border text-heritage-primary flex items-center justify-center shrink-0 text-xs font-bold shadow-xs">
+                    <i data-lucide="cpu" class="w-4 h-4"></i>
+                  </div>
+                  <div class="bg-white p-3.5 rounded-2xl rounded-tl-none border border-heritage-border shadow-xs text-xs text-heritage-text max-w-[85%] leading-relaxed whitespace-pre-line">
+                    ${c.answer}
+                  </div>
+                </div>
+              </div>
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+            lucide.createIcons();
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('Fetch chats error:', e);
+      }
+
+      container.innerHTML = `
+        <div class="text-center py-12 text-heritage-muted text-xs">
+          ยังไม่มีประวัติการสนทนา ส่งข้อความคุยกับบอทใน LINE หรือพิมพ์ด้านล่างได้เลยครับ 🍃
+        </div>
+      `;
+    };
+
+    window.sendWebChatMessage = function() {
+      const input = document.getElementById('chatUserQuestion');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const history = document.getElementById('chatMessageHistory');
+
+      const userBubble = document.createElement('div');
+      userBubble.className = 'flex justify-end gap-2 mb-3';
+      userBubble.innerHTML = `
+        <div class="bg-heritage-primary text-white p-3 rounded-2xl rounded-tr-none text-xs max-w-[85%] leading-relaxed shadow-xs">
+          <div class="text-[10px] text-[#D8E2E8] mb-0.5 font-medium text-right">💻 ถามผ่านหน้าเว็บ</div>
+          ${text}
+        </div>
+      `;
+      history.appendChild(userBubble);
+      input.value = '';
+      history.scrollTop = history.scrollHeight;
+
+      setTimeout(() => {
+        const aiBubble = document.createElement('div');
+        aiBubble.className = 'flex gap-2.5 mb-3';
+        aiBubble.innerHTML = `
+          <div class="w-8 h-8 rounded-xl bg-white border border-heritage-border text-heritage-primary flex items-center justify-center shrink-0 text-xs font-bold shadow-xs">
+            <i data-lucide="cpu" class="w-4 h-4"></i>
+          </div>
+          <div class="bg-white p-3.5 rounded-2xl rounded-tl-none border border-heritage-border shadow-xs text-xs text-heritage-text max-w-[85%] leading-relaxed whitespace-pre-line">
+            💡 <strong>KruSos Cortex วิเคราะห์ประเด็น:</strong> "${text}"
+            
+            ขอเสนอแนวทางจัดการเรียนรู้เชิงรุก (Active Learning):
+            1. 🎯 <strong>ขั้นคิดตั้งคำถาม:</strong> นำสถานการณ์หรือหลักฐานประวัติศาสตร์ในท้องถิ่นสู่ห้องเรียน
+            2. 🔍 <strong>ขั้นคิดวิเคราะห์:</strong> วิเคราะห์หลักฐานและจำแนกข้อมูลรอบด้าน
+            3. 🧩 <strong>ขั้นคิดสังเคราะห์:</strong> นักเรียนร่วมกันสร้างแบบจำลองหรือข้อสรุป
+            4. 🚀 <strong>ขั้นคิดนำไปใช้:</strong> สะท้อนคิดและนำข้อคิดไปปรับใช้ในการเป็นพลเมืองตื่นรู้
+          </div>
+        `;
+        history.appendChild(aiBubble);
+        history.scrollTop = history.scrollHeight;
+        lucide.createIcons();
+      }, 700);
+    };
+
+    window.openCommentModal = function(id) {
+      activeCommentId = id;
+      document.getElementById('commentModal').classList.remove('hidden');
+      renderCommentList();
+    };
+
+    window.closeCommentModal = function() {
+      document.getElementById('commentModal').classList.add('hidden');
+    };
+
+    function renderCommentList() {
+      const container = document.getElementById('commentsContainer');
+      const list = itemComments[activeCommentId] || [];
+      if (list.length === 0) {
+        container.innerHTML = `<div class="text-center py-6 text-heritage-muted text-xs">ยังไม่มีบันทึกความคิดเห็น เริ่มเขียนเป็นคนแรกได้เลยครับ</div>`;
+        return;
+      }
+      container.innerHTML = list.map(c => `
+        <div class="p-2.5 bg-white rounded-xl border border-heritage-border shadow-xs">
+          <div class="flex justify-between items-center text-[10px] text-heritage-muted mb-1">
+            <span class="font-semibold text-heritage-terracotta">บันทึกช่วยสอน</span>
+            <span>${c.time}</span>
+          </div>
+          <p class="text-xs text-heritage-text">${c.text}</p>
+        </div>
+      `).join('');
+    }
+
+    window.submitCommentText = function() {
+      const input = document.getElementById('commentTextInput');
+      const text = input.value.trim();
+      if (!text || !activeCommentId) return;
+
+      if (!itemComments[activeCommentId]) itemComments[activeCommentId] = [];
+      const now = new Date();
+      itemComments[activeCommentId].unshift({
+        text,
+        time: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} น.`
+      });
+
+      localStorage.setItem('krusos_item_comments', JSON.stringify(itemComments));
+      input.value = '';
+      renderCommentList();
+      renderNews();
+      renderPedagogy();
+      showToast('บันทึกไอเดียเรียบร้อย');
+    };
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').innerText = msg;
+      toast.classList.remove('opacity-0', 'translate-y-16');
+      setTimeout(() => toast.classList.add('opacity-0', 'translate-y-16'), 2000);
+    }
+
+    init();
   </script>
 </body>
 </html>
