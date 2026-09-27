@@ -1,3 +1,22 @@
+import admin from 'firebase-admin';
+
+// กำหนดค่าเริ่มต้นเชื่อมต่อกับ Firebase Admin SDK
+if (!admin.apps.length) {
+  try {
+    admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      }),
+    });
+  } catch (err) {
+    console.error('Firebase initialization error:', err);
+  }
+}
+
+const db = admin.firestore();
+
 export const config = {
   maxDuration: 60,
 };
@@ -11,7 +30,6 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Missing Environment Variables" });
   }
 
-  // คำสั่งกำหนดให้ Gemini ส่งคำตอบแยกเป็น 5 บล็อกคั่นด้วยเครื่องหมาย [SPLIT]
   const prompt = `คุณคือผู้ช่วยส่วนตัวของครูสังคมศึกษาที่กำลังศึกษาต่อระดับปริญญาโท และยึดมั่นในอุดมการณ์ 'ครูเพื่อศิษย์'
 ให้จัดเตรียมเนื้อหาแยกเป็น 5 ส่วน โดยคั่นระหว่างแต่ละส่วนด้วยคำว่า "[SPLIT]" เพียงคำเดียวเท่านั้น (ห้ามใส่สิ่งอื่นในบรรทัดคั่น):
 
@@ -72,8 +90,24 @@ export default async function handler(req, res) {
       .split("[SPLIT]")
       .map(msg => msg.trim())
       .filter(msg => msg.length > 0)
-      .slice(0, 5) // ป้องกันไม่ให้เกินโควตา 5 บับเบิลของ LINE
+      .slice(0, 5)
       .map(text => ({ type: "text", text }));
+
+    // บันทึกลง Firestore ใน collection "daily_summaries"
+    try {
+      const today = new Date();
+      await db.collection('daily_summaries').add({
+        date: today.toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' }),
+        type: 'morning_news',
+        title: 'สรุปข่าวและสาระการเรียนรู้ประจำวัน',
+        rawContent: fullText,
+        sections: splitMessages.map(m => m.text),
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      console.log('Successfully saved to Firestore');
+    } catch (dbErr) {
+      console.error('Firestore save error:', dbErr);
+    }
 
     // ส่งข้อความแยกทีละกล่องเข้า LINE
     const lineRes = await fetch("https://api.line.me/v2/bot/message/push", {
@@ -93,7 +127,7 @@ export default async function handler(req, res) {
       throw new Error("LINE Push Error: " + lineError);
     }
 
-    return res.status(200).json({ success: true, message: "Sent successfully in separate bubbles" });
+    return res.status(200).json({ success: true, message: "Sent successfully in separate bubbles and saved to Firestore" });
   } catch (error) {
     console.error("Error:", error.message);
     return res.status(500).json({ success: false, error: error.message });
