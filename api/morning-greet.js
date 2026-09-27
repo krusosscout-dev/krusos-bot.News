@@ -15,35 +15,58 @@ export default async function handler(req, res) {
 ในแต่ละข่าว ให้เขียนแยกบรรทัดตามโครงสร้างนี้:
 - 📌 หัวข้อข่าว: [ระบุหัวข้อ]
 - 📝 สรุปสาระสำคัญ: [สรุปสั้นกระชับ พร้อมระบุประเด็นชวนคิดสำหรับนำไปคุยกับนักเรียนในห้องเรียน]
+- 🔗 แหล่งข้อมูลอ่านต่อ: [ใส่ URL ข่าวจริง]
 
 ปิดท้ายด้วยประโยคว่า:
 "หากครูสนใจรายละเอียดข่าวไหน พิมพ์โต้ตอบถามผมต่อได้เลยครับ!"`;
 
-  // อัปเดตชื่อโมเดลเป็น gemini-3.8-flash ตามคำแนะนำของระบบ API
-  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`;
+  // ใช้โมเดลปัจจุบันที่เสถียรที่สุด
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+  let geminiData = null;
+  let isSuccess = false;
+
+  // ระบบ Auto-Retry: ลองดึงข้อมูลใหม่สูงสุด 3 ครั้ง หากเจอ Error 503
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const geminiRes = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }]
+        })
+      });
+      
+      geminiData = await geminiRes.json();
+      
+      // ถ้าระบบไม่ได้ฟ้อง Error 503 ให้ออกจากลูปพยายามซ้ำทันที
+      if (!geminiData.error || geminiData.error.code !== 503) {
+        isSuccess = true;
+        break; 
+      }
+      
+      // หากชน 503 ระบบจะหน่วงเวลา 2 วินาที (2000 ms) ก่อนวนลูปไปดึงใหม่
+      if (attempt < 3) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    } catch (error) {
+      console.error(`Attempt ${attempt} failed:`, error);
+    }
+  }
+
+  // หากพยายามครบ 3 ครั้งแล้วยังไม่ได้ผล ให้แจ้ง Error กลับไป
+  if (!isSuccess || (geminiData && geminiData.error)) {
+    return res.status(503).json({ success: false, error: "API busy after 3 retries", details: geminiData?.error });
+  }
+
+  const parts = geminiData.candidates?.[0]?.content?.parts || [];
+  const greetingMessage = parts.map(p => p.text).filter(Boolean).join('\n');
+
+  if (!greetingMessage) {
+    return res.status(400).json({ success: false, error: "No text generated" });
+  }
 
   try {
-    const geminiRes = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }]
-      })
-    });
-    
-    const geminiData = await geminiRes.json();
-    
-    if (geminiData.error) {
-      return res.status(400).json({ success: false, error: "Gemini API Error", details: geminiData.error });
-    }
-    
-    const parts = geminiData.candidates?.[0]?.content?.parts || [];
-    const greetingMessage = parts.map(p => p.text).filter(Boolean).join('\n');
-
-    if (!greetingMessage) {
-      return res.status(400).json({ success: false, error: "No response generated from Gemini", details: geminiData });
-    }
-
     const lineUrl = 'https://api.line.me/v2/bot/message/push';
     await fetch(lineUrl, {
       method: 'POST',
@@ -57,7 +80,7 @@ export default async function handler(req, res) {
       })
     });
 
-    res.status(200).json({ success: true, message: "Sent successfully" });
+    res.status(200).json({ success: true, message: "Sent successfully with Auto-Retry" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: error.message });
