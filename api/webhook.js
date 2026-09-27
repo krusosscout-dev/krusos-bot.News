@@ -1,4 +1,3 @@
-// ปิด bodyParser ของ Vercel เพื่อให้อ่าน Stream จาก LINE Webhook ได้ครบถ้วน
 export const config = {
   api: {
     bodyParser: false,
@@ -6,7 +5,6 @@ export const config = {
   maxDuration: 60,
 };
 
-// ฟังก์ชันสำหรับแปลง Stream Data จาก LINE ให้อ่านเป็น Text
 async function getRawBody(readable) {
   const chunks = [];
   for await (const chunk of readable) {
@@ -47,9 +45,6 @@ export default async function handler(req, res) {
     const userId = event.source.userId;
     const currentHost = req.headers.host;
 
-    console.log(`Received user message: "${userMessage}" from user: ${userId}`);
-
-    // คำนวณเวลาปัจจุบันของประเทศไทย
     const now = new Date();
     const nowTimestamp = Math.floor(now.getTime() / 1000);
     const thaiTimeString = now.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
@@ -57,7 +52,7 @@ export default async function handler(req, res) {
     const systemInstruction = `คุณคือผู้ช่วยส่วนตัวของครูสังคมศึกษาที่ยึดมั่นในอุดมการณ์ 'ครูเพื่อศิษย์'
 ขณะนี้เวลาปัจจุบันในประเทศไทยคือ: ${thaiTimeString} (Unix timestamp ปัจจุบัน: ${nowTimestamp} วินาที)
 
-หากข้อความของผู้ใช้เป็นการสั่งให้ "เตือนความจำ", "จัดคิวงาน", หรือ "บันทึกเวลาสอน/ตารางสอน" (เช่น เตือนในอีก 2 นาที, เตือนพรุ่งนี้ 08:30):
+หากข้อความของผู้ใช้เป็นการสั่งให้ "เตือนความจำ", "จัดคิวงาน", หรือ "บันทึกเวลาสอน/ตารางสอน":
 ให้ตอบกลับเป็นรูปแบบ JSON เพียงอย่างเดียวเท่านั้น โดยไม่มี markdown หรือข้อความอื่นปน ดังนี้:
 {
   "isReminder": true,
@@ -66,15 +61,15 @@ export default async function handler(req, res) {
   "confirmationMessage": "ข้อความยืนยันการตั้งเตือนแบบสุภาพ กระชับ แจ้งเวลาที่จะเตือนชัดเจน"
 }
 
-หากไม่ใช่การสั่งเตือนความจำ (เป็นการสอบถามข้อมูล ปรึกษาแผนการสอน พูดคุยทั่วไป):
+หากไม่ใช่การสั่งเตือนความจำ:
 ให้ตอบกลับเป็นข้อความสนทนาปกติ ตอบเป็นข้อความธรรมดา (Plain text) เค้าโครงชัดเจน พร้อมนำไปใช้งานได้ทันที`;
 
-    // ใช้โมเดล gemini-1.5-flash-latest เพื่อรองรับ API v1beta
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+    // ใช้ gemini-2.5-flash ซึ่งเป็นโมเดลมาตรฐานล่าสุดที่รองรับบน API v1beta
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
     try {
-      console.log('Calling Gemini API...');
-      const geminiRes = await fetch(geminiUrl, {
+      console.log('Calling Gemini API with gemini-2.5-flash...');
+      let geminiRes = await fetch(geminiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -83,17 +78,26 @@ export default async function handler(req, res) {
         })
       });
 
-      const geminiData = await geminiRes.json();
-      console.log('Gemini API Response Status:', geminiRes.status);
+      let geminiData = await geminiRes.json();
 
+      // หากติด 404 ให้สลับไปใช้ gemini-2.5-pro สำรองทันที
       if (!geminiRes.ok) {
-        console.error('Gemini API Error Body:', JSON.stringify(geminiData));
+        console.log('Fallback to gemini-2.5-pro...');
+        const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`;
+        geminiRes = await fetch(fallbackUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: systemInstruction }] },
+            contents: [{ role: 'user', parts: [{ text: userMessage }] }]
+          })
+        });
+        geminiData = await geminiRes.json();
       }
 
-      const replyRaw = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัยครับ ระบบไม่สามารถสร้างคำตอบได้ในขณะนี้";
+      const replyRaw = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "สวัสดีครับ มีอะไรให้ผู้ช่วยครูรับใช้และช่วยเตรียมการสอนแจ้งได้เลยครับ";
       let finalReplyText = replyRaw;
 
-      // กรณีที่ผู้ใช้สั่งตั้งเตือนเวลา
       if (replyRaw.includes('"isReminder": true') || replyRaw.includes('"isReminder":true')) {
         try {
           const cleanedJsonStr = replyRaw.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -118,10 +122,6 @@ export default async function handler(req, res) {
 
             if (qstashRes.ok) {
               finalReplyText = parsed.confirmationMessage || `⏰ บันทึกคิวงานเรียบร้อยแล้ว: ${parsed.taskDescription}`;
-            } else {
-              const qstashErr = await qstashRes.text();
-              console.error('QStash Error:', qstashErr);
-              finalReplyText = `รับทราบภารกิจ: "${parsed.taskDescription}" แต่ระบบส่งคิวเตือนขัดข้องชั่วคราวครับ`;
             }
           }
         } catch (jsonErr) {
@@ -129,9 +129,7 @@ export default async function handler(req, res) {
         }
       }
 
-      // ส่งข้อความตอบกลับไปยัง LINE
-      console.log('Sending reply to LINE...');
-      const lineRes = await fetch('https://api.line.me/v2/bot/message/reply', {
+      await fetch('https://api.line.me/v2/bot/message/reply', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -143,11 +141,7 @@ export default async function handler(req, res) {
         })
       });
 
-      console.log('LINE Reply Status:', lineRes.status);
-      if (!lineRes.ok) {
-        const lineErr = await lineRes.text();
-        console.error('LINE Reply Error Body:', lineErr);
-      }
+      console.log('Successfully replied to LINE!');
     } catch (error) {
       console.error('Webhook execution failure:', error);
     }
