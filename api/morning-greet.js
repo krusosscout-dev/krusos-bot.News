@@ -1,82 +1,101 @@
+export const config = {
+  maxDuration: 60,
+};
+
 export default async function handler(req, res) {
   const LINE_ACCESS_TOKEN = process.env.LINE_ACCESS_TOKEN;
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
   const LINE_USER_ID = process.env.LINE_USER_ID;
 
-  const prompt = `เขียนข้อความทักทายยามเช้าสั้นๆ 1 ย่อหน้า เพื่อให้กำลังใจครูสังคมศึกษาที่มีอุดมการณ์ 'ครูเพื่อศิษย์'
+  if (!LINE_ACCESS_TOKEN || !GEMINI_API_KEY || !LINE_USER_ID) {
+    return res.status(500).json({ error: "Missing Environment Variables" });
+  }
 
-จากนั้น ให้สรุปเหตุการณ์หรือประเด็นความรู้เด่นระดับโลกล่าสุด มาทั้งหมด 3 เรื่อง:
-1. ประเด็นเทคโนโลยี
-2. ประเด็นสิ่งแวดล้อม
-3. ประเด็นการศึกษา
+  // คำสั่งกำหนดให้ Gemini ส่งคำตอบแยกเป็น 5 บล็อกคั่นด้วยเครื่องหมาย [SPLIT]
+  const prompt = `คุณคือผู้ช่วยส่วนตัวของครูสังคมศึกษาที่กำลังศึกษาต่อระดับปริญญาโท และยึดมั่นในอุดมการณ์ 'ครูเพื่อศิษย์'
+ให้จัดเตรียมเนื้อหาแยกเป็น 5 ส่วน โดยคั่นระหว่างแต่ละส่วนด้วยคำว่า "[SPLIT]" เพียงคำเดียวเท่านั้น (ห้ามใส่สิ่งอื่นในบรรทัดคั่น):
 
-ในแต่ละข่าว ให้เขียนแยกบรรทัดตามโครงสร้างนี้:
+ส่วนที่ 1: คำทักทายยามเช้า
+เขียนข้อความทักทายยามเช้า 1 ย่อหน้าสั้นๆ เพื่อให้กำลังใจครูก่อนเริ่มการสอนและการทำหน้าที่ในโรงเรียน
+
+[SPLIT]
+
+ส่วนที่ 2: หมวดที่ 1: 📋 ตารางคิวงานและภารกิจประจำวัน (Daily Tasks)
+สรุปเตือนความจำภารกิจสำคัญของวัน (เตรียมสอน, งานโรงเรียน/เวร, ภารกิจวิจัยหรือการบ้าน ป.โท) ในรูปแบบ Check-list สั้น กระชับ
+
+[SPLIT]
+
+ส่วนที่ 3: หมวดที่ 2: 🌍 สรุปข่าวเด่นรอบโลกและประเด็นร่วมสมัย (5 ด้าน)
+สรุปข่าวเหตุการณ์จริงล่าสุด 5 เรื่อง 5 ด้าน (1. เทคโนโลยี/AI 2. สิ่งแวดล้อม 3. เศรษฐกิจ 4. สังคม/สิทธิมนุษยชน 5. นวัตกรรมการศึกษา)
+แต่ละเรื่องเขียนตามโครงสร้าง:
 - 📌 หัวข้อข่าว: [ระบุหัวข้อ]
-- 📝 สรุปสาระสำคัญ: [สรุปสั้นกระชับ พร้อมระบุประเด็นชวนคิดสำหรับนำไปคุยกับนักเรียน]
-- 🔗 แหล่งข้อมูลอ่านต่อ: [ใส่ URL ข่าวจริง]
+- 📝 สรุปสาระสำคัญ: [สรุปสั้นกระชับ พร้อมคำถามชวนคิดเพื่อนำไปคุยกับนักเรียน]
+- 🔗 แหล่งข้อมูลอ่านต่อ: [ระบุชื่อสำนักข่าว พร้อมใส่ URL จริงแบบเต็ม https:// ห้ามใส่แบบ markdown link เพื่อให้กดใน LINE ได้ทันที]
 
-ปิดท้ายด้วยประโยคว่า:
-"หากสนใจรายละเอียดข่าวไหน พิมพ์โต้ตอบถามผมต่อได้เลยครับ!"`;
+[SPLIT]
 
-  // เปลี่ยนมาใช้โมเดล gemini-pro ซึ่งเป็นรุ่นมาตรฐานที่เสถียรและเข้าถึงได้ทุก API Key
-  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
+ส่วนที่ 4: หมวดที่ 3: 💡 นวัตกรรมการเรียนรู้และงานวิจัยเพื่อการประยุกต์ใช้ (Pedagogy & Research Trends)
+นำเสนอเทรนด์การสอนสังคมศึกษา/ประวัติศาสตร์ หรือนวัตกรรมการจัดการเรียนรู้สมัยใหม่ 2-3 นวัตกรรม แต่ละเรื่องต้องมี:
+- 🎯 ชื่อแนวคิด/งานวิจัย: [ระบุชื่อ]
+- 🔍 แก่นสำคัญ: [อธิบายแนวคิดสั้นๆ]
+- 🏫 ไอเดียนำไปสอนจริง (กระบวนการ 4 คิด): [ระบุแนวทางการสอนตาม 4 ขั้นตอน: 1. คิดตั้งคำถาม, 2. คิดวิเคราะห์, 3. คิดสังเคราะห์, 4. คิดนำไปใช้]
+- 🛠️ แนวทางการนำไปสร้างสื่อการสอนเชิงประยุกต์: [ระบุตัวอย่างสื่อที่ครูนำไปสร้างใช้จริงได้ เช่น ใบงานสืบสวน, สไลด์ Interactive, การ์ดสถานการณ์จำลอง, บอร์ดเกม]
+- 📚 แหล่งอ้างอิง/อ่านเพิ่มเติม: [ระบุชื่อสถาบัน/วารสาร พร้อม URL จริง https://]
 
-  let geminiData = null;
-  let isSuccess = false;
+[SPLIT]
 
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    try {
-      const geminiRes = await fetch(geminiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }]
-        })
-      });
-      
-      geminiData = await geminiRes.json();
-      
-      if (!geminiData.error || (geminiData.error.code !== 503 && geminiData.error.code !== 429)) {
-        isSuccess = true;
-        break; 
-      }
-      
-      if (attempt < 3) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      }
-    } catch (error) {
-      console.error(`Attempt ${attempt} failed:`, error);
-    }
-  }
+ส่วนที่ 5: ข้อความลงท้าย
+พิมพ์ข้อความสั้นๆ ว่า:
+"หากครูสนใจรายละเอียดข่าว ไอเดียกิจกรรม หรือต้องการปรับคิวงานเรื่องไหน พิมพ์บอกผมได้เลยครับ!"`;
 
-  if (!isSuccess || (geminiData && geminiData.error)) {
-    return res.status(500).json({ success: false, error: "API Error", details: geminiData?.error });
-  }
-
-  const parts = geminiData.candidates?.[0]?.content?.parts || [];
-  const greetingMessage = parts.map(p => p.text).filter(Boolean).join('\n');
-
-  if (!greetingMessage) {
-    return res.status(400).json({ success: false, error: "No text generated" });
-  }
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
   try {
-    const lineUrl = 'https://api.line.me/v2/bot/message/push';
-    await fetch(lineUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${LINE_ACCESS_TOKEN}`
-      },
+    const geminiRes = await fetch(geminiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        to: LINE_USER_ID,
-        messages: [{ type: 'text', text: greetingMessage }]
+        contents: [{ parts: [{ text: prompt }] }],
+        tools: [{ google_search: {} }]
       })
     });
 
-    res.status(200).json({ success: true, message: "Sent successfully with gemini-pro" });
+    const geminiData = await geminiRes.json();
+    const fullText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!fullText) {
+      throw new Error("No response from Gemini: " + JSON.stringify(geminiData));
+    }
+
+    // หั่นข้อความเป็น 5 กล่องข้อความตามสัญลักษณ์ [SPLIT]
+    const splitMessages = fullText
+      .split("[SPLIT]")
+      .map(msg => msg.trim())
+      .filter(msg => msg.length > 0)
+      .slice(0, 5) // ป้องกันไม่ให้เกินโควตา 5 บับเบิลของ LINE
+      .map(text => ({ type: "text", text }));
+
+    // ส่งข้อความแยกทีละกล่องเข้า LINE
+    const lineRes = await fetch("https://api.line.me/v2/bot/message/push", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${LINE_ACCESS_TOKEN}`
+      },
+      body: JSON.stringify({
+        to: LINE_USER_ID,
+        messages: splitMessages
+      })
+    });
+
+    if (!lineRes.ok) {
+      const lineError = await lineRes.text();
+      throw new Error("LINE Push Error: " + lineError);
+    }
+
+    return res.status(200).json({ success: true, message: "Sent successfully in separate bubbles" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, error: error.message });
+    console.error("Error:", error.message);
+    return res.status(500).json({ success: false, error: error.message });
   }
 }
