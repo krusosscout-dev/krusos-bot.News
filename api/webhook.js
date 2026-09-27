@@ -1,3 +1,21 @@
+import admin from 'firebase-admin';
+
+// ตรวจสอบและเริ่มต้น Firebase Admin SDK
+if (!admin.apps.length) {
+  try {
+    const serviceAccount = {
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
+    };
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+  } catch (error) {
+    console.error('Firebase init error:', error);
+  }
+}
+
 export const config = {
   api: {
     bodyParser: false,
@@ -56,7 +74,6 @@ export default async function handler(req, res) {
     const currentHost = req.headers.host;
 
     const now = new Date();
-    const nowTimestamp = Math.floor(now.getTime() / 1000);
     const thaiTimeString = now.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
 
     // กำหนดข้อบังคับพฤติกรรม AI: โมเดลการสอนสากลยอดนิยม + บังคับแทรกอิโมจิทุกย่อหน้า
@@ -91,7 +108,7 @@ export default async function handler(req, res) {
      "confirmationMessage": "ข้อความยืนยันพร้อมอิโมจิ ⏰"
    }`;
 
-   const candidateModels = ['gemini-3.8-flash', 'gemini-3.8-flash-lite'];
+    const candidateModels = ['gemini-3.8-flash', 'gemini-3.8-flash-lite'];
     let replyRaw = '';
 
     for (const model of candidateModels) {
@@ -159,6 +176,23 @@ export default async function handler(req, res) {
       }
     }
 
+    // บันทึกบทสนทนาลง Firestore (Collection: chat_history)
+    if (admin.apps.length) {
+      try {
+        const db = admin.firestore();
+        await db.collection('chat_history').add({
+          question: event.message?.type === 'sticker' ? '🎨 (ส่งสติกเกอร์)' : userMessage,
+          answer: finalReplyText,
+          timestamp: new Date().toISOString(),
+          userId: userId,
+          source: 'LINE'
+        });
+      } catch (dbErr) {
+        console.error('Error saving chat to Firestore:', dbErr);
+      }
+    }
+
+    // ตอบกลับผู้ใช้ใน LINE
     await fetch('https://api.line.me/v2/bot/message/reply', {
       method: 'POST',
       headers: {
