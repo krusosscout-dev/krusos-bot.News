@@ -2,6 +2,15 @@ export const config = {
   maxDuration: 60,
 };
 
+// ฟังก์ชันช่วยอ่าน Raw Body กรณี Vercel ไม่ได้ parse อัตโนมัติ
+async function getRawBody(readable) {
+  const chunks = [];
+  for await (const chunk of readable) {
+    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+  }
+  return Buffer.concat(chunks).toString('utf8');
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(200).send('Webhook is active');
@@ -11,8 +20,19 @@ export default async function handler(req, res) {
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
   const QSTASH_TOKEN = process.env.QSTASH_TOKEN;
 
-  const events = req.body?.events;
+  let body = req.body;
+  if (!body || typeof body === 'string') {
+    try {
+      const raw = typeof body === 'string' ? body : await getRawBody(req);
+      body = JSON.parse(raw);
+    } catch (e) {
+      console.error('Body parse error:', e);
+    }
+  }
+
+  const events = body?.events;
   if (!events || events.length === 0) {
+    console.log('No events found in payload');
     return res.status(200).send('OK');
   }
 
@@ -23,29 +43,24 @@ export default async function handler(req, res) {
     const userId = event.source.userId;
     const currentHost = req.headers.host;
 
-    // คำนวณเวลาปัจจุบันของประเทศไทย (UTC+7)
     const now = new Date();
     const nowTimestamp = Math.floor(now.getTime() / 1000);
     const thaiTimeString = now.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
 
-    const systemInstruction = `คุณคือผู้ช่วยส่วนตัวของครูสังคมศึกษาที่กำลังศึกษาต่อระดับ ป.โท และยึดมั่นในอุดมการณ์ 'ครูเพื่อศิษย์'
+    const systemInstruction = `คุณคือผู้ช่วยส่วนตัวของครูสังคมศึกษาที่ยึดมั่นในอุดมการณ์ 'ครูเพื่อศิษย์'
 ขณะนี้เวลาปัจจุบันในประเทศไทยคือ: ${thaiTimeString} (Unix timestamp ปัจจุบัน: ${nowTimestamp} วินาที)
 
-หากข้อความของผู้ใช้เป็นการสั่งให้ "เตือนความจำ", "จัดคิวงาน", หรือ "บันทึกเวลาสอน/ตารางสอน" (เช่น เตือนในอีก 2 นาที, เตือนพรุ่งนี้ 08:30, เตือนสอนวิชาสังคม ป.4 คาบ 2):
+หากข้อความของผู้ใช้เป็นการสั่งให้ "เตือนความจำ", "จัดคิวงาน", หรือ "บันทึกเวลาสอน/ตารางสอน" (เช่น เตือนในอีก 2 นาที, เตือนพรุ่งนี้ 08:30):
 ให้ตอบกลับเป็นรูปแบบ JSON เพียงอย่างเดียวเท่านั้น โดยไม่มี markdown หรือข้อความอื่นปน ดังนี้:
 {
   "isReminder": true,
-  "taskDescription": "สรุปภารกิจหรือวิชาที่ต้องทำ เช่น สอนสังคมศึกษา ป.4 คาบที่ 2",
+  "taskDescription": "สรุปภารกิจหรือวิชาที่ต้องทำ",
   "scheduledTimestampSeconds": 1727400000,
   "confirmationMessage": "ข้อความยืนยันการตั้งเตือนแบบสุภาพ กระชับ แจ้งเวลาที่จะเตือนชัดเจน"
 }
-*เงื่อนไขสำคัญสำหรับ scheduledTimestampSeconds:*
-- คำนวณเป็นตัวเลข Unix Timestamp (วินาที) ตามเวลาประเทศไทย
-- หากผู้ใช้สั่ง เช่น 'อีก 2 นาที' ให้นำ ${nowTimestamp} + 120
-- หากผู้ใช้ระบุเวลา เช่น '08:30' ให้ดูว่าวันปัจจุบันเวลานี้ผ่านไปหรือยัง ถ้าผ่านไปแล้วให้เป็น 08:30 ของวันพรุ่งนี้
 
-หากไม่ใช่การสั่งเตือนความจำ (เป็นการสอบถามข้อมูลทั่วไป ปรึกษาแผนการสอน พูดคุย หรือขอคำแนะนำวิชาการ):
-ให้ตอบกลับเป็นข้อความสนทนาปกติ มีความเป็นมืออาชีพ เข้าใจง่าย กระชับ และพร้อมนำไปใช้จัดการเรียนรู้หรือทำงานวิชาการได้ทันที`;
+หากไม่ใช่การสั่งเตือนความจำ (เป็นการสอบถามข้อมูล ปรึกษาแผนการสอน พูดคุยทั่วไป):
+ให้ตอบกลับเป็นข้อความสนทนาปกติ ตอบเป็นข้อความธรรมดา (Plain text) เค้าโครงชัดเจน พร้อมนำไปใช้งานได้ทันที`;
 
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
@@ -64,7 +79,6 @@ export default async function handler(req, res) {
 
       let finalReplyText = replyRaw;
 
-      // ตรวจสอบและประมวลผลกรณีที่เป็นการสั่งแจ้งเตือน
       if (replyRaw.includes('"isReminder": true') || replyRaw.includes('"isReminder":true')) {
         try {
           const cleanedJsonStr = replyRaw.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -91,7 +105,7 @@ export default async function handler(req, res) {
               finalReplyText = parsed.confirmationMessage || `⏰ บันทึกคิวงานเรียบร้อยแล้ว: ${parsed.taskDescription}`;
             } else {
               const qstashErr = await qstashRes.text();
-              console.error('QStash publish error:', qstashErr);
+              console.error('QStash error:', qstashErr);
               finalReplyText = `รับทราบภารกิจ: "${parsed.taskDescription}" แต่ระบบส่งคิวเตือนขัดข้องชั่วคราวครับ`;
             }
           }
@@ -100,7 +114,6 @@ export default async function handler(req, res) {
         }
       }
 
-      // ส่งข้อความตอบกลับผู้ใช้ใน LINE
       await fetch('https://api.line.me/v2/bot/message/reply', {
         method: 'POST',
         headers: {
@@ -113,7 +126,7 @@ export default async function handler(req, res) {
         })
       });
     } catch (error) {
-      console.error('Webhook processing error:', error);
+      console.error('Webhook error:', error);
     }
   }
 
