@@ -1,8 +1,11 @@
+// ปิด bodyParser ของ Vercel เพื่อให้อ่าน Stream จาก LINE Webhook ได้โดยตรง
 export const config = {
+  api: {
+    bodyParser: false,
+  },
   maxDuration: 60,
 };
 
-// ฟังก์ชันช่วยอ่าน Raw Body กรณี Vercel ไม่ได้ parse อัตโนมัติ
 async function getRawBody(readable) {
   const chunks = [];
   for await (const chunk of readable) {
@@ -20,19 +23,20 @@ export default async function handler(req, res) {
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
   const QSTASH_TOKEN = process.env.QSTASH_TOKEN;
 
-  let body = req.body;
-  if (!body || typeof body === 'string') {
-    try {
-      const raw = typeof body === 'string' ? body : await getRawBody(req);
-      body = JSON.parse(raw);
-    } catch (e) {
-      console.error('Body parse error:', e);
-    }
+  let bodyText = '';
+  let bodyJson = {};
+
+  try {
+    bodyText = await getRawBody(req);
+    bodyJson = JSON.parse(bodyText);
+  } catch (err) {
+    console.error('Error reading/parsing request body:', err);
+    return res.status(200).send('OK');
   }
 
-  const events = body?.events;
+  const events = bodyJson.events;
   if (!events || events.length === 0) {
-    console.log('No events found in payload');
+    console.log('No events found in payload. Raw body was:', bodyText);
     return res.status(200).send('OK');
   }
 
@@ -42,6 +46,8 @@ export default async function handler(req, res) {
     const replyToken = event.replyToken;
     const userId = event.source.userId;
     const currentHost = req.headers.host;
+
+    console.log(`Received user message: "${userMessage}" from user: ${userId}`);
 
     const now = new Date();
     const nowTimestamp = Math.floor(now.getTime() / 1000);
@@ -65,6 +71,7 @@ export default async function handler(req, res) {
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
     try {
+      console.log('Calling Gemini API...');
       const geminiRes = await fetch(geminiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -75,8 +82,13 @@ export default async function handler(req, res) {
       });
 
       const geminiData = await geminiRes.json();
-      const replyRaw = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      console.log('Gemini API Response Status:', geminiRes.status);
 
+      if (!geminiRes.ok) {
+        console.error('Gemini API Error Body:', JSON.stringify(geminiData));
+      }
+
+      const replyRaw = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัยครับ ระบบไม่สามารถสร้างคำตอบได้ในขณะนี้";
       let finalReplyText = replyRaw;
 
       if (replyRaw.includes('"isReminder": true') || replyRaw.includes('"isReminder":true')) {
@@ -105,7 +117,7 @@ export default async function handler(req, res) {
               finalReplyText = parsed.confirmationMessage || `⏰ บันทึกคิวงานเรียบร้อยแล้ว: ${parsed.taskDescription}`;
             } else {
               const qstashErr = await qstashRes.text();
-              console.error('QStash error:', qstashErr);
+              console.error('QStash Error:', qstashErr);
               finalReplyText = `รับทราบภารกิจ: "${parsed.taskDescription}" แต่ระบบส่งคิวเตือนขัดข้องชั่วคราวครับ`;
             }
           }
@@ -114,7 +126,8 @@ export default async function handler(req, res) {
         }
       }
 
-      await fetch('https://api.line.me/v2/bot/message/reply', {
+      console.log('Sending reply to LINE...');
+      const lineRes = await fetch('https://api.line.me/v2/bot/message/reply', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -125,8 +138,14 @@ export default async function handler(req, res) {
           messages: [{ type: 'text', text: finalReplyText }]
         })
       });
+
+      console.log('LINE Reply Status:', lineRes.status);
+      if (!lineRes.ok) {
+        const lineErr = await lineRes.text();
+        console.error('LINE Reply Error Body:', lineErr);
+      }
     } catch (error) {
-      console.error('Webhook error:', error);
+      console.error('Webhook execution failure:', error);
     }
   }
 
