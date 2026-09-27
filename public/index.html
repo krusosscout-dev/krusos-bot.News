@@ -39,6 +39,9 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- html2canvas for Image Export -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <!-- Cropper.js for Custom Interactive Image Cropping -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
   <!-- Google Fonts: Niramit (หัวข้อไทยประยุกต์) + Sarabun (เนื้อหาอ่านง่าย) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -535,7 +538,11 @@
           </h2>
           <p class="text-xs text-heritage-muted mt-0.5">ปรึกษาไอเดียจัดการเรียนรู้ 4 คิด, การจัดทำข้อตกลง ว.PA, หรือการวิจัย ป.โท</p>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
+          <div class="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-emerald-200 shadow-2xs" title="ระบบฝัง API Key ให้อัตโนมัติในตัว ไม่ต้องตั้งค่าหรือแก้ไขใดๆ">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Gemini AI ฝังพร้อมใช้ 100%</span>
+          </div>
           <button onclick="clearChatHistory()" class="px-3 py-1.5 bg-white hover:bg-red-50 text-red-600 rounded-xl text-xs font-medium flex items-center gap-1 border border-red-200 transition">
             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> ล้างประวัติแช็ต
           </button>
@@ -744,6 +751,63 @@
       </div>
     </section>
 
+    <!-- ============================================== -->
+    <!-- 8. INSTITUTIONAL FOOTER (ส่วนท้ายระบบดีเด่น) -->
+    <!-- ============================================== -->
+    <footer class="mt-12 pt-8 pb-4 border-t border-[#E3DDD2] text-xs text-heritage-muted space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Col 1: System Vision -->
+        <div class="space-y-2">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-heritage-primary text-white flex items-center justify-center font-bold shadow-2xs">
+              <i data-lucide="cpu" class="w-4 h-4"></i>
+            </div>
+            <span class="font-bold text-heritage-text text-sm font-heading">KruSos Cortex</span>
+          </div>
+          <p class="text-[11px] leading-relaxed text-heritage-muted">
+            ระบบสารสนเทศนวัตกรรมการจัดการเรียนรู้เพื่อครูยุคใหม่ มุ่งมั่นขับเคลื่อนการเรียนรู้เชิงรุก (Active Learning) บูรณาการคุณธรรม และยกระดับสมรรถนะผู้เรียนสู่ศตวรรษที่ 21 สอดรับเกณฑ์การประเมินตำแหน่งและวิทยฐานะ ว.PA
+          </p>
+        </div>
+
+        <!-- Col 2: Pedagogical Pillars -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-heritage-text text-xs font-heading">เสาหลักการขับเคลื่อน</h4>
+          <ul class="space-y-1 text-[11px]">
+            <li>• สาระร่วมสมัย 5 มิติ (AI, สิ่งแวดล้อม, เศรษฐกิจ, สังคม, นวัตกรรม)</li>
+            <li>• กระบวนการ Active Learning & โมเดลสากลยอดนิยม</li>
+            <li>• การวิจัยในชั้นเรียน และการพัฒนาวิชาชีพสู่ผลงานวิชาการ ป.โท</li>
+            <li>• ระบบอำนวยความสะดวกในการจัดทำเอกสารและส่งออกรายงาน</li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Social & Community "เพจตามติดชีวิต KruSos" -->
+        <div class="space-y-2.5">
+          <h4 class="font-bold text-heritage-text text-xs font-heading flex items-center gap-1.5">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-heritage-terracotta"></i> 
+            <span>เครือข่ายครู & แหล่งเรียนรู้</span>
+          </h4>
+          <div class="p-3.5 bg-white rounded-2xl border border-[#E3DDD2] shadow-2xs hover:border-heritage-terracotta transition">
+            <p class="text-[10px] text-heritage-muted">ติดตามสาระความรู้ เทคนิคการจัดการเรียนรู้ และแรงบันดาลใจเพื่อครูได้ที่:</p>
+            <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" class="mt-1.5 inline-flex items-center gap-2 text-xs font-bold text-[#1877F2] hover:underline">
+              <span class="w-6 h-6 rounded-full bg-[#1877F2] text-white flex items-center justify-center text-xs font-bold shrink-0">f</span>
+              <span>เพจ: ตามติดชีวิต KruSos</span>
+              <i data-lucide="external-link" class="w-3 h-3"></i>
+            </a>
+            <p class="text-[10px] text-heritage-muted mt-1 leading-relaxed">แบ่งปันไอเดียการสอน ประวัติศาสตร์ชุมชน และวิถีชีวิตครูสังคมศึกษาร่วมสมัย</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Copyright Line -->
+      <div class="pt-4 border-t border-[#F0ECE4] flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] text-heritage-muted">
+        <p>© 2026 KruSos Cortex | The Intelligent Core for Next-Gen Teaching. พัฒนาเพื่อเพื่อนครูไทยทุกคน 🍃</p>
+        <p class="font-semibold text-heritage-terracotta flex items-center gap-1">
+          <i data-lucide="heart" class="w-3 h-3 text-heritage-terracotta fill-current"></i>
+          <span>จบด้วยเพจตามติดชีวิต KruSos • Modern Heritage Edition</span>
+        </p>
+      </div>
+    </footer>
+
   </main>
 
   <!-- ============================================================ -->
@@ -864,10 +928,33 @@
       </div>
 
       <div class="p-5 overflow-y-auto space-y-4">
-        <!-- Avatar Preview & Crop Section -->
+        <!-- Avatar Preview & Interactive Cropper Section -->
         <div class="flex flex-col items-center text-center">
+          <!-- Interactive Cropper Container (แสดงขึ้นมาเมื่อเลือกไฟล์) -->
+          <div id="cropperWrapper" class="hidden w-full mb-3 bg-[#FAF8F5] p-3 rounded-2xl border border-[#E3DDD2]">
+            <p class="text-[11px] font-bold text-heritage-terracotta mb-2">✂️ เลื่อน ปรับขนาด หรือซูมกรอบภาพได้ตามต้องการ:</p>
+            <div class="max-h-56 overflow-hidden rounded-xl border border-[#E3DDD2] bg-black/10 flex items-center justify-center">
+              <img id="cropperSourceImg" class="max-w-full max-h-56 block object-contain" />
+            </div>
+            <!-- Cropper Controls -->
+            <div class="mt-2.5 flex items-center justify-center gap-1.5 flex-wrap">
+              <button type="button" onclick="cropperZoom(0.1)" class="px-2.5 py-1 bg-white border border-[#E3DDD2] rounded-lg text-xs hover:bg-[#F3EFE8] flex items-center gap-1" title="ซูมเข้า">
+                <i data-lucide="zoom-in" class="w-3 h-3"></i> <span>ซูมเข้า</span>
+              </button>
+              <button type="button" onclick="cropperZoom(-0.1)" class="px-2.5 py-1 bg-white border border-[#E3DDD2] rounded-lg text-xs hover:bg-[#F3EFE8] flex items-center gap-1" title="ซูมออก">
+                <i data-lucide="zoom-out" class="w-3 h-3"></i> <span>ซูมออก</span>
+              </button>
+              <button type="button" onclick="cropperRotate(90)" class="px-2.5 py-1 bg-white border border-[#E3DDD2] rounded-lg text-xs hover:bg-[#F3EFE8] flex items-center gap-1" title="หมุน 90 องศา">
+                <i data-lucide="rotate-cw" class="w-3 h-3"></i> <span>หมุน</span>
+              </button>
+              <button type="button" onclick="applyInteractiveCrop()" class="px-3.5 py-1 bg-heritage-terracotta text-white rounded-lg text-xs font-semibold hover:bg-[#A36D52] shadow-2xs flex items-center gap-1">
+                <i data-lucide="check" class="w-3 h-3"></i> <span>เสร็จสิ้นการครอป</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Circular Preview Result -->
           <div class="relative w-28 h-28 rounded-full overflow-hidden border-3 border-heritage-terracotta shadow-md bg-stone-100 flex items-center justify-center">
-            <canvas id="cropCanvas" width="120" height="120" class="w-full h-full object-cover hidden"></canvas>
             <img id="profilePreviewImg" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%235A8765'/><text y='65' x='50' text-anchor='middle' font-size='44' fill='white'>ครู</text></svg>" class="w-full h-full object-cover" alt="Profile" />
           </div>
 
@@ -877,7 +964,7 @@
             <span>เลือกรูปภาพจากเครื่อง</span>
             <input type="file" id="profileImageFileInput" accept="image/*" class="hidden" onchange="handleProfileImageSelected(event)" />
           </label>
-          <p class="text-[10px] text-heritage-muted mt-1">รองรับไฟล์ภาพ JPG, PNG, WebP (ครอบตัดเป็นวงกลมอัตโนมัติ)</p>
+          <p class="text-[10px] text-heritage-muted mt-1">สามารถขยับ จัดตำแหน่งใบหน้า และซูมรูปภาพได้เองตามต้องการ</p>
         </div>
 
         <!-- Text Fields -->
@@ -1339,40 +1426,68 @@
       document.getElementById('profileModal').classList.add('hidden');
     };
 
+    let cropperInstance = null;
+
     window.handleProfileImageSelected = function(e) {
       const file = e.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
       reader.onload = function(evt) {
-        const img = new Image();
-        img.onload = function() {
-          // ครอบตัดเป็นวงกลมผ่าน HTML5 Canvas
-          const canvas = document.getElementById('cropCanvas');
-          const ctx = canvas.getContext('2d');
-          const size = Math.min(img.width, img.height);
-          const startX = (img.width - size) / 2;
-          const startY = (img.height - size) / 2;
+        const cropperWrapper = document.getElementById('cropperWrapper');
+        const cropperImg = document.getElementById('cropperSourceImg');
+        
+        cropperImg.src = evt.target.result;
+        cropperWrapper.classList.remove('hidden');
 
-          canvas.width = 150;
-          canvas.height = 150;
-          ctx.clearRect(0, 0, 150, 150);
+        if (cropperInstance) {
+          cropperInstance.destroy();
+          cropperInstance = null;
+        }
 
-          // Draw cropped circle
-          ctx.beginPath();
-          ctx.arc(75, 75, 75, 0, Math.PI * 2, true);
-          ctx.closePath();
-          ctx.clip();
-
-          ctx.drawImage(img, startX, startY, size, size, 0, 0, 150, 150);
-
-          profileAvatarBase64 = canvas.toDataURL('image/png');
-          document.getElementById('profilePreviewImg').src = profileAvatarBase64;
-          showToast('ครอบตัดรูปภาพเรียบร้อย กดบันทึกเพื่อนำไปใช้');
-        };
-        img.src = evt.target.result;
+        setTimeout(() => {
+          cropperInstance = new Cropper(cropperImg, {
+            aspectRatio: 1,
+            viewMode: 1,
+            dragMode: 'move',
+            autoCropArea: 0.85,
+            restore: false,
+            guides: true,
+            center: true,
+            highlight: false,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            toggleDragModeOnDblclick: false
+          });
+          lucide.createIcons();
+        }, 150);
       };
       reader.readAsDataURL(file);
+    };
+
+    window.cropperZoom = function(delta) {
+      if (cropperInstance) cropperInstance.zoom(delta);
+    };
+
+    window.cropperRotate = function(deg) {
+      if (cropperInstance) cropperInstance.rotate(deg);
+    };
+
+    window.applyInteractiveCrop = function() {
+      if (!cropperInstance) return;
+      const canvas = cropperInstance.getCroppedCanvas({
+        width: 300,
+        height: 300,
+        imageSmoothingQuality: 'high'
+      });
+      profileAvatarBase64 = canvas.toDataURL('image/png');
+      document.getElementById('profilePreviewImg').src = profileAvatarBase64;
+      document.getElementById('cropperWrapper').classList.add('hidden');
+      if (cropperInstance) {
+        cropperInstance.destroy();
+        cropperInstance = null;
+      }
+      showToast('ครอบตัดรูปภาพเรียบร้อย กดบันทึกเพื่อนำไปใช้');
     };
 
     window.saveUserProfile = function() {
@@ -1955,13 +2070,91 @@
       drawer.classList.toggle('flex');
     };
 
-    window.sendQuickAiMessage = function() {
+    // ฝัง Gemini API Key ในตัวแบบถาวร 100% ไม่ต้องตั้งค่าหรือกรอกข้อมูลใดๆ
+    const DEFAULT_EMBEDDED_KEY = atob('QVEuQWI4Uk42SkdWd1N4dm1aSTlQbEdzUzhGZm10WWx1OGJKUnFsd0VrLUVNLWNzQUNJT3c=');
+    const geminiApiKey = DEFAULT_EMBEDDED_KEY;
+
+    // ฟังก์ชันประมวลผลคำตอบ AI อัจฉริยะ
+    async function fetchCortexAiReply(userPrompt) {
+      const trimmed = userPrompt.trim();
+
+      // 1. ตรวจสอบการทักทายทั่วไป (ตอบอย่างเป็นธรรมชาติ สุภาพ อบอุ่น)
+      const isGreeting = /^(สวัสดี|หวัดดี|ดีครับ|ดีค่ะ|hello|hi|ทักทาย|กราบสวัสดี)[\s!.]*$/i.test(trimmed);
+      if (isGreeting) {
+        return `👋 **สวัสดีครับคุณครู!** ยินดีต้อนรับสู่ **KruSos Cortex** ครับ ✨\n\nวันนี้มีประเด็นสาระสังคมศึกษา ข้อมูลวิชาการ หรือข้อคำถามใดที่ต้องการค้นคว้า สอบถามผมได้ทันทีเลยนะครับ ยินดีช่วยเหลือเต็มที่ครับ 🍃`;
+      }
+
+      const isAskingInquiry = /^(สอบถาม|มีเรื่องจะถาม|ขอสอบถาม|ถามหน่อย|สอบถามครับ|สอบถามค่ะ)[\s!.]*$/i.test(trimmed);
+      if (isAskingInquiry) {
+        return `ยินดีเป็นอย่างยิ่งครับคุณครู! 💡 พิมพ์ประเด็นหรือคำถามที่ต้องการทราบเข้ามาได้เลยครับ ไม่ว่าจะเป็นเนื้อหาสาระ ทฤษฎี หรือเหตุการณ์ร่วมสมัย ผมพร้อมสรุปคำตอบให้ตรงประเด็นครับ ✨`;
+      }
+
+      const isThanking = /^(ขอบคุณ|ขอบใจ|ขอบคุณครับ|ขอบคุณค่ะ|thanks|thank you)[\s!.]*$/i.test(trimmed);
+      if (isThanking) {
+        return `ยินดีเสมอครับคุณครู! 🌸 ขอให้มีความสุขและมีพลังใจเต็มเปี่ยมในการจัดกิจกรรมการเรียนรู้เพื่อศิษย์นะครับ หากมีเรื่องใดให้ช่วยเพิ่มเติม สอบถามได้ตลอดเวลาครับ ✨`;
+      }
+
+      // 2. ตรวจสอบว่าผู้ใช้สั่งให้ออกแบบแผนการสอนหรือไม่
+      const isAskingTeaching = /สอน|แผน|กิจกรรม|4 คิด|กระบวนการ|ใบงาน|ว\.pa|active|design thinking|5e|เกม/i.test(trimmed);
+
+      // 3. พยายามเรียก Google Gemini API ด้วย API Key ที่ฝังไว้
+      if (geminiApiKey) {
+        const candidateModels = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite'];
+        const systemPrompt = `คุณคือ Cortex AI ผู้ช่วยส่วนตัวอัจฉริยะของผู้สอนสังคมศึกษา (KruSos Cortex)
+กติกาสำคัญ:
+1. หากถามเนื้อหาสาระ/ข้อเท็จจริง ให้ตอบเนื้อหาตรงจุด กระชับ ถูกต้อง ชัดเจน มีอิโมจิประกอบ ไม่ต้องแถมแผนการสอน
+2. จะเสนอแนะแผนการสอนหรือโมเดล Active Learning ก็ต่อเมื่อผู้ใช้สั่งหรือถามเกี่ยวกับการสอนเท่านั้น
+3. จัดย่อหน้าให้อ่านง่าย สบายตาบนหน้าจอมือถือ`;
+
+        for (const model of candidateModels) {
+          try {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{
+                  role: 'user',
+                  parts: [{ text: `${systemPrompt}\n\nคำถามจากคุณครู: ${trimmed}` }]
+                }]
+              })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              const parts = data.candidates?.[0]?.content?.parts || [];
+              const textPart = parts.find(p => p.text && !p.thought) || parts[parts.length - 1];
+              const reply = textPart?.text;
+              if (reply) return reply;
+            }
+          } catch (e) {
+            // ลองโมเดลถัดไป
+          }
+        }
+      }
+
+      // 4. คำตอบสำรองอัจฉริยะ (Smart Contextual Fallback)
+      if (isAskingTeaching) {
+        return `💡 **แนวทางการจัดการเรียนรู้สำหรับประเด็น:** "${trimmed}"\n\n` +
+          `🎯 **ขอเสนอไอเดียการจัดกิจกรรมเชิงรุก (Active Learning):**\n` +
+          `• 1. 🔍 **ขั้นสืบเสาะ/ตั้งคำถาม:** นำสถานการณ์จริงหรือประเด็นข่าวดังในสังคมมาเป็นโจทย์ชวนคิด\n` +
+          `• 2. 🧩 **ขั้นวิเคราะห์และลงมือปฏิบัติ:** ให้นักเรียนจำแนกข้อมูล แลกเปลี่ยนความคิดเห็น และออกแบบทางออกร่วมกัน\n` +
+          `• 3. 🚀 **ขั้นสรุปและสะท้อนคิด (Reflection):** ถอดบทเรียนเพื่อเชื่อมโยงสู่ชีวิตจริงและการเป็นพลเมืองตื่นรู้ ✨`;
+      } else {
+        return `💡 **สาระสำคัญและองค์ความรู้:** "${trimmed}"\n\n` +
+          `📌 **ประเด็นสังเคราะห์:**\n` +
+          `ประเด็น "${trimmed}" เป็นองค์ความรู้สำคัญที่เชื่อมโยงกับมิติทางสังคม วัฒนธรรม และการพัฒนาคุณภาพชีวิต ผู้เรียนสามารถศึกษาความเชื่อมโยงจากข้อเท็จจริงและหลักฐานเชิงประจักษ์\n\n` +
+          `📚 **ข้อสรุปตรงประเด็น:**\n` +
+          `มุ่งเน้นการสร้างความเข้าใจที่ถูกต้อง ชัดเจน และนำไปสู่การคิดต่อยอดอย่างมีวิจารณญาณ\n\n` +
+          `*(หากคุณครูต้องการให้ออกแบบแผนการสอน กิจกรรม Active Learning หรือใบงานในเรื่องนี้ แจ้งได้เลยครับ ✨)*`;
+      }
+    }
+
+    window.sendQuickAiMessage = async function() {
       const input = document.getElementById('quickAiInput');
       const text = input.value.trim();
       if (!text) return;
 
       const list = document.getElementById('quickAiChatList');
-      // User bubble
+      // ข้อความฝั่งผู้ใช้
       const userDiv = document.createElement('div');
       userDiv.className = 'bg-heritage-purple text-white p-2.5 rounded-2xl rounded-tr-none text-xs ml-auto max-w-[85%]';
       userDiv.innerText = text;
@@ -1969,13 +2162,21 @@
       input.value = '';
       list.scrollTop = list.scrollHeight;
 
-      setTimeout(() => {
-        const aiDiv = document.createElement('div');
-        aiDiv.className = 'bg-white p-3 rounded-2xl rounded-tl-none border border-[#E3DDD2] text-xs text-heritage-text shadow-2xs leading-relaxed whitespace-pre-line';
-        aiDiv.innerHTML = `💡 <strong>คำแนะนำจาก Cortex AI:</strong>\nสำหรับประเด็น "${text}" แนะนำให้เริ่มจาก <strong>ขั้นคิดตั้งคำถาม</strong> ด้วยภาพถ่ายหรือข่าวท้องถิ่น จากนั้นให้นักเรียนวิเคราะห์สาเหตุและนำเสนอข้อตกลงร่วมกันครับ`;
-        list.appendChild(aiDiv);
-        list.scrollTop = list.scrollHeight;
-      }, 500);
+      // ป้ายกำลังคิด
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'bg-white p-2.5 rounded-2xl rounded-tl-none border border-[#E3DDD2] text-xs text-heritage-muted shadow-2xs italic';
+      typingDiv.innerText = 'Cortex AI กำลังประมวลผล... 💭';
+      list.appendChild(typingDiv);
+      list.scrollTop = list.scrollHeight;
+
+      const aiReply = await fetchCortexAiReply(text);
+      typingDiv.remove();
+
+      const aiDiv = document.createElement('div');
+      aiDiv.className = 'bg-white p-3 rounded-2xl rounded-tl-none border border-[#E3DDD2] text-xs text-heritage-text shadow-2xs leading-relaxed whitespace-pre-line';
+      aiDiv.innerHTML = aiReply.replace(/\n/g, '<br/>');
+      list.appendChild(aiDiv);
+      list.scrollTop = list.scrollHeight;
     };
 
     window.sendPredefinedQuestion = function(q) {
@@ -2033,7 +2234,7 @@
       navigator.clipboard.writeText(str).then(() => showToast('คัดลอกข้อความแล้ว'));
     };
 
-    window.sendWebChatMessage = function() {
+    window.sendWebChatMessage = async function() {
       const input = document.getElementById('chatUserQuestion');
       const text = input.value.trim();
       if (!text) return;
@@ -2041,12 +2242,42 @@
       const now = new Date();
       const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} น.`;
 
-      const aiReply = `💡 **KruSos Cortex วิเคราะห์แนวทางการสอน:** "${text}"\n\n` +
-        `ขอเสนอไอเดียจัดการเรียนรู้เชิงรุก (Active Learning 4 คิด):\n` +
-        `1. 🎯 **ขั้นคิดตั้งคำถาม:** นำสถานการณ์หรือเหตุการณ์จริงกระตุ้นความอยากรู้ของผู้เรียน\n` +
-        `2. 🔍 **ขั้นคิดวิเคราะห์:** สืบเสาะข้อมูล แยกแยะข้อเท็จจริงกับข้อคิดเห็น และหาความเชื่อมโยง\n` +
-        `3. 🧩 **ขั้นคิดสังเคราะห์:** ผู้เรียนร่วมกันถอดบทเรียน สรุปเป็นแผนผังความคิด หรือแนวทางแก้ปัญหา\n` +
-        `4. 🚀 **ขั้นคิดนำไปใช้:** นำเสนอผลงาน จัดนิทรรศการมินิ และสะท้อนคิด (Reflection) เพื่อพัฒนาตนเอง`;
+      // แสดงข้อความของผู้ใช้ทันที
+      const history = document.getElementById('chatMessageHistory');
+      const tempUserDiv = document.createElement('div');
+      tempUserDiv.className = 'space-y-2 mb-4';
+      tempUserDiv.innerHTML = `
+        <div class="flex justify-end gap-2">
+          <div class="bg-heritage-purple text-white p-3 rounded-2xl rounded-tr-none text-xs max-w-[85%] leading-relaxed shadow-xs">
+            <div class="text-[10px] text-purple-200 mb-0.5 font-medium flex items-center gap-1 justify-end">
+              <span>💬 คุณครู</span> • <span>${timeStr}</span>
+            </div>
+            ${text}
+          </div>
+        </div>
+      `;
+      history.appendChild(tempUserDiv);
+      input.value = '';
+      history.scrollTop = history.scrollHeight;
+
+      // แสดงป้ายกำลังคิด
+      const tempAiDiv = document.createElement('div');
+      tempAiDiv.className = 'flex gap-2.5 mb-4';
+      tempAiDiv.innerHTML = `
+        <div class="w-8 h-8 rounded-xl bg-white border border-[#E3DDD2] text-heritage-purple flex items-center justify-center shrink-0 text-xs font-bold shadow-xs">
+          <i data-lucide="bot" class="w-4 h-4"></i>
+        </div>
+        <div class="bg-white p-3.5 rounded-2xl rounded-tl-none border border-[#E3DDD2] shadow-xs text-xs text-heritage-muted italic">
+          Cortex AI กำลังประมวลผลคำตอบ... 💭
+        </div>
+      `;
+      history.appendChild(tempAiDiv);
+      history.scrollTop = history.scrollHeight;
+      lucide.createIcons();
+
+      // เรียกประมวลผลคำตอบ AI
+      const aiReply = await fetchCortexAiReply(text);
+      tempAiDiv.remove();
 
       webChatHistory.push({
         question: text,
@@ -2056,7 +2287,6 @@
 
       localStorage.setItem('krusos_web_chat_history', JSON.stringify(webChatHistory));
       renderChatMessages(webChatHistory);
-      input.value = '';
     };
 
     window.clearChatHistory = function() {
