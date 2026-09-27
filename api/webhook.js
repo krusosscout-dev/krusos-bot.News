@@ -49,10 +49,10 @@ export default async function handler(req, res) {
     const nowTimestamp = Math.floor(now.getTime() / 1000);
     const thaiTimeString = now.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
 
-    const systemInstruction = `คุณคือผู้ช่วยส่วนตัวของครูสังคมศึกษาที่ยึดมั่นในอุดมการณ์ 'ครูเพื่อศิษย์'
+    const systemPromptText = `คุณคือผู้ช่วยส่วนตัวของครูสังคมศึกษาที่ยึดมั่นในอุดมการณ์ 'ครูเพื่อศิษย์'
 ขณะนี้เวลาปัจจุบันในประเทศไทยคือ: ${thaiTimeString} (Unix timestamp ปัจจุบัน: ${nowTimestamp} วินาที)
 
-หากข้อความของผู้ใช้เป็นการสั่งให้ "เตือนความจำ", "จัดคิวงาน", หรือ "บันทึกเวลาสอน/ตารางสอน":
+หากข้อความของผู้ใช้เป็นการสั่งให้ "เตือนความจำ", "จัดคิวงาน", หรือ "บันทึกเวลาสอน/ตารางสอน" (เช่น เตือนในอีก 2 นาที, เตือนพรุ่งนี้ 08:30):
 ให้ตอบกลับเป็นรูปแบบ JSON เพียงอย่างเดียวเท่านั้น โดยไม่มี markdown หรือข้อความอื่นปน ดังนี้:
 {
   "isReminder": true,
@@ -62,89 +62,88 @@ export default async function handler(req, res) {
 }
 
 หากไม่ใช่การสั่งเตือนความจำ:
-ให้ตอบกลับเป็นข้อความสนทนาปกติ ตอบเป็นข้อความธรรมดา (Plain text) เค้าโครงชัดเจน พร้อมนำไปใช้งานได้ทันที`;
+ให้ตอบกลับเป็นข้อความสนทนาปกติ ตอบเป็นข้อความธรรมดา (Plain text) เค้าโครงชัดเจน พร้อมนำไปใช้งานได้ทันที หากมีการออกแบบกิจกรรมการเรียนรู้ ให้ใช้รูปแบบ 4 คิด (1. คิดตั้งคำถาม 2. คิดวิเคราะห์ 3. คิดสังเคราะห์ 4. คิดนำไปใช้)`;
 
-    // ใช้ gemini-2.5-flash ซึ่งเป็นโมเดลมาตรฐานล่าสุดที่รองรับบน API v1beta
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    // รายชื่อโมเดลที่พยายามเรียกตามลำดับ
+    const candidateModels = ['gemini-2.5-pro', 'gemini-1.5-flash', 'gemini-pro'];
+    let replyRaw = '';
 
-    try {
-      console.log('Calling Gemini API with gemini-2.5-flash...');
-      let geminiRes = await fetch(geminiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: systemInstruction }] },
-          contents: [{ role: 'user', parts: [{ text: userMessage }] }]
-        })
-      });
-
-      let geminiData = await geminiRes.json();
-
-      // หากติด 404 ให้สลับไปใช้ gemini-2.5-pro สำรองทันที
-      if (!geminiRes.ok) {
-        console.log('Fallback to gemini-2.5-pro...');
-        const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`;
-        geminiRes = await fetch(fallbackUrl, {
+    for (const model of candidateModels) {
+      try {
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+        const geminiRes = await fetch(geminiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            system_instruction: { parts: [{ text: systemInstruction }] },
-            contents: [{ role: 'user', parts: [{ text: userMessage }] }]
+            contents: [
+              {
+                role: 'user',
+                parts: [{ text: `${systemPromptText}\n\nคำถามจากผู้ใช้: ${userMessage}` }]
+              }
+            ]
           })
         });
-        geminiData = await geminiRes.json();
-      }
 
-      const replyRaw = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "สวัสดีครับ มีอะไรให้ผู้ช่วยครูรับใช้และช่วยเตรียมการสอนแจ้งได้เลยครับ";
-      let finalReplyText = replyRaw;
-
-      if (replyRaw.includes('"isReminder": true') || replyRaw.includes('"isReminder":true')) {
-        try {
-          const cleanedJsonStr = replyRaw.replace(/```json/g, '').replace(/```/g, '').trim();
-          const parsed = JSON.parse(cleanedJsonStr);
-
-          if (parsed.isReminder && parsed.scheduledTimestampSeconds && QSTASH_TOKEN) {
-            const destinationUrl = `https://${currentHost}/api/remind-notify`;
-            const qstashUrl = `https://qstash.upstash.io/v2/publish/${destinationUrl}`;
-
-            const qstashRes = await fetch(qstashUrl, {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${QSTASH_TOKEN}`,
-                'Content-Type': 'application/json',
-                'Upstash-Not-Before': parsed.scheduledTimestampSeconds.toString()
-              },
-              body: JSON.stringify({
-                userId: userId,
-                taskDescription: parsed.taskDescription
-              })
-            });
-
-            if (qstashRes.ok) {
-              finalReplyText = parsed.confirmationMessage || `⏰ บันทึกคิวงานเรียบร้อยแล้ว: ${parsed.taskDescription}`;
-            }
-          }
-        } catch (jsonErr) {
-          console.error('JSON parse error:', jsonErr);
+        const geminiData = await geminiRes.json();
+        if (geminiRes.ok && geminiData.candidates?.[0]?.content?.parts?.[0]?.text) {
+          replyRaw = geminiData.candidates[0].content.parts[0].text;
+          break;
+        } else {
+          console.error(`Model ${model} failed:`, JSON.stringify(geminiData));
         }
+      } catch (err) {
+        console.error(`Error requesting model ${model}:`, err);
       }
-
-      await fetch('https://api.line.me/v2/bot/message/reply', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${LINE_ACCESS_TOKEN}`
-        },
-        body: JSON.stringify({
-          replyToken: replyToken,
-          messages: [{ type: 'text', text: finalReplyText }]
-        })
-      });
-
-      console.log('Successfully replied to LINE!');
-    } catch (error) {
-      console.error('Webhook execution failure:', error);
     }
+
+    if (!replyRaw) {
+      replyRaw = "ขออภัยครับ ระบบกำลังประมวลผลข้อมูล กรุณาลองส่งข้อความใหม่อีกครั้งครับ";
+    }
+
+    let finalReplyText = replyRaw;
+
+    if (replyRaw.includes('"isReminder": true') || replyRaw.includes('"isReminder":true')) {
+      try {
+        const cleanedJsonStr = replyRaw.replace(/```json/g, '').replace(/```/g, '').trim();
+        const parsed = JSON.parse(cleanedJsonStr);
+
+        if (parsed.isReminder && parsed.scheduledTimestampSeconds && QSTASH_TOKEN) {
+          const destinationUrl = `https://${currentHost}/api/remind-notify`;
+          const qstashUrl = `https://qstash.upstash.io/v2/publish/${destinationUrl}`;
+
+          const qstashRes = await fetch(qstashUrl, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${QSTASH_TOKEN}`,
+              'Content-Type': 'application/json',
+              'Upstash-Not-Before': parsed.scheduledTimestampSeconds.toString()
+            },
+            body: JSON.stringify({
+              userId: userId,
+              taskDescription: parsed.taskDescription
+            })
+          });
+
+          if (qstashRes.ok) {
+            finalReplyText = parsed.confirmationMessage || `⏰ บันทึกคิวงานเรียบร้อยแล้ว: ${parsed.taskDescription}`;
+          }
+        }
+      } catch (jsonErr) {
+        console.error('JSON parse error:', jsonErr);
+      }
+    }
+
+    await fetch('https://api.line.me/v2/bot/message/reply', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${LINE_ACCESS_TOKEN}`
+      },
+      body: JSON.stringify({
+        replyToken: replyToken,
+        messages: [{ type: 'text', text: finalReplyText }]
+      })
+    });
   }
 
   return res.status(200).send('OK');
