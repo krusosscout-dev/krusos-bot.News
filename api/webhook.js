@@ -47,7 +47,7 @@ export default async function handler(req, res) {
 หากไม่ใช่การสั่งเตือนความจำ (เป็นการสอบถามข้อมูลทั่วไป ปรึกษาแผนการสอน พูดคุย หรือขอคำแนะนำวิชาการ):
 ให้ตอบกลับเป็นข้อความสนทนาปกติ มีความเป็นมืออาชีพ เข้าใจง่าย กระชับ และพร้อมนำไปใช้จัดการเรียนรู้หรือทำงานวิชาการได้ทันที`;
 
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
     try {
       const geminiRes = await fetch(geminiUrl, {
@@ -100,7 +100,7 @@ export default async function handler(req, res) {
         }
       }
 
-      // ตอบกลับผู้ใช้ใน LINE
+      // ส่งข้อความตอบกลับผู้ใช้ใน LINE
       await fetch('https://api.line.me/v2/bot/message/reply', {
         method: 'POST',
         headers: {
