@@ -19,8 +19,8 @@ export default async function handler(req, res) {
 ปิดท้ายด้วยประโยคว่า:
 "หากครูสนใจรายละเอียดข่าวไหน พิมพ์โต้ตอบถามผมต่อได้เลยครับ!"`;
 
-  // อัปเดตชื่อโมเดลเป็น gemini-2.5-flash ตามมาตรฐานปัจจุบัน
-  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+  // อัปเดตชื่อโมเดลเป็น gemini-3.8-flash ตามคำแนะนำของระบบ API
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`;
 
   try {
     const geminiRes = await fetch(geminiUrl, {
