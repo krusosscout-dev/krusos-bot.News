@@ -1,21 +1,29 @@
 import admin from 'firebase-admin';
 
-// กำหนดค่าเริ่มต้นเชื่อมต่อกับ Firebase Admin SDK
-if (!admin.apps.length) {
+// กำหนดค่าเริ่มต้นเชื่อมต่อกับ Firebase Admin SDK อย่างปลอดภัย
+function getFirestoreDb() {
+  if (!admin.apps.length) {
+    try {
+      if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_PRIVATE_KEY) {
+        admin.initializeApp({
+          credential: admin.credential.cert({
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+          }),
+        });
+      }
+    } catch (err) {
+      console.error('Firebase initialization error:', err);
+      return null;
+    }
+  }
   try {
-    admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-    });
-  } catch (err) {
-    console.error('Firebase initialization error:', err);
+    return admin.apps.length ? admin.firestore() : null;
+  } catch (e) {
+    return null;
   }
 }
-
-const db = admin.firestore();
 
 export const config = {
   maxDuration: 60,
@@ -66,7 +74,8 @@ export default async function handler(req, res) {
 พิมพ์ข้อความสั้นๆ ว่า:
 "หากครูสนใจรายละเอียดข่าว ไอเดียกิจกรรม หรือต้องการปรับคิวงานเรื่องไหน พิมพ์บอกผมได้เลยครับ!"`;
 
-  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+  // อัปเกรดเป็น gemini-3.8-flash ที่รองรับ API เวอร์ชันปัจจุบันและดึงข่าวได้สดใหม่ที่สุด
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`;
 
   try {
     const geminiRes = await fetch(geminiUrl, {
@@ -79,37 +88,47 @@ export default async function handler(req, res) {
     });
 
     const geminiData = await geminiRes.json();
-    const fullText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    // ดึงข้อความจาก parts ตัวที่เป็น Text อย่างแม่นยำ
+    const parts = geminiData.candidates?.[0]?.content?.parts || [];
+    const textPart = parts.find(p => p.text && !p.thought) || parts[parts.length - 1];
+    const fullText = textPart?.text;
 
     if (!fullText) {
       throw new Error("No response from Gemini: " + JSON.stringify(geminiData));
     }
 
-    // หั่นข้อความเป็น 5 กล่องข้อความตามสัญลักษณ์ [SPLIT]
+    // หั่นข้อความเป็น 5 กล่องข้อความตามสัญลักษณ์ [SPLIT] (ไม่เกิน 5 ฟองสบู่ตามโควตา LINE)
     const splitMessages = fullText
       .split("[SPLIT]")
       .map(msg => msg.trim())
       .filter(msg => msg.length > 0)
       .slice(0, 5)
-      .map(text => ({ type: "text", text }));
+      .map(text => ({ 
+        type: "text", 
+        text: text.length > 4900 ? text.substring(0, 4900) + '...' : text 
+      }));
 
-    // บันทึกลง Firestore ใน collection "daily_summaries"
-    try {
-      const today = new Date();
-      await db.collection('daily_summaries').add({
-        date: today.toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' }),
-        type: 'morning_news',
-        title: 'สรุปข่าวและสาระการเรียนรู้ประจำวัน',
-        rawContent: fullText,
-        sections: splitMessages.map(m => m.text),
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-      console.log('Successfully saved to Firestore');
-    } catch (dbErr) {
-      console.error('Firestore save error:', dbErr);
+    // บันทึกลง Firestore (ถ้ามีการเชื่อมต่อไว้)
+    const db = getFirestoreDb();
+    if (db) {
+      try {
+        const today = new Date();
+        await db.collection('daily_summaries').add({
+          date: today.toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' }),
+          type: 'morning_news',
+          title: 'สรุปข่าวและสาระการเรียนรู้ประจำวัน',
+          rawContent: fullText,
+          sections: splitMessages.map(m => m.text),
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+        console.log('Successfully saved to Firestore');
+      } catch (dbErr) {
+        console.error('Firestore save error:', dbErr);
+      }
     }
 
-    // ส่งข้อความแยกทีละกล่องเข้า LINE
+    // ส่งข้อความแจ้งเตือนเข้า LINE แบบแยกกล่อง
     const lineRes = await fetch("https://api.line.me/v2/bot/message/push", {
       method: "POST",
       headers: {
@@ -127,7 +146,10 @@ export default async function handler(req, res) {
       throw new Error("LINE Push Error: " + lineError);
     }
 
-    return res.status(200).json({ success: true, message: "Sent successfully in separate bubbles and saved to Firestore" });
+    return res.status(200).json({ 
+      success: true, 
+      message: "Sent morning alert successfully to LINE!" 
+    });
   } catch (error) {
     console.error("Error:", error.message);
     return res.status(500).json({ success: false, error: error.message });
