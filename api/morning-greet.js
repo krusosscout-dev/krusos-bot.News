@@ -1,6 +1,6 @@
 import admin from 'firebase-admin';
 
-// กำหนดค่าเริ่มต้นเชื่อมต่อกับ Firebase Admin SDK อย่างปลอดภัย
+// ฟังก์ชันเชื่อมต่อ Firebase Admin อย่างปลอดภัย (ไม่ทำให้ Serverless แครช)
 function getFirestoreDb() {
   if (!admin.apps.length) {
     try {
@@ -26,7 +26,7 @@ function getFirestoreDb() {
 }
 
 export const config = {
-  maxDuration: 60,
+  maxDuration: 60, // ขยายเวลาทำงานสูงสุด 60 วินาทีสำหรับประมวลผล AI
 };
 
 export default async function handler(req, res) {
@@ -34,8 +34,12 @@ export default async function handler(req, res) {
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
   const LINE_USER_ID = process.env.LINE_USER_ID;
 
+  // ตรวจสอบความพร้อมของตัวแปร Environment Variables
   if (!LINE_ACCESS_TOKEN || !GEMINI_API_KEY || !LINE_USER_ID) {
-    return res.status(500).json({ error: "Missing Environment Variables" });
+    return res.status(500).json({ 
+      success: false, 
+      error: "Missing Environment Variables (ตรวจสอบ LINE_ACCESS_TOKEN, GEMINI_API_KEY หรือ LINE_USER_ID บน Vercel)" 
+    });
   }
 
   const prompt = `คุณคือผู้ช่วยส่วนตัวของครูสังคมศึกษาที่กำลังศึกษาต่อระดับปริญญาโท และยึดมั่นในอุดมการณ์ 'ครูเพื่อศิษย์'
@@ -74,7 +78,7 @@ export default async function handler(req, res) {
 พิมพ์ข้อความสั้นๆ ว่า:
 "หากครูสนใจรายละเอียดข่าว ไอเดียกิจกรรม หรือต้องการปรับคิวงานเรื่องไหน พิมพ์บอกผมได้เลยครับ!"`;
 
-  // อัปเกรดเป็น gemini-3.8-flash ที่รองรับ API เวอร์ชันปัจจุบันและดึงข่าวได้สดใหม่ที่สุด
+  // อัปเกรดเป็น gemini-3.8-flash ที่เปิดบริการจริงและรองรับค้นหาข่าวล่าสุดผ่าน Google Search
   const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`;
 
   try {
@@ -89,7 +93,7 @@ export default async function handler(req, res) {
 
     const geminiData = await geminiRes.json();
     
-    // ดึงข้อความจาก parts ตัวที่เป็น Text อย่างแม่นยำ
+    // ดึงเฉพาะเนื้อหาข้อความจริง (กรองส่วน thinking ออก)
     const parts = geminiData.candidates?.[0]?.content?.parts || [];
     const textPart = parts.find(p => p.text && !p.thought) || parts[parts.length - 1];
     const fullText = textPart?.text;
@@ -98,7 +102,7 @@ export default async function handler(req, res) {
       throw new Error("No response from Gemini: " + JSON.stringify(geminiData));
     }
 
-    // หั่นข้อความเป็น 5 กล่องข้อความตามสัญลักษณ์ [SPLIT] (ไม่เกิน 5 ฟองสบู่ตามโควตา LINE)
+    // หั่นข้อความเป็น 5 ฟองสบู่ตามสัญลักษณ์ [SPLIT] พร้อมป้องกันข้อความยาวเกินลิมิต LINE (4,900 ตัวอักษร)
     const splitMessages = fullText
       .split("[SPLIT]")
       .map(msg => msg.trim())
@@ -128,7 +132,7 @@ export default async function handler(req, res) {
       }
     }
 
-    // ส่งข้อความแจ้งเตือนเข้า LINE แบบแยกกล่อง
+    // ยิงส่งข้อความ Push แจ้งเตือนเข้า LINE
     const lineRes = await fetch("https://api.line.me/v2/bot/message/push", {
       method: "POST",
       headers: {
@@ -148,7 +152,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ 
       success: true, 
-      message: "Sent morning alert successfully to LINE!" 
+      message: "ส่งข้อความสรุปข่าวเช้าเข้า LINE สำเร็จเรียบร้อยแล้วครับ!" 
     });
   } catch (error) {
     console.error("Error:", error.message);
