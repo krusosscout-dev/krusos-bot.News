@@ -543,11 +543,15 @@
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span>Gemini AI ฝังพร้อมใช้ 100%</span>
           </div>
+          <button onclick="configureBackendUrl()" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-heritage-text rounded-xl text-xs font-medium flex items-center gap-1.5 border border-[#E3DDD2] transition" title="เชื่อมต่อกับ Vercel Backend เพื่อดึงข้อมูล LINE">
+            <i data-lucide="link-2" class="w-3.5 h-3.5 text-heritage-purple"></i>
+            <span id="backendStatusLabel">เชื่อมต่อ Vercel</span>
+          </button>
           <button onclick="clearChatHistory()" class="px-3 py-1.5 bg-white hover:bg-red-50 text-red-600 rounded-xl text-xs font-medium flex items-center gap-1 border border-red-200 transition">
             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> ล้างประวัติแช็ต
           </button>
-          <button onclick="loadLineChatHistory()" class="px-3 py-1.5 bg-[#F3EFE8] hover:bg-[#EAE4DC] text-heritage-text rounded-xl text-xs font-medium flex items-center gap-1.5 transition">
-            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> รีเฟรช
+          <button onclick="loadLineChatHistory(true)" class="px-3 py-1.5 bg-heritage-purple hover:bg-[#5848CE] text-white rounded-xl text-xs font-medium flex items-center gap-1.5 shadow-2xs transition">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> ดึงข้อมูลจาก LINE
           </button>
         </div>
       </div>
@@ -555,14 +559,14 @@
       <!-- Quick Prompt Chips -->
       <div class="mb-3 flex items-center gap-2 overflow-x-auto pb-1 text-xs no-scrollbar">
         <span class="text-[11px] text-heritage-muted font-bold whitespace-nowrap">💡 ตัวอย่างคำถาม:</span>
-        <button onclick="sendPredefinedQuestion('ช่วยออกแบบแผนการสอนประวัติศาสตร์ ม.2 เรื่องอยุธยา ตามแนวทาง 4 คิด')" class="px-3 py-1 bg-white border border-[#E3DDD2] hover:border-heritage-purple text-heritage-text rounded-lg whitespace-nowrap transition shadow-2xs">
-          🏰 แผนประวัติศาสตร์ 4 คิด
+        <button onclick="sendPredefinedQuestion('ช่วยนำเสนอโมเดลการสอนประวัติศาสตร์แบบสืบสอบระดับสากล เช่น กรณีศึกษาจากสหราชอาณาจักรหรือสหรัฐอเมริกา')" class="px-3 py-1 bg-white border border-[#E3DDD2] hover:border-heritage-purple text-heritage-text rounded-lg whitespace-nowrap transition shadow-2xs">
+          🌐 โมเดลสอนประวัติศาสตร์สากล
         </button>
         <button onclick="sendPredefinedQuestion('ขอแนวทางจัดกิจกรรม ว.PA เรื่องประชาธิปไตยในโรงเรียนที่เน้นผู้เรียนเป็นสำคัญ')" class="px-3 py-1 bg-white border border-[#E3DDD2] hover:border-heritage-purple text-heritage-text rounded-lg whitespace-nowrap transition shadow-2xs">
           📋 กิจกรรม ว.PA ประชาธิปไตย
         </button>
-        <button onclick="sendPredefinedQuestion('ช่วยสรุปกระบวนการ 4 คิด เรื่องภาวะโลกร้อนกับผลกระทบต่อชุมชน')" class="px-3 py-1 bg-white border border-[#E3DDD2] hover:border-heritage-purple text-heritage-text rounded-lg whitespace-nowrap transition shadow-2xs">
-          🌍 4 คิด เรื่องภาวะโลกร้อน
+        <button onclick="sendPredefinedQuestion('ขอตัวอย่างการจัดการเรียนรู้เรื่องการเปลี่ยนแปลงสภาพภูมิอากาศสไตล์ฟินแลนด์ (Phenomenon-Based Learning)')" class="px-3 py-1 bg-white border border-[#E3DDD2] hover:border-heritage-purple text-heritage-text rounded-lg whitespace-nowrap transition shadow-2xs">
+          🌍 ปรากฏการณ์ศึกษา (ฟินแลนด์)
         </button>
       </div>
 
@@ -1249,6 +1253,7 @@
       updateSavedBadge();
       updateTaskCountBadges();
       startLiveThaiClock();
+      updateBackendStatusUI();
       lucide.createIcons();
     }
 
@@ -2184,48 +2189,192 @@
       sendWebChatMessage();
     };
 
-    window.loadLineChatHistory = function() {
+    // ==========================================
+    // BACKEND API & VERCEL SYNC CONFIGURATION
+    // ==========================================
+    const DEFAULT_VERCEL_BACKEND = 'https://krusos-bot-news-02.vercel.app';
+    let backendUrl = localStorage.getItem('krusos_backend_url') || DEFAULT_VERCEL_BACKEND;
+
+    window.configureBackendUrl = function() {
+      const current = localStorage.getItem('krusos_backend_url') || DEFAULT_VERCEL_BACKEND;
+      const input = prompt('กรอก URL โดเมน Vercel ของคุณครู (เช่น https://your-project.vercel.app):', current);
+      if (input !== null) {
+        let clean = input.trim().replace(/\/+$/, '');
+        if (clean && !clean.startsWith('http')) {
+          clean = 'https://' + clean;
+        }
+        localStorage.setItem('krusos_backend_url', clean || DEFAULT_VERCEL_BACKEND);
+        backendUrl = clean || DEFAULT_VERCEL_BACKEND;
+        updateBackendStatusUI();
+        showToast('เชื่อมต่อ Vercel: ' + backendUrl);
+        loadLineChatHistory(true);
+      }
+    };
+
+    function updateBackendStatusUI() {
+      const label = document.getElementById('backendStatusLabel');
+      if (!label) return;
+      if (backendUrl) {
+        label.innerText = 'krusos-bot-news-02 🟢';
+      } else {
+        label.innerText = 'เชื่อมต่อ Vercel';
+      }
+    }
+
+    window.loadLineChatHistory = async function(forceFetch = false) {
       const container = document.getElementById('chatMessageHistory');
-      if (webChatHistory.length > 0) {
-        renderChatMessages(webChatHistory);
+      let base = backendUrl || (window.location.protocol.startsWith('http') ? window.location.origin : DEFAULT_VERCEL_BACKEND);
+
+      const cachedLineSummaries = JSON.parse(localStorage.getItem('krusos_line_saved_summaries') || '[]');
+
+      // ดึงข้อมูลอัตโนมัติเมื่อกดรีเฟรช หรือเปิดแท็บครั้งแรกแล้วยังไม่มีแคช
+      if ((forceFetch || cachedLineSummaries.length === 0) && base) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-heritage-muted text-xs space-y-2">
+            <div class="inline-block animate-spin text-heritage-purple"><i data-lucide="refresh-cw" class="w-6 h-6"></i></div>
+            <p>กำลังเชื่อมต่อ Firebase ดึงข้อมูลสรุปข่าวเช้าจาก LINE... 📡</p>
+          </div>
+        `;
+        lucide.createIcons();
+
+        try {
+          const res = await fetch(`${base}/api/get-history`);
+          if (res.ok) {
+            const result = await res.json();
+            if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+              localStorage.setItem('krusos_line_saved_summaries', JSON.stringify(result.data));
+              renderMergedChatAndSummaries(result.data, webChatHistory);
+              if (forceFetch) showToast(`ดึงข้อมูลสำเร็จ ${result.data.length} รายการจาก LINE & Firebase`);
+              return;
+            } else if (result.success && result.data.length === 0) {
+              showToast('ยังไม่พบข้อมูลใน Firebase (ลองเปิด /api/morning-greet เพื่อส่งข่าวก่อน)');
+            } else if (result.error) {
+              showToast('Firebase แจ้งเตือน: ' + result.error);
+            }
+          } else {
+            showToast('เชื่อมต่อ API ไม่สำเร็จ (ตรวจสอบ URL หรือการ Deploy)');
+          }
+        } catch (e) {
+          console.error("Fetch history error:", e);
+        }
+      }
+
+      if (cachedLineSummaries.length > 0 || webChatHistory.length > 0) {
+        renderMergedChatAndSummaries(cachedLineSummaries, webChatHistory);
         return;
       }
 
       container.innerHTML = `
-        <div class="text-center py-12 text-heritage-muted text-xs">
-          ยินดีต้อนรับสู่ Cortex AI! พิมพ์ปรึกษาแผนการสอน ไอเดียโครงงาน หรือส่งข้อความผ่าน LINE ได้ทันที 🍃
+        <div class="text-center py-12 text-heritage-muted text-xs space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-purple-50 text-heritage-purple mx-auto flex items-center justify-center">
+            <i data-lucide="message-square" class="w-6 h-6"></i>
+          </div>
+          <p class="font-bold text-heritage-text text-sm">ยินดีต้อนรับสู่ Cortex AI & LINE Hub! 🍃</p>
+          <p class="max-w-md mx-auto text-heritage-muted leading-relaxed">
+            ระบบรองรับทั้งการสนทนาวิชาการบนหน้าเว็บ และการดึงข้อมูลสรุปข่าวเช้าพร้อมนวัตกรรมการสอนสากลที่ส่งเข้า LINE โดยอัตโนมัติ
+          </p>
+          ${!base ? `
+            <button onclick="configureBackendUrl()" class="px-4 py-2 bg-heritage-purple text-white rounded-xl text-xs font-semibold shadow-xs hover:bg-[#5848CE] inline-flex items-center gap-1.5 transition">
+              <i data-lucide="link" class="w-3.5 h-3.5"></i> เชื่อมต่อลิงก์ Vercel ของคุณครู
+            </button>
+          ` : `
+            <button onclick="loadLineChatHistory(true)" class="px-4 py-2 bg-heritage-purple text-white rounded-xl text-xs font-semibold shadow-xs hover:bg-[#5848CE] inline-flex items-center gap-1.5 transition">
+              <i data-lucide="download-cloud" class="w-3.5 h-3.5"></i> กดดึงข้อมูลจาก LINE ทันที
+            </button>
+          `}
         </div>
       `;
+      lucide.createIcons();
     };
 
-    function renderChatMessages(chats) {
+    function renderMergedChatAndSummaries(lineSummaries, chats) {
       const container = document.getElementById('chatMessageHistory');
-      container.innerHTML = chats.map(c => `
-        <div class="space-y-2 mb-4">
-          <div class="flex justify-end gap-2">
-            <div class="bg-heritage-purple text-white p-3 rounded-2xl rounded-tr-none text-xs max-w-[85%] leading-relaxed shadow-xs">
-              <div class="text-[10px] text-purple-200 mb-0.5 font-medium flex items-center gap-1 justify-end">
-                <span>💬 คุณครู</span> • <span>${c.time || 'เมื่อสักครู่'}</span>
-              </div>
-              ${c.question}
-            </div>
-          </div>
+      let html = '';
 
-          <div class="flex gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-white border border-[#E3DDD2] text-heritage-purple flex items-center justify-center shrink-0 text-xs font-bold shadow-xs">
-              <i data-lucide="bot" class="w-4 h-4"></i>
-            </div>
-            <div class="bg-white p-4 rounded-2xl rounded-tl-none border border-[#E3DDD2] shadow-xs text-xs text-heritage-text max-w-[85%] leading-relaxed whitespace-pre-line">
-              ${c.answer}
-              <div class="mt-3 pt-2 border-t border-[#FAF8F5] flex justify-end">
-                <button onclick="copyRawText(\`${c.answer.replace(/`/g, '\\`')}\`)" class="text-[11px] text-heritage-purple hover:underline flex items-center gap-1 font-semibold">
-                  <i data-lucide="copy" class="w-3 h-3"></i> คัดลอกคำตอบ
+      // 1. เรนเดอร์การ์ดสรุปข่าวเช้าจาก LINE & Firebase ก่อน
+      if (lineSummaries && lineSummaries.length > 0) {
+        html += lineSummaries.map(item => {
+          const sections = item.sections || [];
+          const sectionTitles = [
+            '☀️ คำทักทายยามเช้า',
+            '📋 คิวงาน & ภารกิจประจำวัน',
+            '🌍 เจาะลึกข่าวเด่น 5 มิติ',
+            '🌐 นวัตกรรมการสอนสากล',
+            '💬 สรุปปิดท้าย'
+          ];
+
+          return `
+            <div class="mb-5 bg-white rounded-2xl border border-[#E3DDD2] shadow-xs overflow-hidden">
+              <div class="p-3.5 bg-gradient-to-r from-emerald-500/10 via-emerald-50 to-transparent border-b border-[#E3DDD2] flex items-center justify-between flex-wrap gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="w-7 h-7 rounded-xl bg-[#06C755] text-white flex items-center justify-center font-bold text-xs shadow-2xs">
+                    <i data-lucide="bell" class="w-4 h-4"></i>
+                  </span>
+                  <div>
+                    <h4 class="font-bold text-xs text-heritage-text font-heading flex items-center gap-1.5">
+                      <span>สรุปข่าวเช้า & นวัตกรรมการสอนสากล (LINE Sync)</span>
+                    </h4>
+                    <p class="text-[10px] text-heritage-muted">${item.date || 'ข้อมูลล่าสุด'}</p>
+                  </div>
+                </div>
+                <button onclick="copyRawText(\`${(item.rawContent || '').replace(/`/g, '\\`').replace(/\\/g, '\\\\')}\`)" class="px-2.5 py-1 bg-white hover:bg-[#FAF8F5] text-heritage-muted text-[11px] rounded-lg border border-[#E3DDD2] flex items-center gap-1 font-medium transition shadow-2xs">
+                  <i data-lucide="copy" class="w-3 h-3"></i> คัดลอกสาระทั้งหมด
                 </button>
               </div>
+
+              <div class="p-4 space-y-3 bg-[#FAF8F5] text-xs">
+                ${sections.length > 0 ? sections.map((sec, sIdx) => `
+                  <div class="p-3 bg-white rounded-xl border border-[#E3DDD2] shadow-2xs">
+                    <div class="font-bold text-heritage-primary text-[11px] mb-1.5 flex items-center justify-between">
+                      <span>${sectionTitles[sIdx] || `ส่วนที่ ${sIdx+1}`}</span>
+                      <button onclick="copyRawText(\`${sec.replace(/`/g, '\\`').replace(/\\/g, '\\\\')}\`)" class="text-[10px] text-heritage-muted hover:text-heritage-primary flex items-center gap-0.5">
+                        <i data-lucide="copy" class="w-2.5 h-2.5"></i> คัดลอก
+                      </button>
+                    </div>
+                    <p class="text-heritage-text leading-relaxed whitespace-pre-line text-xs">${sec}</p>
+                  </div>
+                `).join('') : `
+                  <div class="p-3 bg-white rounded-xl border border-[#E3DDD2] shadow-2xs leading-relaxed whitespace-pre-line">
+                    ${item.rawContent || ''}
+                  </div>
+                `}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 2. เรนเดอร์ประวัติการสนทนาระหว่างครูกับ AI บนหน้าเว็บ
+      if (chats && chats.length > 0) {
+        html += chats.map(c => `
+          <div class="space-y-2 mb-4">
+            <div class="flex justify-end gap-2">
+              <div class="bg-heritage-purple text-white p-3 rounded-2xl rounded-tr-none text-xs max-w-[85%] leading-relaxed shadow-xs">
+                <div class="text-[10px] text-purple-200 mb-0.5 font-medium flex items-center gap-1 justify-end">
+                  <span>💬 คุณครู</span> • <span>${c.time || 'เมื่อสักครู่'}</span>
+                </div>
+                ${c.question}
+              </div>
+            </div>
+
+            <div class="flex gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-white border border-[#E3DDD2] text-heritage-purple flex items-center justify-center shrink-0 text-xs font-bold shadow-xs">
+                <i data-lucide="bot" class="w-4 h-4"></i>
+              </div>
+              <div class="bg-white p-4 rounded-2xl rounded-tl-none border border-[#E3DDD2] shadow-xs text-xs text-heritage-text max-w-[85%] leading-relaxed whitespace-pre-line">
+                ${c.answer}
+                <div class="mt-3 pt-2 border-t border-[#FAF8F5] flex justify-end">
+                  <button onclick="copyRawText(\`${c.answer.replace(/`/g, '\\`').replace(/\\/g, '\\\\')}\`)" class="text-[11px] text-heritage-purple hover:underline flex items-center gap-1 font-semibold">
+                    <i data-lucide="copy" class="w-3 h-3"></i> คัดลอกคำตอบ
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      `).join('');
+        `).join('');
+      }
+
+      container.innerHTML = html;
       container.scrollTop = container.scrollHeight;
       lucide.createIcons();
     }
