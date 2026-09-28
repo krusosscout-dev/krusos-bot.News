@@ -1,0 +1,16 @@
+{
+  "name": "krusos-cortex",
+  "version": "2.0.0",
+  "description": "KruSos Cortex - The Intelligent Core for Next-Gen Teaching & LINE Morning Hub",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "start": "serve ."
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  },
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}

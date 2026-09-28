@@ -42,6 +42,45 @@ export default async function handler(req, res) {
     });
   }
 
+  const db = getFirestoreDb();
+
+  // ดึงรายการงานจริงของครูที่บันทึกไว้ในระบบเพื่อนำมาเตือนความจำใน LINE เมื่อถึงวันส่ง
+  let realTasksText = "";
+  if (db) {
+    try {
+      const now = new Date();
+      const bkkDateStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bangkok' }).format(now); // 'YYYY-MM-DD'
+      
+      const snap = await db.collection('tasks').where('completed', '==', false).get();
+      const dueToday = [];
+      const overdue = [];
+      const upcoming = [];
+
+      snap.forEach(doc => {
+        const t = doc.data();
+        const due = t.dueDate || '';
+        if (due === bkkDateStr) {
+          dueToday.push(`• [🚨 ครบกำหนดส่งวันนี้!] ${t.title} (${t.category || 'ทั่วไป'})`);
+        } else if (due && due < bkkDateStr && due !== 'ไม่ระบุวัน') {
+          overdue.push(`• [⚠️ ค้างส่ง/เลยกำหนด] ${t.title} (กำหนดเดิม: ${due})`);
+        } else if (due && due !== 'ไม่ระบุวัน') {
+          upcoming.push(`• [📌 กำหนดส่ง: ${due}] ${t.title} (${t.category || 'ทั่วไป'})`);
+        } else {
+          upcoming.push(`• [📌 ภารกิจค้าง] ${t.title} (${t.category || 'ทั่วไป'})`);
+        }
+      });
+
+      if (dueToday.length > 0 || overdue.length > 0 || upcoming.length > 0) {
+        realTasksText = 
+          (dueToday.length > 0 ? "🔥 รายการงานที่ครบกำหนดส่งวันนี้:\n" + dueToday.join("\n") + "\n\n" : "") +
+          (overdue.length > 0 ? "⚠️ รายการงานที่เลยกำหนดส่งแล้ว:\n" + overdue.join("\n") + "\n\n" : "") +
+          (upcoming.length > 0 ? "📋 คิวงานที่กำลังจะมาถึง:\n" + upcoming.join("\n") : "");
+      }
+    } catch (taskErr) {
+      console.error("Fetch tasks for morning greet error:", taskErr);
+    }
+  }
+
   const prompt = `คุณคือผู้ช่วยส่วนตัวระดับหัวกะทิของครูสังคมศึกษาที่กำลังศึกษาระดับปริญญาโท และยึดมั่นในอุดมการณ์ 'ครูเพื่อศิษย์'
 ให้จัดเตรียมเนื้อหาแยกเป็น 5 ส่วน โดยคั่นระหว่างแต่ละส่วนด้วยคำว่า "[SPLIT]" เพียงคำเดียวเท่านั้น (ห้ามใส่สิ่งอื่นในบรรทัดคั่น):
 
@@ -55,7 +94,7 @@ export default async function handler(req, res) {
 [SPLIT]
 
 ส่วนที่ 2: หมวดที่ 1: 📋 ตารางคิวงานและภารกิจสำคัญประจำวัน (Daily Priorities)
-จัดลำดับภารกิจสำคัญของวัน (เตรียมการสอน, งานธุรการ/ภาระงานโรงเรียน, การค้นคว้าวิจัย ป.โท) ในรูปแบบ Action List ที่ชัดเจน ตรงประเด็น
+${realTasksText ? `นำรายการคิวงานจริงของครูต่อไปนี้ มาจัดทำเป็นตาราง Check-list แจ้งเตือนยามเช้าอย่างชัดเจน เน้นย้ำภารกิจที่ต้องทำหรือส่งวันนี้เป็นอันดับแรก:\n\n${realTasksText}` : `เนื่องจากวันนี้ยังไม่มีบันทึกคิวงานค้างส่งในระบบ ให้เขียนสรุปเตือนความจำภารกิจสำคัญทั่วไป (เตรียมการสอน, งานธุรการ/ภาระงานโรงเรียน, การค้นคว้าวิจัย ป.โท) ในรูปแบบ Action List สั้น กระชับ ชวนให้เริ่มต้นวันใหม่อย่างมีระบบ`}
 
 [SPLIT]
 
@@ -122,7 +161,6 @@ export default async function handler(req, res) {
 
     // บันทึกลง Firestore ใน collection "daily_summaries"
     let firestoreStatus = { saved: false, reason: "ไม่ได้เชื่อมต่อฐานข้อมูล" };
-    const db = getFirestoreDb();
 
     if (db) {
       try {
