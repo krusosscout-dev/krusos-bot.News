@@ -135,13 +135,13 @@
             </div>
           </button>
 
-          <!-- 4. นวัตกรรม 4 คิด -->
+          <!-- 4. นวัตกรรมการสอนสากล -->
           <button onclick="switchMainTab('pedagogy')" id="sbar-pedagogy" class="sidebar-item w-full flex items-center justify-between px-3 py-2 rounded-xl nav-transition text-heritage-muted hover:bg-white/80 hover:text-heritage-text border-l-4 border-transparent">
             <div class="flex items-center gap-2.5">
               <div class="w-7 h-7 rounded-lg bg-[#EFF7F1] text-heritage-celadon flex items-center justify-center">
-                <i data-lucide="lightbulb" class="w-4 h-4"></i>
+                <i data-lucide="graduation-cap" class="w-4 h-4"></i>
               </div>
-              <span class="truncate">นวัตกรรม 4 คิด (Active)</span>
+              <span class="truncate">นวัตกรรมการสอนสากล</span>
             </div>
           </button>
         </nav>
@@ -151,32 +151,52 @@
       <div>
         <p class="px-3 text-[10px] font-bold text-heritage-muted uppercase tracking-wider mb-2 flex items-center gap-1.5">
           <span class="w-1.5 h-1.5 rounded-full bg-heritage-purple"></span>
-          <span>ระบบอัจฉริยะ & เครื่องมือ</span>
+          <span>ระบบอัจฉริยะ & พิมพ์เอกสาร</span>
         </p>
         <nav class="space-y-1 text-xs font-semibold">
-          <!-- 5. Cortex AI -->
+          <!-- 5. กระดานเอกสารเวิร์ด (Word Studio) -->
+          <button onclick="switchMainTab('word')" id="sbar-word" class="sidebar-item w-full flex items-center justify-between px-3 py-2 rounded-xl nav-transition text-heritage-muted hover:bg-white/80 hover:text-heritage-text border-l-4 border-transparent">
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-lg bg-[#EBF3FD] text-blue-600 flex items-center justify-center">
+                <i data-lucide="file-edit" class="w-4 h-4"></i>
+              </div>
+              <span class="truncate">กระดานเอกสารเวิร์ด</span>
+            </div>
+            <span class="text-[9px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-md font-bold">Word</span>
+          </button>
+
+          <!-- 6. GPT อัจฉริยะ (GPT Studio) -->
+          <button onclick="switchMainTab('gpt')" id="sbar-gpt" class="sidebar-item w-full flex items-center justify-between px-3 py-2 rounded-xl nav-transition text-heritage-muted hover:bg-white/80 hover:text-heritage-text border-l-4 border-transparent">
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-lg bg-[#EBF7F2] text-emerald-600 flex items-center justify-center">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+              </div>
+              <span class="truncate">GPT อัจฉริยะ</span>
+            </div>
+            <span class="text-[9px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-md font-bold">AI</span>
+          </button>
+
+          <!-- 7. Cortex AI สนทนา -->
           <button onclick="switchMainTab('chat')" id="sbar-chat" class="sidebar-item w-full flex items-center justify-between px-3 py-2 rounded-xl nav-transition text-heritage-muted hover:bg-white/80 hover:text-heritage-text border-l-4 border-transparent">
             <div class="flex items-center gap-2.5">
               <div class="w-7 h-7 rounded-lg bg-[#F3F1FD] text-heritage-purple flex items-center justify-center">
                 <i data-lucide="bot" class="w-4 h-4"></i>
               </div>
-              <span>Cortex AI สนทนา</span>
+              <span>Cortex AI & LINE Hub</span>
             </div>
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="ระบบ AI พร้อมใช้งาน"></span>
           </button>
 
-          <!-- 6. ศูนย์สรุป & ส่งออก (Export) -->
+          <!-- 8. ศูนย์บันทึก & ส่งออก (Export) -->
           <button onclick="switchMainTab('export')" id="sbar-export" class="sidebar-item w-full flex items-center justify-between px-3 py-2 rounded-xl nav-transition text-heritage-muted hover:bg-white/80 hover:text-heritage-text border-l-4 border-transparent">
             <div class="flex items-center gap-2.5">
               <div class="w-7 h-7 rounded-lg bg-[#FDF2F2] text-heritage-rose flex items-center justify-center">
                 <i data-lucide="file-down" class="w-4 h-4"></i>
               </div>
-              <span>ศูนย์สรุป & ส่งออกไฟล์</span>
+              <span>ศูนย์ดาวน์โหลดเอกสาร</span>
             </div>
-            <span class="text-[9px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded-md font-bold">New</span>
           </button>
 
-          <!-- 7. คลังข้อมูลทางการ -->
+          <!-- 9. คลังข้อมูลทางการ -->
           <button onclick="switchMainTab('sources')" id="sbar-sources" class="sidebar-item w-full flex items-center justify-between px-3 py-2 rounded-xl nav-transition text-heritage-muted hover:bg-white/80 hover:text-heritage-text border-l-4 border-transparent">
             <div class="flex items-center gap-2.5">
               <div class="w-7 h-7 rounded-lg bg-[#EFF6FC] text-heritage-blue flex items-center justify-center">
@@ -191,13 +211,13 @@
 
     <!-- Bottom Actions & Teacher Profile Card (Interactive Edit) -->
     <div class="space-y-3 pt-4 border-t border-[#E3DDD2]">
-      <!-- Bookmarks Quick Toggle -->
-      <button onclick="toggleSavedFilter()" id="sidebarSavedBtn" class="w-full px-3 py-2 rounded-xl text-xs font-semibold bg-white/70 hover:bg-white text-heritage-text flex items-center justify-between border border-[#E3DDD2] nav-transition shadow-2xs">
+      <!-- Starred Items Quick Toggle -->
+      <button onclick="toggleStarFilter()" id="sidebarSavedBtn" class="w-full px-3 py-2.5 rounded-xl text-xs font-bold bg-white/80 hover:bg-amber-50 text-heritage-text flex items-center justify-between border border-[#E3DDD2] hover:border-amber-300 nav-transition shadow-2xs group" title="คลิกเพื่อกรองแสดงเฉพาะรายการติดดาว">
         <div class="flex items-center gap-2">
-          <i data-lucide="bookmark" class="w-4 h-4 text-heritage-terracotta"></i>
-          <span>รายการโปรดที่บันทึก</span>
+          <i data-lucide="star" class="w-4 h-4 text-amber-500 fill-amber-400 group-hover:scale-110 transition"></i>
+          <span>⭐ รายการติดดาว</span>
         </div>
-        <span id="savedCountBadge" class="bg-heritage-terracotta text-white rounded-full px-1.5 py-0.2 text-[10px]">0</span>
+        <span id="savedCountBadge" class="bg-amber-500 text-white rounded-full px-2 py-0.5 text-[10px] font-bold">0</span>
       </button>
 
       <!-- Profile Card (Click to Edit Profile & Upload Image) -->
@@ -236,10 +256,10 @@
         <img id="mobileAvatarImg" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%235A8765'/><text y='65' x='50' text-anchor='middle' font-size='44' fill='white'>ครู</text></svg>" class="w-full h-full object-cover" alt="Profile" />
       </button>
 
-      <!-- Bookmark Trigger Mobile -->
-      <button onclick="toggleSavedFilter()" class="p-1.5 rounded-xl bg-white border border-[#E3DDD2] text-heritage-text flex items-center gap-1 text-xs">
-        <i data-lucide="bookmark" class="w-4 h-4 text-heritage-terracotta"></i>
-        <span id="savedCountBadgeMobile" class="bg-heritage-terracotta text-white rounded-full px-1.5 py-0.2 text-[9px]">0</span>
+      <!-- Starred Trigger Mobile -->
+      <button onclick="toggleStarFilter()" class="p-1.5 rounded-xl bg-white border border-[#E3DDD2] text-heritage-text flex items-center gap-1 text-xs" title="รายการติดดาว">
+        <i data-lucide="star" class="w-4 h-4 text-amber-500 fill-amber-400"></i>
+        <span id="savedCountBadgeMobile" class="bg-amber-500 text-white rounded-full px-1.5 py-0.2 text-[9px] font-bold">0</span>
       </button>
     </div>
   </header>
@@ -307,7 +327,7 @@
             <span>KruSos Cortex • นวัตกรรมระบบสารสนเทศเพื่อครูมืออาชีพ</span>
           </div>
           <h2 class="text-xl sm:text-2xl font-bold font-heading leading-tight text-[#FBF9F5]">
-            ศูนย์กลางองค์ความรู้ นวัตกรรม และขับเคลื่อนกระบวนการ 4 คิด
+            ศูนย์กลางองค์ความรู้ ทันโลก 5 มิติ และนวัตกรรมการสอนระดับสากล
           </h2>
           <p class="text-[#D8E2E8] text-xs sm:text-sm mt-2 leading-relaxed font-light">
             เชื่อมโยงสาระร่วมสมัย 5 มิติ สู่การจัดการเรียนรู้เชิงรุก จัดทำเอกสารประเมิน ว.PA พร้อมระบบสรุปและส่งออกไฟล์ Word, PDF, และภาพครบวงจร
@@ -354,11 +374,11 @@
 
         <div onclick="switchMainTab('pedagogy')" class="p-3.5 sm:p-4 bg-white rounded-2xl border-2 border-transparent hover:border-heritage-celadon transition cursor-pointer flex items-center gap-3 shadow-xs">
           <div class="w-10 h-10 rounded-xl bg-[#EFF7F1] text-heritage-celadon flex items-center justify-center shrink-0">
-            <i data-lucide="lightbulb" class="w-5 h-5"></i>
+            <i data-lucide="graduation-cap" class="w-5 h-5"></i>
           </div>
           <div class="overflow-hidden">
-            <h4 class="text-xs font-bold text-heritage-text truncate">นวัตกรรม 4 คิด</h4>
-            <p class="text-[10px] text-heritage-muted truncate mt-0.5">โมเดล Active Learning</p>
+            <h4 class="text-xs font-bold text-heritage-text truncate">การสอนสากล</h4>
+            <p class="text-[10px] text-heritage-muted truncate mt-0.5">Global Pedagogy</p>
           </div>
         </div>
 
@@ -373,6 +393,113 @@
         </div>
       </div>
 
+      <!-- ============================================== -->
+      <!-- MORNING BRIEFING HUB: สรุปข้อมูลส่งตรงจาก LINE & Firebase -->
+      <!-- ============================================== -->
+      <div id="homeLineBriefingSection" class="mb-7 bg-white rounded-3xl border border-[#E3DDD2] p-5 sm:p-6 shadow-xs">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#F0ECE1] gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-xs shrink-0">
+              <i data-lucide="bell" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-sm sm:text-base font-bold text-heritage-text font-heading">
+                  สรุปข้อมูลรอบวันส่งตรงจาก LINE (Morning Briefing)
+                </h3>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">LINE Synced</span>
+              </div>
+              <p class="text-xs text-heritage-muted mt-0.5" id="homeBriefingDateSubtitle">กำลังเชื่อมต่อฐานข้อมูล...</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <select id="homeBriefingDateSelect" onchange="changeBriefingDate(this.value)" class="text-xs bg-[#FAF8F5] border border-[#E3DDD2] rounded-xl px-2.5 py-1.5 text-heritage-text font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"></select>
+            <button onclick="fetchLineHistoryAndPopulate(true)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+              <span>ดึงข้อมูลล่าสุด</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
+          <!-- Card 1: Greeting -->
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-[#FBF9F5] to-amber-50/40 border border-[#EBE4D8] flex flex-col justify-between shadow-2xs hover:border-amber-300 transition">
+            <div>
+              <div class="flex items-center gap-2 text-amber-700 font-bold text-xs mb-2">
+                <i data-lucide="sun" class="w-4 h-4"></i>
+                <span>คำทักทายยามเช้า</span>
+              </div>
+              <p id="homeGreetingText" class="text-xs text-heritage-text leading-relaxed line-clamp-4">กำลังโหลดข้อความทักทาย...</p>
+            </div>
+            <div class="mt-3 pt-2 border-t border-[#F0EAE1] flex justify-between items-center text-[10px] text-heritage-muted">
+              <span>☀️ เติมพลังวันใหม่</span>
+              <button onclick="copyBriefingSection(0)" class="hover:text-heritage-primary flex items-center gap-1 font-medium"><i data-lucide="copy" class="w-3 h-3"></i>คัดลอก</button>
+            </div>
+          </div>
+
+          <!-- Card 2: Tasks -->
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-[#FAF5F2] to-orange-50/40 border border-[#EDDDD4] flex flex-col justify-between shadow-2xs hover:border-orange-300 transition">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2 text-heritage-terracotta font-bold text-xs">
+                  <i data-lucide="calendar-check" class="w-4 h-4"></i>
+                  <span>คิวงานประจำวัน</span>
+                </div>
+                <button onclick="switchMainTab('tasks')" class="text-[10px] text-heritage-terracotta hover:underline font-bold">เปิดดู →</button>
+              </div>
+              <div id="homeBriefingTasksList" class="text-xs text-heritage-text space-y-1.5 max-h-24 overflow-y-auto no-scrollbar">
+                <p class="text-heritage-muted">กำลังโหลดคิวงาน...</p>
+              </div>
+            </div>
+            <div class="mt-3 pt-2 border-t border-[#F0E2DA] flex justify-between items-center text-[10px] text-heritage-muted">
+              <span>📋 แจ้งเตือนใน LINE</span>
+              <button onclick="copyBriefingSection(1)" class="hover:text-heritage-primary flex items-center gap-1 font-medium"><i data-lucide="copy" class="w-3 h-3"></i>คัดลอก</button>
+            </div>
+          </div>
+
+          <!-- Card 3: 5 Dims News -->
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-[#F5F8FA] to-blue-50/40 border border-[#DCE5EB] flex flex-col justify-between shadow-2xs hover:border-blue-300 transition">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2 text-heritage-primary font-bold text-xs">
+                  <i data-lucide="globe" class="w-4 h-4"></i>
+                  <span>ทันโลก 5 มิติ</span>
+                </div>
+                <button onclick="switchMainTab('news')" class="text-[10px] text-heritage-primary hover:underline font-bold">ดู 5 มิติ →</button>
+              </div>
+              <div id="homeBriefingNewsPreview" class="text-xs text-heritage-text space-y-1 max-h-24 overflow-y-auto no-scrollbar">
+                <p class="text-heritage-muted">กำลังโหลดประเด็นข่าว...</p>
+              </div>
+            </div>
+            <div class="mt-3 pt-2 border-t border-[#DFE7ED] flex justify-between items-center text-[10px] text-heritage-muted">
+              <span id="homeBriefingNewsCount">5 ด้านสากล</span>
+              <button onclick="copyBriefingSection(2)" class="hover:text-heritage-primary flex items-center gap-1 font-medium"><i data-lucide="copy" class="w-3 h-3"></i>คัดลอก</button>
+            </div>
+          </div>
+
+          <!-- Card 4: Global Pedagogy -->
+          <div class="p-4 rounded-2xl bg-gradient-to-br from-[#F4FAF6] to-emerald-50/40 border border-[#D5EADB] flex flex-col justify-between shadow-2xs hover:border-emerald-300 transition">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2 text-heritage-celadon font-bold text-xs">
+                  <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                  <span>นวัตกรรมการสอนสากล</span>
+                </div>
+                <button onclick="switchMainTab('pedagogy')" class="text-[10px] text-heritage-celadon hover:underline font-bold">ดูกรณีศึกษา →</button>
+              </div>
+              <div id="homeBriefingPedagogyPreview" class="text-xs text-heritage-text space-y-1 max-h-24 overflow-y-auto no-scrollbar">
+                <p class="text-heritage-muted">กำลังโหลดงานวิจัย...</p>
+              </div>
+            </div>
+            <div class="mt-3 pt-2 border-t border-[#DFEDE3] flex justify-between items-center text-[10px] text-heritage-muted">
+              <span>🌐 กรณีศึกษาระดับโลก</span>
+              <button onclick="copyBriefingSection(3)" class="hover:text-heritage-primary flex items-center gap-1 font-medium"><i data-lucide="copy" class="w-3 h-3"></i>คัดลอก</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <!-- Overview 2 Columns Layout -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Highlights Column -->
@@ -480,28 +607,55 @@
           <p class="text-xs text-heritage-muted mt-0.5">สาระร่วมสมัยเพื่อบูรณาการสอน: AI/เทคโนโลยี • สิ่งแวดล้อม • เศรษฐกิจ • สังคม • นวัตกรรมศึกษา</p>
         </div>
 
-        <!-- Actions: เพิ่มข่าวใหม่ + คืนค่าเริ่มต้น -->
         <div class="flex items-center gap-2 flex-wrap">
-          <button onclick="openAddNewsModal()" class="px-3.5 py-1.5 bg-heritage-ochre hover:bg-[#AE8745] text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-xs transition">
-            <i data-lucide="plus" class="w-3.5 h-3.5"></i> เพิ่มข่าวใหม่
-          </button>
-          <button onclick="resetDefaultNews()" class="px-3 py-1.5 bg-white border border-[#E3DDD2] text-heritage-muted hover:text-heritage-text rounded-xl text-xs font-medium flex items-center gap-1 transition" title="คืนค่าข่าวเริ่มต้น">
-            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> คืนค่าเริ่มต้น
+          <button onclick="fetchLineHistoryAndPopulate(true)" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-xs transition">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> ดึงข้อมูล LINE ล่าสุด
           </button>
         </div>
       </div>
 
-      <!-- Notice Tag for Bookmarks Filter -->
-      <div id="savedNoticeTag" class="hidden mb-4 text-xs bg-[#FDF7ED] text-heritage-ochre border border-[#EED8B5] px-3.5 py-1.5 rounded-xl flex items-center justify-between">
-        <span>📌 กำลังแสดงเฉพาะรายการโปรดที่คุณครูบันทึกไว้</span>
-        <button onclick="toggleSavedFilter()" class="hover:underline font-bold text-xs">✕ แสดงทั้งหมด</button>
+      <!-- Segmented Sub-tab Switcher -->
+      <div class="mb-5 flex items-center gap-2 border-b border-[#E3DDD2] pb-3">
+        <button id="newsTabLiveBtn" onclick="switchNewsSubTab('live')" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-heritage-ochre text-white shadow-2xs">
+          <i data-lucide="radio" class="w-3.5 h-3.5"></i> <span>📡 ดึงอัตโนมัติจาก LINE</span>
+        </button>
+        <button id="newsTabArchiveBtn" onclick="switchNewsSubTab('archive')" class="px-4 py-2 rounded-xl text-xs font-semibold text-heritage-muted hover:bg-white transition flex items-center gap-2">
+          <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> <span>✍️ บันทึกเองในระบบ</span>
+        </button>
       </div>
 
-      <div id="newsCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+      <!-- TAB 1: Live LINE 5 Dimensions Container -->
+      <div id="newsLiveContainer" class="space-y-5">
+        
+      <div id="newsLiveStarNotice" class="hidden text-xs bg-amber-50 text-amber-900 border border-amber-200 px-4 py-2 rounded-xl flex items-center justify-between mb-4 shadow-2xs">
+        <span class="flex items-center gap-1.5 font-bold"><i data-lucide="star" class="w-4 h-4 fill-amber-400 text-amber-500"></i> กำลังแสดงเฉพาะรายการติดดาว (Starred)</span>
+        <button onclick="toggleStarFilter()" class="text-amber-800 hover:underline font-bold text-xs">✕ แสดงทั้งหมด</button>
+      </div>
+        <div id="newsLiveCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+      </div>
 
-      <div id="emptyNewsBox" class="hidden text-center py-16 bg-white rounded-2xl border border-[#E3DDD2]">
-        <i data-lucide="inbox" class="w-10 h-10 text-heritage-muted mx-auto mb-2 opacity-50"></i>
-        <p class="text-xs font-semibold text-heritage-muted">ไม่พบข้อมูลข่าวตามคำค้นหา</p>
+      <!-- TAB 2: Custom News Archive Container -->
+      <div id="newsArchiveContainer" class="hidden space-y-4">
+        <div class="flex items-center justify-between gap-2 flex-wrap mb-3">
+          <span class="text-xs text-heritage-muted">จัดการและค้นคว้าคลังสาระข่าวเพิ่มเติม:</span>
+          <div class="flex items-center gap-2">
+            <button onclick="openAddNewsModal()" class="px-3 py-1.5 bg-heritage-ochre hover:bg-[#AE8745] text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-xs transition">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i> เพิ่มข่าวใหม่
+            </button>
+            <button onclick="resetDefaultNews()" class="px-3 py-1.5 bg-white border border-[#E3DDD2] text-heritage-muted hover:text-heritage-text rounded-xl text-xs font-medium flex items-center gap-1 transition">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> คืนค่าเริ่มต้น
+            </button>
+          </div>
+        </div>
+        <div id="savedNoticeTag" class="hidden mb-4 text-xs bg-[#FDF7ED] text-heritage-ochre border border-[#EED8B5] px-3.5 py-1.5 rounded-xl flex items-center justify-between">
+          <span>📌 กำลังแสดงเฉพาะรายการโปรดที่คุณครูบันทึกไว้</span>
+          <button onclick="toggleSavedFilter()" class="hover:underline font-bold text-xs">✕ แสดงทั้งหมด</button>
+        </div>
+        <div id="newsCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        <div id="emptyNewsBox" class="hidden text-center py-16 bg-white rounded-2xl border border-[#E3DDD2]">
+          <i data-lucide="inbox" class="w-10 h-10 text-heritage-muted mx-auto mb-2 opacity-50"></i>
+          <p class="text-xs font-semibold text-heritage-muted">ไม่พบข้อมูลข่าวตามคำค้นหา</p>
+        </div>
       </div>
     </section>
 
@@ -512,22 +666,53 @@
       <div class="mb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
           <h2 class="text-lg font-bold text-heritage-text flex items-center gap-2 font-heading">
-            <i data-lucide="lightbulb" class="w-5 h-5 text-heritage-celadon"></i> นวัตกรรม 4 คิด (Active Pedagogy)
+            <i data-lucide="graduation-cap" class="w-5 h-5 text-heritage-celadon"></i> นวัตกรรมการสอนสากล (Global Pedagogy)
           </h2>
-          <p class="text-xs text-heritage-muted mt-0.5">โมเดลจัดการเรียนรู้เชิงรุก: คิดตั้งคำถาม • คิดวิเคราะห์ • คิดสังเคราะห์ • คิดนำไปใช้</p>
+          <p class="text-xs text-heritage-muted mt-0.5">กรณีศึกษาและโมเดลการจัดการเรียนรู้ระดับสากล: โมเดลการสืบสอบ • ปรากฏการณ์ศึกษา • การถกเถียงประเด็นสาธารณะ</p>
         </div>
 
         <div class="flex items-center gap-2 flex-wrap">
-          <button onclick="openAddPedagogyModal()" class="px-3.5 py-1.5 bg-heritage-celadon hover:bg-[#4C7556] text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-xs transition">
-            <i data-lucide="plus" class="w-3.5 h-3.5"></i> เพิ่มโมเดล 4 คิด
-          </button>
-          <button onclick="resetDefaultPedagogy()" class="px-3 py-1.5 bg-white border border-[#E3DDD2] text-heritage-muted hover:text-heritage-text rounded-xl text-xs font-medium flex items-center gap-1 transition" title="คืนค่าโมเดลเริ่มต้น">
-            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> คืนค่าเริ่มต้น
+          <button onclick="fetchLineHistoryAndPopulate(true)" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-xs transition">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> ดึงข้อมูล LINE ล่าสุด
           </button>
         </div>
       </div>
 
-      <div id="pedagogyGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+      <!-- Segmented Sub-tab Switcher -->
+      <div class="mb-5 flex items-center gap-2 border-b border-[#E3DDD2] pb-3">
+        <button id="pedTabLiveBtn" onclick="switchPedSubTab('live')" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-heritage-celadon text-white shadow-2xs">
+          <i data-lucide="radio" class="w-3.5 h-3.5"></i> <span>📡 ดึงอัตโนมัติจาก LINE</span>
+        </button>
+        <button id="pedTabArchiveBtn" onclick="switchPedSubTab('archive')" class="px-4 py-2 rounded-xl text-xs font-semibold text-heritage-muted hover:bg-white transition flex items-center gap-2">
+          <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> <span>✍️ บันทึกเองในระบบ</span>
+        </button>
+      </div>
+
+      <!-- TAB 1: Live Pedagogy Models from LINE -->
+      <div id="pedLiveContainer" class="space-y-6">
+        
+      <div id="pedLiveStarNotice" class="hidden text-xs bg-amber-50 text-amber-900 border border-amber-200 px-4 py-2 rounded-xl flex items-center justify-between mb-4 shadow-2xs">
+        <span class="flex items-center gap-1.5 font-bold"><i data-lucide="star" class="w-4 h-4 fill-amber-400 text-amber-500"></i> กำลังแสดงเฉพาะกรณีศึกษาติดดาว (Starred)</span>
+        <button onclick="toggleStarFilter()" class="text-amber-800 hover:underline font-bold text-xs">✕ แสดงทั้งหมด</button>
+      </div>
+        <div id="pedLiveGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+      </div>
+
+      <!-- TAB 2: Custom Pedagogy Archive -->
+      <div id="pedArchiveContainer" class="hidden space-y-4">
+        <div class="flex items-center justify-between gap-2 flex-wrap mb-3">
+          <span class="text-xs text-heritage-muted">โมเดลจัดการเรียนรู้เชิงรุกที่บันทึกไว้ในระบบ:</span>
+          <div class="flex items-center gap-2">
+            <button onclick="openAddPedagogyModal()" class="px-3 py-1.5 bg-heritage-celadon hover:bg-[#4C7556] text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-xs transition">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i> เพิ่มโมเดลการสอน
+            </button>
+            <button onclick="resetDefaultPedagogy()" class="px-3 py-1.5 bg-white border border-[#E3DDD2] text-heritage-muted hover:text-heritage-text rounded-xl text-xs font-medium flex items-center gap-1 transition">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> คืนค่าเริ่มต้น
+            </button>
+          </div>
+        </div>
+        <div id="pedagogyGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+      </div>
     </section>
 
     <!-- ============================================== -->
@@ -546,10 +731,10 @@
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span>Gemini AI ฝังพร้อมใช้ 100%</span>
           </div>
-          <button onclick="configureBackendUrl()" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-heritage-text rounded-xl text-xs font-medium flex items-center gap-1.5 border border-[#E3DDD2] transition" title="เชื่อมต่อกับ Vercel Backend เพื่อดึงข้อมูล LINE">
-            <i data-lucide="link-2" class="w-3.5 h-3.5 text-heritage-purple"></i>
-            <span id="backendStatusLabel">เชื่อมต่อ Vercel</span>
-          </button>
+          <div class="px-3 py-1.5 bg-sky-50 text-sky-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-sky-200 shadow-2xs" title="ระบบเชื่อมต่อ Vercel Production ถาวร (krusos-bot-news-02.vercel.app)">
+            <span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
+            <span>Vercel Cloud ฝังถาวร 100%</span>
+          </div>
           <button onclick="clearChatHistory()" class="px-3 py-1.5 bg-white hover:bg-red-50 text-red-600 rounded-xl text-xs font-medium flex items-center gap-1 border border-red-200 transition">
             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> ล้างประวัติแช็ต
           </button>
@@ -867,8 +1052,8 @@
     </button>
 
     <button onclick="switchMainTab('pedagogy')" id="dock-pedagogy" class="mobile-dock-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl text-heritage-muted transition">
-      <i data-lucide="lightbulb" class="w-4 h-4"></i>
-      <span class="text-[9px] font-semibold mt-0.5">4 คิด</span>
+      <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+      <span class="text-[9px] font-semibold mt-0.5">การสอนสากล</span>
     </button>
 
     <button onclick="switchMainTab('chat')" id="dock-chat" class="mobile-dock-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl text-heritage-muted transition">
@@ -876,9 +1061,17 @@
       <span class="text-[9px] font-semibold mt-0.5">AI</span>
     </button>
 
+    <button onclick="switchMainTab('word')" id="dock-word" class="mobile-dock-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl text-heritage-muted transition">
+      <i data-lucide="file-edit" class="w-4 h-4"></i>
+      <span class="text-[9px] font-semibold mt-0.5">เวิร์ด</span>
+    </button>
+    <button onclick="switchMainTab('gpt')" id="dock-gpt" class="mobile-dock-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl text-heritage-muted transition">
+      <i data-lucide="sparkles" class="w-4 h-4"></i>
+      <span class="text-[9px] font-semibold mt-0.5">GPT</span>
+    </button>
     <button onclick="switchMainTab('export')" id="dock-export" class="mobile-dock-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl text-heritage-muted transition">
       <i data-lucide="file-down" class="w-4 h-4"></i>
-      <span class="text-[9px] font-semibold mt-0.5">ส่งออก</span>
+      <span class="text-[9px] font-semibold mt-0.5">ดาวน์โหลด</span>
     </button>
   </nav>
 
@@ -1130,9 +1323,32 @@
     </div>
   </div>
 
+  <!-- ============================================== -->
+  <!-- MODERN CONFIRMATION MODAL & TOAST -->
+  <!-- ============================================== -->
+  <div id="customConfirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-all duration-300">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-[#E3DDD2] text-center transform transition-all scale-95 duration-200" id="customConfirmCard">
+      <div id="confirmModalIconContainer" class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 mx-auto flex items-center justify-center mb-4 text-xl shadow-xs">
+        <i data-lucide="alert-triangle" class="w-7 h-7"></i>
+      </div>
+      <h4 id="confirmModalTitle" class="text-base font-bold text-heritage-text font-heading mb-1.5">ยืนยันการทำรายการ</h4>
+      <p id="confirmModalMessage" class="text-xs text-heritage-muted leading-relaxed mb-6">คุณแน่ใจหรือไม่ว่าต้องการดำเนินการนี้?</p>
+      <div class="flex items-center gap-2.5">
+        <button id="confirmModalCancelBtn" class="flex-1 py-2.5 bg-[#F5F2EB] hover:bg-[#EBE5D8] text-heritage-text rounded-xl text-xs font-semibold transition">
+          ยกเลิก
+        </button>
+        <button id="confirmModalActionBtn" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold transition shadow-xs">
+          ยืนยัน
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
-  <div id="toast" class="fixed bottom-16 md:bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-6 z-50 px-4 py-2.5 bg-[#2B303A] text-white text-xs font-medium rounded-xl shadow-xl transform translate-y-16 opacity-0 transition duration-300 flex items-center gap-2">
-    <i data-lucide="check-circle" class="w-4 h-4 text-heritage-celadon"></i>
+  <div id="toast" class="fixed bottom-16 md:bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-6 z-50 px-4 py-3 bg-[#1E232B]/95 backdrop-blur-md text-white text-xs font-medium rounded-2xl shadow-2xl transform translate-y-16 opacity-0 transition duration-300 flex items-center gap-2.5 border border-white/10 pointer-events-none">
+    <div id="toastIconWrap" class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+      <i data-lucide="check-circle" class="w-4 h-4"></i>
+    </div>
     <span id="toastMessage">เรียบร้อย</span>
   </div>
 
@@ -1253,10 +1469,16 @@
       renderTasks();
       renderNews();
       renderPedagogy();
-      updateSavedBadge();
+      updateStarBadge();
       updateTaskCountBadges();
       startLiveThaiClock();
       updateBackendStatusUI();
+      fetchLineHistoryAndPopulate();
+      const savedWord = localStorage.getItem('krusos_word_content');
+      const wordCanvas = document.getElementById('wordPaperCanvas');
+      if (savedWord && wordCanvas) {
+        wordCanvas.innerHTML = savedWord;
+      }
       lucide.createIcons();
     }
 
@@ -1313,6 +1535,8 @@
         else if (tabName === 'pedagogy') activeSbar.classList.add('text-heritage-celadon', 'border-heritage-celadon');
         else if (tabName === 'chat') activeSbar.classList.add('text-heritage-purple', 'border-heritage-purple');
         else if (tabName === 'export') activeSbar.classList.add('text-heritage-rose', 'border-heritage-rose');
+        else if (tabName === 'word') activeSbar.classList.add('text-blue-600', 'border-blue-600');
+        else if (tabName === 'gpt') activeSbar.classList.add('text-emerald-600', 'border-emerald-600');
         else if (tabName === 'sources') activeSbar.classList.add('text-heritage-blue', 'border-heritage-blue');
       }
 
@@ -1667,21 +1891,41 @@
     };
 
     window.deleteNewsItem = function(id) {
-      if (!confirm('ต้องการลบข้อมูลข่าวนี้ใช่หรือไม่?')) return;
-      newsData = newsData.filter(n => n.id !== id);
-      localStorage.setItem('krusos_news_data', JSON.stringify(newsData));
-      renderNews();
-      renderHomeOverview();
-      showToast('ลบข้อมูลเรียบร้อย');
+      showCustomConfirm({
+        title: 'ลบข้อมูลข่าวนี้?',
+        message: 'ต้องการลบข้อมูลข่าวนี้ออกจากระบบใช่หรือไม่?',
+        icon: 'trash-2',
+        iconColor: 'text-rose-600',
+        iconBg: 'bg-rose-50',
+        confirmText: 'ลบข่าว',
+        confirmColor: 'bg-rose-600 hover:bg-rose-700',
+        onConfirm: () => {
+          newsData = newsData.filter(n => n.id !== id);
+          localStorage.setItem('krusos_news_data', JSON.stringify(newsData));
+          renderNews();
+          renderHomeOverview();
+          showToast('ลบข้อมูลเรียบร้อย', 'success');
+        }
+      });
     };
 
     window.resetDefaultNews = function() {
-      if (!confirm('ต้องการคืนค่าข่าวเป็นชุดเริ่มต้นหรือไม่?')) return;
-      newsData = JSON.parse(JSON.stringify(initialNewsData));
-      localStorage.setItem('krusos_news_data', JSON.stringify(newsData));
-      renderNews();
-      renderHomeOverview();
-      showToast('คืนค่าข่าวเริ่มต้นเรียบร้อย');
+      showCustomConfirm({
+        title: 'คืนค่าข่าวเริ่มต้น?',
+        message: 'ต้องการรีเซ็ตคลังข่าวกลับเป็นชุดเริ่มต้นของระบบหรือไม่?',
+        icon: 'rotate-ccw',
+        iconColor: 'text-amber-600',
+        iconBg: 'bg-amber-50',
+        confirmText: 'คืนค่าเริ่มต้น',
+        confirmColor: 'bg-amber-600 hover:bg-amber-700',
+        onConfirm: () => {
+          newsData = JSON.parse(JSON.stringify(initialNewsData));
+          localStorage.setItem('krusos_news_data', JSON.stringify(newsData));
+          renderNews();
+          renderHomeOverview();
+          showToast('คืนค่าข่าวเริ่มต้นเรียบร้อย', 'success');
+        }
+      });
     };
 
     // ==========================================
@@ -1727,8 +1971,8 @@
               </a>
 
               <div class="flex items-center gap-1.5">
-                <button onclick="toggleBookmark('${item.id}')" class="p-1.5 rounded-lg ${isSaved ? 'text-heritage-terracotta font-bold' : 'hover:text-heritage-primary'}">
-                  <i data-lucide="bookmark" class="w-3.5 h-3.5 ${isSaved ? 'fill-current' : ''}"></i>
+                <button onclick="toggleStar('${item.id}', '${item.title.replace(/'/g, "\\'")}')" class="p-1.5 rounded-lg ${isItemStarred(item.id) ? 'text-amber-500 font-bold' : 'text-heritage-muted hover:text-amber-500'}" title="ติดดาว">
+                  <i data-lucide="star" class="w-3.5 h-3.5 ${isItemStarred(item.id) ? 'fill-amber-400 text-amber-500' : ''}"></i>
                 </button>
                 <button onclick="openCommentModal('${item.id}')" class="p-1.5 hover:text-heritage-primary rounded-lg flex items-center gap-1 text-[11px]">
                   <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
@@ -1819,19 +2063,39 @@
     };
 
     window.deletePedagogyItem = function(id) {
-      if (!confirm('ต้องการลบโมเดล 4 คิดนี้ใช่หรือไม่?')) return;
-      pedagogyData = pedagogyData.filter(p => p.id !== id);
-      localStorage.setItem('krusos_pedagogy_data', JSON.stringify(pedagogyData));
-      renderPedagogy();
-      showToast('ลบโมเดลเรียบร้อย');
+      showCustomConfirm({
+        title: 'ลบโมเดลการสอนนี้?',
+        message: 'ต้องการลบโมเดลการจัดการเรียนรู้นี้ใช่หรือไม่?',
+        icon: 'trash-2',
+        iconColor: 'text-rose-600',
+        iconBg: 'bg-rose-50',
+        confirmText: 'ลบโมเดล',
+        confirmColor: 'bg-rose-600 hover:bg-rose-700',
+        onConfirm: () => {
+          pedagogyData = pedagogyData.filter(p => p.id !== id);
+          localStorage.setItem('krusos_pedagogy_data', JSON.stringify(pedagogyData));
+          renderPedagogy();
+          showToast('ลบโมเดลเรียบร้อย', 'success');
+        }
+      });
     };
 
     window.resetDefaultPedagogy = function() {
-      if (!confirm('ต้องการคืนค่าโมเดล 4 คิดเป็นชุดเริ่มต้นหรือไม่?')) return;
-      pedagogyData = JSON.parse(JSON.stringify(initialPedagogyData));
-      localStorage.setItem('krusos_pedagogy_data', JSON.stringify(pedagogyData));
-      renderPedagogy();
-      showToast('คืนค่าโมเดลเริ่มต้นเรียบร้อย');
+      showCustomConfirm({
+        title: 'คืนค่าโมเดลเริ่มต้น?',
+        message: 'ต้องการรีเซ็ตโมเดลการสอนกลับเป็นชุดเริ่มต้นของระบบหรือไม่?',
+        icon: 'rotate-ccw',
+        iconColor: 'text-amber-600',
+        iconBg: 'bg-amber-50',
+        confirmText: 'คืนค่าเริ่มต้น',
+        confirmColor: 'bg-amber-600 hover:bg-amber-700',
+        onConfirm: () => {
+          pedagogyData = JSON.parse(JSON.stringify(initialPedagogyData));
+          localStorage.setItem('krusos_pedagogy_data', JSON.stringify(pedagogyData));
+          renderPedagogy();
+          showToast('คืนค่าโมเดลเริ่มต้นเรียบร้อย', 'success');
+        }
+      });
     };
 
     // ==========================================
@@ -1902,7 +2166,7 @@
     };
 
     window.exportAllPedagogyToWord = function() {
-      let body = `<h1>คู่มือนวัตกรรมการจัดการเรียนรู้เชิงรุก (Active Pedagogy 4 คิด)</h1>`;
+      let body = `<h1>คู่มือนวัตกรรมการจัดการเรียนรู้ระดับสากล (Global Pedagogy Manual)</h1>`;
       body += `<p>จัดทำโดย: ${userProfile.name} | ${userProfile.role}</p>`;
       pedagogyData.forEach((item, index) => {
         body += `
@@ -1917,7 +2181,7 @@
           </div>
         `;
       });
-      downloadWordFile('คู่มือนวัตกรรม4คิด_KruSos', body);
+      downloadWordFile('คู่มือนวัตกรรมการสอนสากล_KruSos', body);
     };
 
     window.exportTasksToWord = function() {
@@ -1945,19 +2209,155 @@
     };
 
     // (C) พิมพ์ / สั่งพิมพ์ PDF
+    
+    // ส่งออกสรุปข่าวเช้าจาก LINE เป็นไฟล์ Word
+    window.exportBriefingToWord = function() {
+      if (!window.lineSummariesData || window.lineSummariesData.length === 0) {
+        showToast('ยังไม่มีข้อมูลสรุปข่าวเช้าจาก LINE', 'warning');
+        return;
+      }
+      const currentDoc = window.lineSummariesData[window.currentBriefingIndex] || window.lineSummariesData[0];
+      const parsed = parseSummarySections(currentDoc);
+      
+      let body = `<h1>สรุปข่าวและสาระการเรียนรู้สากลประจำวัน (LINE Morning Briefing)</h1>`;
+      body += `<p><strong>ประจำวันที่:</strong> ${parsed.date} | <strong>ผู้จัดทำ:</strong> ${userProfile.name} (${userProfile.role})</p>`;
+      body += `<hr/>`;
+
+      body += `<div class="box"><h2>☀️ คำทักทายยามเช้า</h2><p>${parsed.sec1.replace(/\n/g, '<br/>')}</p></div>`;
+      body += `<div class="box"><h2>📋 ตารางคิวงานและภารกิจประจำวัน</h2><p>${parsed.sec2.replace(/\n/g, '<br/>')}</p></div>`;
+
+      body += `<h2>🌍 เจาะลึกประเด็นร่วมสมัย 5 มิติ</h2>`;
+      if (parsed.dimensions && parsed.dimensions.length > 0) {
+        parsed.dimensions.forEach((dim, idx) => {
+          body += `
+            <div class="box">
+              <h3>${idx + 1}. [${dim.category}] ${dim.title}</h3>
+              <p>${dim.summary.replace(/\n/g, '<br/>')}</p>
+              ${dim.think ? `<p style="background: #FFFBEB; padding: 8px; border-left: 3px solid #D97706;"><strong>💡 ชวนคิดในห้องเรียน:</strong> ${dim.think}</p>` : ''}
+              ${dim.link ? `<p><strong>แหล่งข้อมูล:</strong> <a href="${dim.link}">${dim.link}</a></p>` : ''}
+            </div>
+          `;
+        });
+      }
+
+      body += `<h2>🌐 นวัตกรรมการเรียนรู้และงานวิจัยระดับสากล</h2>`;
+      if (parsed.pedagogies && parsed.pedagogies.length > 0) {
+        parsed.pedagogies.forEach((ped, idx) => {
+          body += `
+            <div class="box">
+              <h3>${idx + 1}. ${ped.title}</h3>
+              <p><strong>🎯 ชื่อแนวคิด/งานวิจัย:</strong> ${ped.researchName}</p>
+              <p><strong>🔍 แก่นสำคัญ:</strong> ${ped.essence}</p>
+              <div style="background: #FFF; padding: 10px; border-left: 3px solid #059669; margin: 8px 0;">
+                <strong>🏫 ไอเดียนำไปสอนจริง:</strong><br/>
+                ${ped.steps.replace(/\n/g, '<br/>')}
+              </div>
+              <p><strong>🛠️ แนวทางการสร้างสื่อ:</strong> ${ped.mediaGuide}</p>
+              <p><strong>📚 แหล่งอ้างอิงสากล:</strong> ${ped.refText} (${ped.refUrl})</p>
+            </div>
+          `;
+        });
+      }
+
+      downloadWordFile(`สรุปข่าวเช้าLINE_${parsed.date.replace(/\//g, '-')}`, body);
+    };
+
+    // ส่งออกรายการติดดาวเป็นไฟล์ Word
+    window.exportStarredToWord = function() {
+      if (!savedStars || savedStars.length === 0) {
+        showToast('ยังไม่มีรายการที่ติดดาวไว้ครับ ⭐', 'warning');
+        return;
+      }
+
+      let body = `<h1>แฟ้มผลงานสาระและนวัตกรรมการสอนที่ติดดาว ⭐ (Starred Collection)</h1>`;
+      body += `<p>รวบรวมโดย: ${userProfile.name} | จัดพิมพ์เมื่อ: ${new Date().toLocaleDateString('th-TH')}</p>`;
+      body += `<p>จำนวนรายการที่คัดเลือกทั้งหมด: <strong>${savedStars.length} รายการ</strong></p><hr/>`;
+
+      // ค้นหาใน newsData
+      const starredNews = newsData.filter(n => isItemStarred(n.id));
+      if (starredNews.length > 0) {
+        body += `<h2>📰 สาระข่าว 5 มิติที่ติดดาว</h2>`;
+        starredNews.forEach((n, idx) => {
+          body += `
+            <div class="box">
+              <h3>${idx + 1}. [${n.category}] ${n.title}</h3>
+              <p>${n.summary.replace(/\n/g, '<br/>')}</p>
+              <p><strong>แหล่งอ้างอิง:</strong> ${n.linkText} (${n.linkUrl})</p>
+            </div>
+          `;
+        });
+      }
+
+      // ค้นหาใน pedagogyData
+      const starredPed = pedagogyData.filter(p => isItemStarred(p.id));
+      if (starredPed.length > 0) {
+        body += `<h2>🌐 โมเดลนวัตกรรมการสอนสากลที่ติดดาว</h2>`;
+        starredPed.forEach((p, idx) => {
+          body += `
+            <div class="box">
+              <h3>${idx + 1}. ${p.title}</h3>
+              <p><strong>แก่นสำคัญ:</strong> ${p.essence}</p>
+              <div style="background: #FFF; padding: 10px; border-left: 3px solid #059669; margin: 8px 0;">
+                ${p.fourSteps.replace(/\n/g, '<br/>')}
+              </div>
+              <p><strong>แนวทางสื่อ:</strong> ${p.mediaGuide}</p>
+              <p><strong>แหล่งอ้างอิง:</strong> ${p.refText} (${p.refUrl})</p>
+            </div>
+          `;
+        });
+      }
+
+      downloadWordFile('แฟ้มผลงานติดดาว_KruSos', body);
+    };
+
     window.printReportAsPDF = function(type) {
       let printContent = `
-        <div style="font-family: 'Sarabun', sans-serif; padding: 20px;">
+        <div style="font-family: 'Sarabun', sans-serif; padding: 20px; line-height: 1.6;">
           <div style="text-align: center; margin-bottom: 20px;">
-            <h2 style="margin: 0; font-size: 18pt;">ระบบสารสนเทศนวัตกรรมการจัดการเรียนรู้ KruSos Cortex</h2>
+            <h2 style="margin: 0; font-size: 18pt; color: #3F6178;">ระบบสารสนเทศนวัตกรรมการจัดการเรียนรู้ KruSos Cortex</h2>
             <p style="margin: 5px 0; font-size: 11pt; color: #555;">สอดรับเกณฑ์การประเมินตำแหน่งและวิทยฐานะ ว.PA / DPA</p>
             <p style="margin: 0; font-size: 10pt; color: #777;">ผู้จัดทำ: ${userProfile.name} • ${userProfile.role}</p>
           </div>
           <hr style="margin-bottom: 20px;" />
       `;
 
+      if (type === 'briefing') {
+        const currentDoc = (window.lineSummariesData && window.lineSummariesData[window.currentBriefingIndex]) || {};
+        const parsed = parseSummarySections(currentDoc);
+        if (parsed) {
+          printContent += `<h3 style="font-size: 14pt; color: #059669;">สรุปข่าวและสาระการเรียนรู้สากลประจำวัน (LINE Briefing) - วันที่ ${parsed.date}</h3>`;
+          printContent += `<div style="margin-bottom: 15px; padding: 12px; border: 1px solid #DDD; border-radius: 8px;"><h4>คำทักทาย:</h4><p>${parsed.sec1.replace(/\n/g, '<br/>')}</p></div>`;
+          printContent += `<div style="margin-bottom: 15px; padding: 12px; border: 1px solid #DDD; border-radius: 8px;"><h4>ตารางคิวงาน:</h4><p>${parsed.sec2.replace(/\n/g, '<br/>')}</p></div>`;
+          if (parsed.dimensions) {
+            printContent += `<h4>เจาะลึกประเด็นร่วมสมัย 5 มิติ:</h4>`;
+            parsed.dimensions.forEach((d, i) => {
+              printContent += `<div style="margin-bottom: 10px; padding: 10px; border-left: 3px solid #C19854; background: #FAF8F5;"><strong>${i+1}. [${d.category}] ${d.title}</strong><p>${d.summary}</p>${d.think ? `<p style="color: #B45309;">💡 ชวนคิด: ${d.think}</p>` : ''}</div>`;
+            });
+          }
+        }
+      } else if (type === 'tasks') {
+        printContent += `<h3 style="font-size: 14pt; color: #B67E61;">รายงานตารางภารกิจและงานโรงเรียน (My Tasks)</h3>`;
+        printContent += `<table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse; border-color: #DDD; margin-top: 10px;">
+          <tr style="background: #F3EFE8;"><th>สถานะ</th><th>ภารกิจ</th><th>หมวดหมู่</th><th>กำหนดส่ง</th></tr>`;
+        taskList.forEach(t => {
+          printContent += `<tr><td style="text-align: center;">${t.completed ? '✅ เสร็จ' : '⏳ รอ'}</td><td>${t.title}</td><td>${t.category}</td><td>${t.dueDate}</td></tr>`;
+        });
+        printContent += `</table>`;
+      } else if (type === 'starred') {
+        printContent += `<h3 style="font-size: 14pt; color: #D97706;">แฟ้มผลงานสาระและนวัตกรรมที่ติดดาว ⭐ (Starred Collection)</h3>`;
+        const stNews = newsData.filter(n => isItemStarred(n.id));
+        const stPed = pedagogyData.filter(p => isItemStarred(p.id));
+        printContent += `<p>รวม ${stNews.length + stPed.length} รายการที่คัดเลือกไว้</p>`;
+        stNews.forEach((n, i) => {
+          printContent += `<div style="margin-bottom: 12px; padding: 10px; border: 1px solid #DDD;"><strong>⭐ ข่าว: [${n.category}] ${n.title}</strong><p>${n.summary}</p></div>`;
+        });
+        stPed.forEach((p, i) => {
+          printContent += `<div style="margin-bottom: 12px; padding: 10px; border: 1px solid #059669;"><strong>⭐ นวัตกรรมการสอน: ${p.title}</strong><p>${p.essence}</p><p>${p.fourSteps}</p></div>`;
+        });
+      } else 
+
       if (type === 'pedagogy') {
-        printContent += `<h3 style="font-size: 14pt; color: #5A8765;">เอกสารประกอบแผนการจัดการเรียนรู้ 4 คิด (Active Learning)</h3>`;
+        printContent += `<h3 style="font-size: 14pt; color: #059669;">คู่มือนวัตกรรมการจัดการเรียนรู้ระดับสากล (Global Pedagogy Manual)</h3>`;
         pedagogyData.forEach((p, idx) => {
           printContent += `
             <div style="margin-bottom: 20px; page-break-inside: avoid; border: 1px solid #DDD; padding: 15px; border-radius: 8px;">
@@ -2196,34 +2596,468 @@
     // ==========================================
     // BACKEND API & VERCEL SYNC CONFIGURATION
     // ==========================================
-    const DEFAULT_VERCEL_BACKEND = 'https://krusos-bot-news-02.vercel.app';
-    let backendUrl = localStorage.getItem('krusos_backend_url') || DEFAULT_VERCEL_BACKEND;
+    // -------------------------------------------------------------
+    // VERCEL PRODUCTION BACKEND (ฝังถาวร 100% ป้องกันการแก้ไข)
+    // -------------------------------------------------------------
+    const BACKEND_URL = 'https://krusos-bot-news-02.vercel.app';
+    let backendUrl = BACKEND_URL;
 
-    window.configureBackendUrl = function() {
-      const current = localStorage.getItem('krusos_backend_url') || DEFAULT_VERCEL_BACKEND;
-      const input = prompt('กรอก URL โดเมน Vercel ของคุณครู (เช่น https://your-project.vercel.app):', current);
-      if (input !== null) {
-        let clean = input.trim().replace(/\/+$/, '');
-        if (clean && !clean.startsWith('http')) {
-          clean = 'https://' + clean;
-        }
-        localStorage.setItem('krusos_backend_url', clean || DEFAULT_VERCEL_BACKEND);
-        backendUrl = clean || DEFAULT_VERCEL_BACKEND;
-        updateBackendStatusUI();
-        showToast('เชื่อมต่อ Vercel: ' + backendUrl);
-        loadLineChatHistory(true);
+    function updateBackendStatusUI() {
+      // Backend ฝังถาวรเรียบร้อย
+    }
+
+    // -------------------------------------------------------------
+    // MODERN HERITAGE CONFIRM MODAL SYSTEM
+    // -------------------------------------------------------------
+    window.showCustomConfirm = function({ title, message, icon = 'alert-triangle', iconColor = 'text-amber-600', iconBg = 'bg-amber-50', confirmText = 'ยืนยัน', confirmColor = 'bg-red-600 hover:bg-red-700', cancelText = 'ยกเลิก', onConfirm }) {
+      const modal = document.getElementById('customConfirmModal');
+      const card = document.getElementById('customConfirmCard');
+      document.getElementById('confirmModalTitle').innerText = title || 'ยืนยันการทำรายการ';
+      document.getElementById('confirmModalMessage').innerText = message || '';
+      
+      const iconContainer = document.getElementById('confirmModalIconContainer');
+      iconContainer.className = `w-14 h-14 rounded-2xl ${iconBg} ${iconColor} mx-auto flex items-center justify-center mb-4 text-xl shadow-xs`;
+      iconContainer.innerHTML = `<i data-lucide="${icon}" class="w-7 h-7"></i>`;
+      
+      const cancelBtn = document.getElementById('confirmModalCancelBtn');
+      cancelBtn.innerText = cancelText;
+      
+      const actionBtn = document.getElementById('confirmModalActionBtn');
+      actionBtn.innerText = confirmText;
+      actionBtn.className = `flex-1 py-2.5 ${confirmColor} text-white rounded-xl text-xs font-semibold transition shadow-xs`;
+      
+      modal.classList.remove('hidden');
+      setTimeout(() => card.classList.remove('scale-95'), 10);
+      lucide.createIcons();
+      
+      function closeModal() {
+        card.classList.add('scale-95');
+        setTimeout(() => modal.classList.add('hidden'), 150);
+        cancelBtn.onclick = null;
+        actionBtn.onclick = null;
+      }
+      
+      cancelBtn.onclick = closeModal;
+      actionBtn.onclick = () => {
+        closeModal();
+        if (typeof onConfirm === 'function') onConfirm();
+      };
+    };
+
+    // -------------------------------------------------------------
+    // PARSING & RENDERING LINE DAILY SUMMARIES INTO MENUS & DASHBOARD
+    // -------------------------------------------------------------
+    window.lineSummariesData = JSON.parse(localStorage.getItem('krusos_line_saved_summaries') || '[]');
+    window.currentBriefingIndex = 0;
+
+    // แยกและแจกแจงเนื้อหา 5 มิติ และ นวัตกรรมการสอนสากล
+    window.parseSummarySections = function(summaryDoc) {
+      if (!summaryDoc) return null;
+      const sections = summaryDoc.sections || [];
+      const sec1 = sections[0] || ''; // Greeting
+      const sec2 = sections[1] || ''; // Tasks
+      const sec3 = sections[2] || ''; // 5 Dims News
+      const sec4 = sections[3] || ''; // Global Pedagogy
+      const sec5 = sections[4] || ''; // Closing
+
+      // Parse 5 Dimensions
+      const dimRegex = /(?:^|\n)(\d+)\.\s*ด้าน([^\n]+)([\s\S]*?)(?=(?:\n\d+\.\s*ด้าน|$))/g;
+      let match;
+      const dimensions = [];
+      while ((match = dimRegex.exec(sec3)) !== null) {
+        const num = match[1];
+        const category = match[2].trim();
+        const content = match[3].trim();
+        
+        const titleMatch = content.match(/📌\s*หัวข้อข่าว:\s*([^\n]+)/);
+        const summaryMatch = content.match(/📝\s*สรุปสาระสำคัญ:\s*([\s\S]*?)(?=(?:\s*ชวนคิดในห้องเรียน:|- 🔗|$))/);
+        const thinkMatch = content.match(/ชวนคิดในห้องเรียน:\s*"?([^\n"]+)"?/);
+        const linkMatch = content.match(/(https?:\/\/[^\s]+)/);
+        
+        dimensions.push({
+          num,
+          category: 'ด้าน' + category,
+          title: titleMatch ? titleMatch[1].trim() : ('ข่าว ' + category),
+          summary: summaryMatch ? summaryMatch[1].trim() : content,
+          think: thinkMatch ? thinkMatch[1].trim() : '',
+          link: linkMatch ? linkMatch[1].trim() : ''
+        });
+      }
+
+      // Parse Global Pedagogy Models
+      const pedRegex = /(?:^|\n)(\d+)\.\s*แนวคิด:\s*([^\n]+)([\s\S]*?)(?=(?:\n\d+\.\s*แนวคิด:|$))/g;
+      const pedagogies = [];
+      while ((match = pedRegex.exec(sec4)) !== null) {
+        const num = match[1];
+        const title = match[2].trim();
+        const content = match[3].trim();
+        
+        const researchMatch = content.match(/🎯\s*ชื่อแนวคิด\/งานวิจัย:\s*([^\n]+)/);
+        const essenceMatch = content.match(/🔍\s*แก่นสำคัญ:\s*([^\n]+)/);
+        const stepsMatch = content.match(/🏫\s*ไอเดียนำไปสอนจริง[^\n]*:([\s\S]*?)(?=(?:- 🛠️|- 📚|$))/);
+        const mediaMatch = content.match(/🛠️\s*แนวทางการนำไปสร้างสื่อ[^\n]*:\s*([\s\S]*?)(?=(?:- 📚|$))/);
+        const refMatch = content.match(/📚\s*แหล่งอ้างอิง[^\n]*:\s*([^\n]+)/);
+        const linkMatch = content.match(/(https?:\/\/[^\s]+)/);
+        
+        pedagogies.push({
+          num,
+          title,
+          researchName: researchMatch ? researchMatch[1].trim() : title,
+          essence: essenceMatch ? essenceMatch[1].trim() : '',
+          steps: stepsMatch ? stepsMatch[1].trim() : '',
+          mediaGuide: mediaMatch ? mediaMatch[1].trim() : '',
+          refText: refMatch ? refMatch[1].trim() : 'แหล่งอ้างอิงระดับสากล',
+          refUrl: linkMatch ? linkMatch[1].trim() : ''
+        });
+      }
+
+      return {
+        date: summaryDoc.date || 'ข้อมูลล่าสุด',
+        rawContent: summaryDoc.rawContent || '',
+        sec1,
+        sec2,
+        sec3,
+        sec4,
+        sec5,
+        dimensions,
+        pedagogies
+      };
+    };
+
+    
+    window.copyNewsDim = function(idx) {
+      if (!window.lineSummariesData || window.lineSummariesData.length === 0) return;
+      const currentDoc = window.lineSummariesData[window.currentBriefingIndex] || window.lineSummariesData[0];
+      const parsed = parseSummarySections(currentDoc);
+      if (parsed && parsed.dimensions && parsed.dimensions[idx]) {
+        const dim = parsed.dimensions[idx];
+        const text = dim.title + '\n\n' + dim.summary + (dim.think ? '\n\n💡 ชวนคิดในห้องเรียน: ' + dim.think : '') + (dim.link ? '\n\n🔗 แหล่งข้อมูล: ' + dim.link : '');
+        copyRawText(text);
+        showToast('คัดลอกสาระมิตินี้แล้ว 📋', 'success');
       }
     };
 
-    function updateBackendStatusUI() {
-      const label = document.getElementById('backendStatusLabel');
-      if (!label) return;
-      if (backendUrl) {
-        label.innerText = 'krusos-bot-news-02 🟢';
-      } else {
-        label.innerText = 'เชื่อมต่อ Vercel';
+    window.copyPedItem = function(idx) {
+      if (!window.lineSummariesData || window.lineSummariesData.length === 0) return;
+      const currentDoc = window.lineSummariesData[window.currentBriefingIndex] || window.lineSummariesData[0];
+      const parsed = parseSummarySections(currentDoc);
+      if (parsed && parsed.pedagogies && parsed.pedagogies[idx]) {
+        const ped = parsed.pedagogies[idx];
+        const text = ped.title + '\n' + ped.researchName + '\n\n🔍 แก่นสำคัญ: ' + ped.essence + '\n\n🏫 การสอนจริงในห้องเรียน:\n' + ped.steps + '\n\n🛠️ แนวทางสื่อ:\n' + ped.mediaGuide + (ped.refUrl ? '\n\n📖 อ้างอิง: ' + ped.refUrl : '');
+        copyRawText(text);
+        showToast('คัดลอกโมเดลการสอนแล้ว 📋', 'success');
+      }
+    };
+
+    window.populateAllLineViews = function() {
+      if (!window.lineSummariesData || window.lineSummariesData.length === 0) return;
+      const currentDoc = window.lineSummariesData[window.currentBriefingIndex] || window.lineSummariesData[0];
+      const parsed = parseSummarySections(currentDoc);
+      if (!parsed) return;
+
+      // 1. เรนเดอร์บนหน้าแรก (Dashboard Morning Briefing Hub)
+      renderDashboardBriefing(parsed);
+
+      // 2. เรนเดอร์บนหน้า ทันโลก 5 มิติ (Live Tab)
+      renderNewsLiveCards(parsed.dimensions);
+
+      // 3. เรนเดอร์บนหน้า นวัตกรรมการสอนสากล (Live Tab)
+      renderPedagogyLiveCards(parsed.pedagogies);
+
+      lucide.createIcons();
+    };
+
+    function renderDashboardBriefing(parsed) {
+      // Date subtitle & Selector
+      const sub = document.getElementById('homeBriefingDateSubtitle');
+      if (sub) sub.innerText = 'ข้อมูลประจำวันที่ ' + parsed.date;
+
+      const sel = document.getElementById('homeBriefingDateSelect');
+      if (sel) {
+        sel.innerHTML = window.lineSummariesData.map((doc, idx) => 
+          `<option value="${idx}" ${idx === window.currentBriefingIndex ? 'selected' : ''}>${doc.date || 'สรุปที่ ' + (idx+1)}</option>`
+        ).join('');
+      }
+
+      // Card 1: Greeting
+      const greetEl = document.getElementById('homeGreetingText');
+      if (greetEl) {
+        greetEl.innerText = parsed.sec1.split('\n')[0].includes('อรุณสวัสดิ์') ? parsed.sec1.split('\n').slice(1).join('\n').trim() : parsed.sec1;
+      }
+
+      // Card 2: Tasks
+      const tasksEl = document.getElementById('homeBriefingTasksList');
+      if (tasksEl) {
+        const taskLines = parsed.sec2.split('\n').filter(l => l.includes('- [ ]') || l.includes('•') || l.includes('ภารกิจ'));
+        if (taskLines.length > 0) {
+          tasksEl.innerHTML = taskLines.slice(0, 3).map(l => 
+            `<p class="truncate font-medium text-heritage-text">• ${l.replace(/- \[ \]|•/g, '').trim()}</p>`
+          ).join('');
+        } else {
+          tasksEl.innerHTML = `<p class="text-heritage-muted leading-relaxed line-clamp-3">${parsed.sec2.slice(0, 150)}...</p>`;
+        }
+      }
+
+      // Card 3: 5 Dims
+      const newsEl = document.getElementById('homeBriefingNewsPreview');
+      if (newsEl) {
+        if (parsed.dimensions && parsed.dimensions.length > 0) {
+          newsEl.innerHTML = parsed.dimensions.slice(0, 3).map(d => 
+            `<p class="truncate font-medium text-heritage-text"><span class="text-heritage-primary font-bold">[${d.category.replace('ด้าน', '')}]</span> ${d.title}</p>`
+          ).join('');
+        } else {
+          newsEl.innerHTML = `<p class="text-heritage-muted leading-relaxed line-clamp-3">${parsed.sec3.slice(0, 150)}...</p>`;
+        }
+      }
+
+      // Card 4: Pedagogy
+      const pedEl = document.getElementById('homeBriefingPedagogyPreview');
+      if (pedEl) {
+        if (parsed.pedagogies && parsed.pedagogies.length > 0) {
+          pedEl.innerHTML = parsed.pedagogies.map(p => 
+            `<p class="truncate font-medium text-heritage-text"><span class="text-heritage-celadon font-bold">•</span> ${p.title}</p>`
+          ).join('');
+        } else {
+          pedEl.innerHTML = `<p class="text-heritage-muted leading-relaxed line-clamp-3">${parsed.sec4.slice(0, 150)}...</p>`;
+        }
       }
     }
+
+    window.changeBriefingDate = function(index) {
+      window.currentBriefingIndex = parseInt(index) || 0;
+      populateAllLineViews();
+    };
+
+    window.copyBriefingSection = function(sectionIndex) {
+      if (!window.lineSummariesData || window.lineSummariesData.length === 0) return;
+      const currentDoc = window.lineSummariesData[window.currentBriefingIndex] || window.lineSummariesData[0];
+      const sections = currentDoc.sections || [];
+      const textToCopy = sections[sectionIndex] || currentDoc.rawContent || '';
+      copyRawText(textToCopy);
+      showToast('คัดลอกเนื้อหาเรียบร้อยแล้ว 📋', 'success');
+    };
+
+    // เรนเดอร์การ์ด 5 มิติล่าสุด
+    function renderNewsLiveCards(dims) {
+      const container = document.getElementById('newsLiveCardsGrid');
+      if (!container) return;
+
+      if (!dims || dims.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-[#E3DDD2]">
+            <i data-lucide="radio" class="w-8 h-8 text-heritage-muted mx-auto mb-2 opacity-50"></i>
+            <p class="text-xs text-heritage-muted font-medium">ยังไม่มีข้อมูล 5 มิติจาก LINE (กดดึงข้อมูลล่าสุดด้านบน)</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      const catBadges = {
+        'ด้านเทคโนโลยี/AI': { bg: 'bg-purple-100', text: 'text-purple-800', border: 'border-purple-200', icon: 'cpu' },
+        'ด้านสิ่งแวดล้อม/สภาพภูมิอากาศ': { bg: 'bg-emerald-100', text: 'text-emerald-800', border: 'border-emerald-200', icon: 'leaf' },
+        'ด้านเศรษฐกิจ/การพัฒนา': { bg: 'bg-amber-100', text: 'text-amber-800', border: 'border-amber-200', icon: 'trending-up' },
+        'ด้านสังคม/สิทธิมนุษยชน/วัฒนธรรม': { bg: 'bg-blue-100', text: 'text-blue-800', border: 'border-blue-200', icon: 'users' },
+        'ด้านนวัตกรรมการศึกษา': { bg: 'bg-rose-100', text: 'text-rose-800', border: 'border-rose-200', icon: 'graduation-cap' },
+      };
+
+      container.innerHTML = dims.map((dim, idx) => {
+        const badge = catBadges[dim.category] || { bg: 'bg-slate-100', text: 'text-slate-800', border: 'border-slate-200', icon: 'globe' };
+        return `
+          <article id="live-card-news-${idx}" class="bg-white rounded-2xl border border-[#E3DDD2] shadow-xs p-5 flex flex-col justify-between hover:border-heritage-ochre transition">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${badge.bg} ${badge.text} border ${badge.border} flex items-center gap-1.5">
+                  <i data-lucide="${badge.icon}" class="w-3 h-3"></i>
+                  <span>${dim.category}</span>
+                </span>
+                <span class="text-[10px] font-semibold text-heritage-muted">ประเด็นที่ ${dim.num || (idx+1)}</span>
+              </div>
+
+              <h4 class="text-sm font-bold text-heritage-text leading-snug font-heading mt-1">${dim.title}</h4>
+              
+              <div class="p-3 bg-[#FAF8F5] rounded-xl border border-[#EDE7DD] text-xs text-heritage-text leading-relaxed whitespace-pre-line">
+                ${dim.summary}
+              </div>
+
+              ${dim.think ? `
+                <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 text-xs text-amber-900 leading-relaxed">
+                  <div class="font-bold flex items-center gap-1.5 text-amber-800 mb-1 text-[11px]">
+                    <i data-lucide="help-circle" class="w-3.5 h-3.5"></i> ชวนคิดในห้องเรียน (Inquiry Prompt)
+                  </div>
+                  "${dim.think}"
+                </div>
+              ` : ''}
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-[#FAF8F5] flex items-center justify-between text-xs text-heritage-muted flex-wrap gap-2">
+              ${dim.link ? `
+                <a href="${dim.link}" target="_blank" rel="noopener noreferrer" class="text-heritage-ochre hover:underline font-semibold inline-flex items-center gap-1 text-[11px]">
+                  <i data-lucide="external-link" class="w-3 h-3"></i> แหล่งข้อมูลต้นทาง
+                </a>
+              ` : '<span class="text-[10px] text-heritage-muted">LINE Daily Sync</span>'}
+
+              <div class="flex items-center gap-1">
+                <button onclick="copyRawText(\`${(dim.title + '\n\n' + dim.summary + (dim.think ? '\n\nชวนคิด: ' + dim.think : '')).replace(/\`/g, '\\\\`')}\`)" class="p-1.5 text-heritage-muted hover:text-heritage-text rounded-lg" title="คัดลอก">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="exportCardAsImage('live-card-news-${idx}', 'news_5dim_${idx}')" class="p-1.5 text-amber-700 hover:bg-amber-50 rounded-lg" title="ส่งออกเป็นภาพ">
+                  <i data-lucide="image" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    // เรนเดอร์การ์ดนวัตกรรมการสอนสากลล่าสุด
+    function renderPedagogyLiveCards(peds) {
+      const container = document.getElementById('pedLiveGrid');
+      if (!container) return;
+
+      if (!peds || peds.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-[#E3DDD2]">
+            <i data-lucide="radio" class="w-8 h-8 text-heritage-muted mx-auto mb-2 opacity-50"></i>
+            <p class="text-xs text-heritage-muted font-medium">ยังไม่มีข้อมูลนวัตกรรมการสอนสากลจาก LINE (กดดึงข้อมูลล่าสุดด้านบน)</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = peds.map((ped, idx) => {
+        return `
+          <article id="live-card-ped-${idx}" class="bg-white rounded-2xl border border-[#E3DDD2] shadow-xs p-6 flex flex-col justify-between hover:border-heritage-celadon transition">
+            <div class="space-y-3.5">
+              <div class="flex items-center justify-between">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1.5">
+                  <i data-lucide="globe" class="w-3 h-3"></i>
+                  <span>Global Pedagogy Case Study</span>
+                </span>
+                <span class="text-[10px] font-semibold text-heritage-muted">แนวคิดที่ ${ped.num || (idx+1)}</span>
+              </div>
+
+              <div>
+                <h4 class="text-base font-bold text-heritage-text leading-snug font-heading">${ped.title}</h4>
+                <p class="text-xs text-heritage-primary font-semibold mt-1">🎯 ${ped.researchName}</p>
+              </div>
+
+              ${ped.essence ? `
+                <div class="p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 text-xs text-[#245233] leading-relaxed">
+                  <span class="font-bold">🔍 แก่นสำคัญ:</span> ${ped.essence}
+                </div>
+              ` : ''}
+
+              ${ped.steps ? `
+                <div class="bg-[#FAF8F5] p-4 rounded-xl border border-[#EDE7DD] text-xs text-heritage-text leading-relaxed whitespace-pre-line">
+                  <div class="font-bold text-heritage-celadon mb-1.5 flex items-center gap-1.5">
+                    <i data-lucide="book-open" class="w-3.5 h-3.5"></i> ไอเดียนำไปสอนจริงในห้องเรียน:
+                  </div>
+                  ${ped.steps}
+                </div>
+              ` : ''}
+
+              ${ped.mediaGuide ? `
+                <div class="p-3 bg-amber-50/50 rounded-xl border border-amber-200 text-xs text-amber-900 leading-relaxed">
+                  <div class="font-bold text-amber-800 mb-1 flex items-center gap-1.5">
+                    <i data-lucide="palette" class="w-3.5 h-3.5"></i> แนวทางการนำไปสร้างสื่อการสอน:
+                  </div>
+                  ${ped.mediaGuide}
+                </div>
+              ` : ''}
+            </div>
+
+            <div class="mt-5 pt-3 border-t border-[#FAF8F5] flex items-center justify-between text-xs text-heritage-muted flex-wrap gap-2">
+              ${ped.refUrl ? `
+                <a href="${ped.refUrl}" target="_blank" rel="noopener noreferrer" class="text-heritage-celadon hover:underline font-semibold inline-flex items-center gap-1 text-[11px]">
+                  📖 ${ped.refText} <i data-lucide="external-link" class="w-3 h-3"></i>
+                </a>
+              ` : `<span class="text-[11px] text-heritage-muted">📖 ${ped.refText}</span>`}
+
+              <div class="flex items-center gap-1">
+                <button onclick="copyRawText(\`${(ped.title + '\n' + ped.researchName + '\n\n' + ped.essence + '\n\n' + ped.steps + '\n\n' + ped.mediaGuide).replace(/\`/g, '\\\\`')}\`)" class="p-1.5 text-heritage-muted hover:text-heritage-text rounded-lg" title="คัดลอก">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="exportCardAsImage('live-card-ped-${idx}', 'pedagogy_global_${idx}')" class="p-1.5 text-amber-700 hover:bg-amber-50 rounded-lg" title="ส่งออกเป็นภาพ">
+                  <i data-lucide="image" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    // สลับแท็บย่อยในหน้า ทันโลก 5 มิติ
+    window.switchNewsSubTab = function(tab) {
+      const liveBtn = document.getElementById('newsTabLiveBtn');
+      const archiveBtn = document.getElementById('newsTabArchiveBtn');
+      const liveBox = document.getElementById('newsLiveContainer');
+      const archiveBox = document.getElementById('newsArchiveContainer');
+
+      if (tab === 'live') {
+        liveBtn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-heritage-ochre text-white shadow-2xs';
+        archiveBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-heritage-muted hover:bg-white transition flex items-center gap-2';
+        liveBox.classList.remove('hidden');
+        archiveBox.classList.add('hidden');
+      } else {
+        archiveBtn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-heritage-ochre text-white shadow-2xs';
+        liveBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-heritage-muted hover:bg-white transition flex items-center gap-2';
+        archiveBox.classList.remove('hidden');
+        liveBox.classList.add('hidden');
+      }
+      lucide.createIcons();
+    };
+
+    // สลับแท็บย่อยในหน้า นวัตกรรมการสอนสากล
+    window.switchPedSubTab = function(tab) {
+      const liveBtn = document.getElementById('pedTabLiveBtn');
+      const archiveBtn = document.getElementById('pedTabArchiveBtn');
+      const liveBox = document.getElementById('pedLiveContainer');
+      const archiveBox = document.getElementById('pedArchiveContainer');
+
+      if (tab === 'live') {
+        liveBtn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-heritage-celadon text-white shadow-2xs';
+        archiveBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-heritage-muted hover:bg-white transition flex items-center gap-2';
+        liveBox.classList.remove('hidden');
+        archiveBox.classList.add('hidden');
+      } else {
+        archiveBtn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-heritage-celadon text-white shadow-2xs';
+        liveBtn.className = 'px-4 py-2 rounded-xl text-xs font-semibold text-heritage-muted hover:bg-white transition flex items-center gap-2';
+        archiveBox.classList.remove('hidden');
+        liveBox.classList.add('hidden');
+      }
+      lucide.createIcons();
+    };
+
+    // ดึงข้อมูลสรุป LINE จาก Vercel/Firebase
+    window.fetchLineHistoryAndPopulate = async function(force = false) {
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/get-history`);
+        if (res.ok) {
+          const result = await res.json();
+          if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+            window.lineSummariesData = result.data;
+            localStorage.setItem('krusos_line_saved_summaries', JSON.stringify(result.data));
+            populateAllLineViews();
+            if (force) showToast(`ดึงข้อมูลสรุปล่าสุดสำเร็จ (${result.data.length} วัน) 📡`, 'success');
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('Fetch LINE history error:', e);
+      }
+
+      if (window.lineSummariesData.length > 0) {
+        populateAllLineViews();
+      }
+    };
 
     window.loadLineChatHistory = async function(forceFetch = false) {
       const container = document.getElementById('chatMessageHistory');
@@ -2525,25 +3359,34 @@
       }
     };
 
-    window.deleteTaskItem = async function(id) {
-      taskList = taskList.filter(t => t.id !== id);
-      localStorage.setItem('krusos_tasks_data', JSON.stringify(taskList));
-      renderTasks();
-      renderHomeOverview();
-      updateTaskCountBadges();
-      showToast('ลบรายการงานแล้ว');
+    window.deleteTaskItem = function(id) {
+      showCustomConfirm({
+        title: 'ลบภารกิจนี้?',
+        message: 'ต้องการลบภารกิจนี้ออกจากระบบและคลาวด์ใช่หรือไม่?',
+        icon: 'trash-2',
+        iconColor: 'text-rose-600',
+        iconBg: 'bg-rose-50',
+        confirmText: 'ลบภารกิจ',
+        confirmColor: 'bg-rose-600 hover:bg-rose-700',
+        onConfirm: async () => {
+          taskList = taskList.filter(t => t.id !== id);
+          localStorage.setItem('krusos_tasks_data', JSON.stringify(taskList));
+          renderTasks();
+          renderHomeOverview();
+          updateTaskCountBadges();
+          showToast('ลบรายการงานเรียบร้อย', 'success');
 
-      if (backendUrl) {
-        try {
-          await fetch(`${backendUrl}/api/tasks`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'delete', id })
-          });
-        } catch (e) {
-          console.error('Delete task error:', e);
+          try {
+            await fetch(`${BACKEND_URL}/api/tasks`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'delete', id })
+            });
+          } catch (e) {
+            console.error('Delete task error:', e);
+          }
         }
-      }
+      });
     };
 
     window.syncTasksFromCloud = async function(silent = false) {
@@ -2590,16 +3433,24 @@
           <div class="flex items-center gap-3">
             <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTaskStatus('${t.id}')" class="w-4 h-4 rounded text-heritage-terracotta focus:ring-heritage-terracotta cursor-pointer accent-[#B67E61]" />
             <div>
-              <p class="text-xs font-bold ${t.completed ? 'line-through text-heritage-muted opacity-60' : 'text-heritage-text'}">${t.title}</p>
+              <div class="flex items-center gap-2">
+                <p class="text-xs font-bold ${t.completed ? 'line-through text-heritage-muted opacity-60' : 'text-heritage-text'}">${t.title}</p>
+                ${isItemStarred(t.id) ? '<span class="text-[10px] text-amber-500 font-bold flex items-center">⭐</span>' : ''}
+              </div>
               <div class="flex items-center gap-2 mt-1">
                 <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#FAF8F5] text-heritage-muted border border-[#E3DDD2] font-medium">${t.category}</span>
                 <span class="text-[10px] text-heritage-muted">กำหนด: ${t.dueDate}</span>
               </div>
             </div>
           </div>
-          <button onclick="deleteTaskItem('${t.id}')" class="text-heritage-muted hover:text-red-600 p-1">
+          <div class="flex items-center gap-1">
+            <button onclick="toggleStar('${t.id}', '${t.title.replace(/'/g, "\\'")}')" class="p-1 text-heritage-muted hover:text-amber-500" title="ติดดาวภารกิจนี้">
+              <i data-lucide="star" class="w-4 h-4 ${isItemStarred(t.id) ? 'fill-amber-400 text-amber-500' : ''}"></i>
+            </button>
+          <button onclick="deleteTaskItem('${t.id}')" class="text-heritage-muted hover:text-red-600 p-1" title="ลบภารกิจ">
             <i data-lucide="trash-2" class="w-4 h-4"></i>
           </button>
+          </div>
         </div>
       `).join('');
 
@@ -2639,33 +3490,112 @@
     // ==========================================
     // 12. รายการโปรด & ความคิดเห็น MODAL
     // ==========================================
-    window.toggleBookmark = function(id) {
-      if (savedBookmarks.includes(id)) {
-        savedBookmarks = savedBookmarks.filter(item => item !== id);
-        showToast('ลบออกจากรายการโปรดแล้ว');
+    // ==========================================
+    // 12. STARRED SYSTEM (ระบบติดดาว ⭐) & SYNC
+    // ==========================================
+    let savedStars = JSON.parse(localStorage.getItem('krusos_starred_items') || localStorage.getItem('krusos_saved_bookmarks') || '[]');
+    let isFilterStarOnly = false;
+
+    window.toggleStar = function(id, title = '') {
+      if (savedStars.includes(id)) {
+        savedStars = savedStars.filter(item => item !== id);
+        showToast('ยกเลิกการติดดาวแล้ว ⭐', 'info');
       } else {
-        savedBookmarks.push(id);
-        showToast('บันทึกลงในรายการโปรดเรียบร้อย');
+        savedStars.push(id);
+        showToast(`ติดดาว "${title ? title.slice(0, 25) + '...' : 'รายการ'}" เรียบร้อย ⭐`, 'success');
       }
-      localStorage.setItem('krusos_saved_bookmarks', JSON.stringify(savedBookmarks));
-      updateSavedBadge();
+      localStorage.setItem('krusos_starred_items', JSON.stringify(savedStars));
+      localStorage.setItem('krusos_saved_bookmarks', JSON.stringify(savedStars));
+      savedBookmarks = savedStars;
+      updateStarBadge();
+      populateAllLineViews();
       renderNews();
       renderPedagogy();
+      renderTasks();
     };
 
-    function updateSavedBadge() {
-      const count = savedBookmarks.length;
+    window.isItemStarred = function(id) {
+      return savedStars.includes(id);
+    };
+
+    function updateStarBadge() {
+      const count = savedStars.length;
       const bDesktop = document.getElementById('savedCountBadge');
       const bMobile = document.getElementById('savedCountBadgeMobile');
       if (bDesktop) bDesktop.innerText = count;
       if (bMobile) bMobile.innerText = count;
     }
 
-    window.toggleSavedFilter = function() {
-      isFilterSavedOnly = !isFilterSavedOnly;
-      document.getElementById('savedNoticeTag').classList.toggle('hidden', !isFilterSavedOnly);
-      switchMainTab('news');
+    window.toggleStarFilter = function() {
+      isFilterStarOnly = !isFilterStarOnly;
+      isFilterSavedOnly = isFilterStarOnly;
+      
+      const tags = ['savedNoticeTag', 'newsLiveStarNotice', 'pedLiveStarNotice'];
+      tags.forEach(tId => {
+        const el = document.getElementById(tId);
+        if (el) el.classList.toggle('hidden', !isFilterStarOnly);
+      });
+
+      populateAllLineViews();
       renderNews();
+      renderPedagogy();
+
+      if (isFilterStarOnly) {
+        showToast(`กำลังแสดงเฉพาะ ${savedStars.length} รายการที่ติดดาว ⭐`, 'info');
+      } else {
+        showToast('แสดงรายการทั้งหมดปกติ', 'info');
+      }
+    };
+
+    // เข้ากันได้กับโค้ดเดิม
+    window.toggleBookmark = window.toggleStar;
+    window.toggleSavedFilter = window.toggleStarFilter;
+
+    // บันทึกสาระจาก LINE เข้าสู่คลังส่วนตัวเพื่อแก้ไขเองได้
+    window.saveLineNewsToArchive = function(dimIndex) {
+      if (!window.lineSummariesData || window.lineSummariesData.length === 0) return;
+      const currentDoc = window.lineSummariesData[window.currentBriefingIndex] || window.lineSummariesData[0];
+      const parsed = parseSummarySections(currentDoc);
+      if (!parsed || !parsed.dimensions || !parsed.dimensions[dimIndex]) return;
+
+      const dim = parsed.dimensions[dimIndex];
+      const newId = 'news_manual_' + Date.now();
+      newsData.unshift({
+        id: newId,
+        category: dim.category,
+        title: dim.title,
+        summary: dim.summary + (dim.think ? '\n\n💡 ชวนคิดในห้องเรียน: ' + dim.think : ''),
+        linkText: 'แหล่งข้อมูลต้นทาง',
+        linkUrl: dim.link || 'https://krusos-bot-news-02.vercel.app'
+      });
+      localStorage.setItem('krusos_news_data', JSON.stringify(newsData));
+      renderNews();
+      renderHomeOverview();
+      showToast(`บันทึก "${dim.title.slice(0, 20)}..." เข้าคลังส่วนตัวเรียบร้อย 📥`, 'success');
+      switchNewsSubTab('archive');
+    };
+
+    window.saveLinePedagogyToArchive = function(pedIndex) {
+      if (!window.lineSummariesData || window.lineSummariesData.length === 0) return;
+      const currentDoc = window.lineSummariesData[window.currentBriefingIndex] || window.lineSummariesData[0];
+      const parsed = parseSummarySections(currentDoc);
+      if (!parsed || !parsed.pedagogies || !parsed.pedagogies[pedIndex]) return;
+
+      const ped = parsed.pedagogies[pedIndex];
+      const newId = 'ped_manual_' + Date.now();
+      pedagogyData.unshift({
+        id: newId,
+        title: ped.title,
+        essence: ped.essence,
+        fourSteps: ped.steps,
+        mediaGuide: ped.mediaGuide,
+        refText: ped.refText,
+        refUrl: ped.refUrl || 'https://scholar.google.com'
+      });
+      localStorage.setItem('krusos_pedagogy_data', JSON.stringify(pedagogyData));
+      renderPedagogy();
+      showToast(`บันทึก "${ped.title.slice(0, 20)}..." เข้าคลังส่วนตัวเรียบร้อย 📥`, 'success');
+      switchPedSubTab('archive');
     };
 
     window.openCommentModal = function(id) {
@@ -2716,16 +3646,401 @@
       showToast('บันทึกไอเดียเรียบร้อย');
     };
 
-    function showToast(msg) {
+    function showToast(msg, type = 'success') {
       const toast = document.getElementById('toast');
-      document.getElementById('toastMessage').innerText = msg;
+      const iconWrap = document.getElementById('toastIconWrap');
+      const msgEl = document.getElementById('toastMessage');
+      if (!toast || !msgEl) return;
+
+      msgEl.innerText = msg;
+      if (type === 'error') {
+        iconWrap.className = 'w-6 h-6 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0';
+        iconWrap.innerHTML = '<i data-lucide="x-circle" class="w-4 h-4"></i>';
+      } else if (type === 'warning') {
+        iconWrap.className = 'w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0';
+        iconWrap.innerHTML = '<i data-lucide="alert-triangle" class="w-4 h-4"></i>';
+      } else if (type === 'info') {
+        iconWrap.className = 'w-6 h-6 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0';
+        iconWrap.innerHTML = '<i data-lucide="info" class="w-4 h-4"></i>';
+      } else {
+        iconWrap.className = 'w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0';
+        iconWrap.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i>';
+      }
+      lucide.createIcons();
+
       toast.classList.remove('opacity-0', 'translate-y-16');
-      setTimeout(() => toast.classList.add('opacity-0', 'translate-y-16'), 2200);
+      clearTimeout(window._toastTimeout);
+      window._toastTimeout = setTimeout(() => toast.classList.add('opacity-0', 'translate-y-16'), 2800);
     }
 
     document.getElementById('searchInput').addEventListener('input', () => {
       renderNews();
     });
+
+    
+    // ==========================================
+    // 13. กระดานเอกสารเวิร์ด (WORD STUDIO) LOGIC
+    // ==========================================
+    window.formatDoc = function(cmd, value = null) {
+      if (value) {
+        document.execCommand(cmd, false, value);
+      } else {
+        document.execCommand(cmd, false, null);
+      }
+      onWordEditorInput();
+    };
+
+    window.insertWordTable = function() {
+      const tableHTML = `
+        <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse; border-color: #CBD5E0; margin: 12px 0;">
+          <tr style="background-color: #F7FAFC;">
+            <th style="width: 25%;">ประเด็น / สาระ</th>
+            <th style="width: 45%;">รายละเอียดกิจกรรมการเรียนรู้</th>
+            <th style="width: 30%;">การวัดและประเมินผล</th>
+          </tr>
+          <tr>
+            <td>ขั้นนำ / ตั้งคำถาม</td>
+            <td>ครูกระตุ้นความสนใจด้วยภาพถ่ายหรือประเด็นข่าว</td>
+            <td>การมีส่วนร่วมในชั้นเรียน</td>
+          </tr>
+          <tr>
+            <td>ขั้นวิเคราะห์ / ปฏิบัติ</td>
+            <td>นักเรียนตรวจสอบหลักฐานและระดมความคิดเห็น</td>
+            <td>ใบงาน / ชิ้นงานกลุ่ม</td>
+          </tr>
+        </table>
+        <p></p>
+      `;
+      document.execCommand('insertHTML', false, tableHTML);
+      onWordEditorInput();
+      showToast('แทรกตารางเรียบร้อย 📊', 'success');
+    };
+
+    let wordSaveTimer = null;
+    window.onWordEditorInput = function() {
+      const statusEl = document.getElementById('wordSaveStatus');
+      if (statusEl) {
+        statusEl.innerHTML = '<i data-lucide="loader" class="w-3.5 h-3.5 animate-spin text-amber-500"></i> กำลังบันทึก...';
+        lucide.createIcons();
+      }
+
+      clearTimeout(wordSaveTimer);
+      wordSaveTimer = setTimeout(() => {
+        const canvas = document.getElementById('wordPaperCanvas');
+        if (canvas) {
+          localStorage.setItem('krusos_word_content', canvas.innerHTML);
+          if (statusEl) {
+            statusEl.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i> บันทึกอัตโนมัติ';
+            lucide.createIcons();
+          }
+        }
+      }, 1000);
+    };
+
+    window.clearWordEditor = function() {
+      showCustomConfirm({
+        title: 'ล้างหน้ากระดาษ?',
+        message: 'ต้องการล้างข้อความในกระดานเอกสารเวิร์ดเพื่อเริ่มหน้าใหม่ใช่หรือไม่?',
+        icon: 'trash-2',
+        iconColor: 'text-rose-600',
+        iconBg: 'bg-rose-50',
+        confirmText: 'ล้างหน้ากระดาษ',
+        confirmColor: 'bg-rose-600 hover:bg-rose-700',
+        onConfirm: () => {
+          const canvas = document.getElementById('wordPaperCanvas');
+          if (canvas) {
+            canvas.innerHTML = `
+              <div style="text-align: center; margin-bottom: 24px;">
+                <h1 style="font-size: 20pt; font-weight: bold; color: #2D3748; margin-bottom: 6px;">เอกสารการจัดการเรียนรู้</h1>
+                <p style="font-size: 11pt; color: #718096; margin: 0;">ครูศรัญญู (KruSos) • โรงเรียนวัดบางปูน</p>
+              </div>
+              <hr style="border: 0; border-top: 1px solid #CBD5E0; margin-bottom: 20px;"/>
+              <p>พิมพ์หรือวางเนื้อหาที่ต้องการได้เลยครับ...</p>
+            `;
+            localStorage.setItem('krusos_word_content', canvas.innerHTML);
+            showToast('ล้างหน้ากระดาษเรียบร้อย 📄', 'success');
+          }
+        }
+      });
+    };
+
+    window.downloadWordFromEditor = function() {
+      const canvas = document.getElementById('wordPaperCanvas');
+      if (!canvas) return;
+      const body = canvas.innerHTML;
+      downloadWordFile('เอกสารการสอน_KruSos', body);
+      showToast('ดาวน์โหลดเอกสาร Word สำเร็จ 📥', 'success');
+    };
+
+    window.printWordEditorPDF = function() {
+      const canvas = document.getElementById('wordPaperCanvas');
+      if (!canvas) return;
+      const printArea = document.getElementById('printableArea');
+      printArea.innerHTML = `
+        <div style="font-family: 'Sarabun', sans-serif; line-height: 1.6; padding: 20px;">
+          ${canvas.innerHTML}
+        </div>
+      `;
+      window.print();
+    };
+
+    // ฟังก์ชันแทรกเนื้อหาอัตโนมัติลงในกระดานเวิร์ด
+    window.insertContentToWord = function(type) {
+      const canvas = document.getElementById('wordPaperCanvas');
+      if (!canvas) return;
+
+      let htmlToInsert = '';
+      const currentDoc = (window.lineSummariesData && window.lineSummariesData[window.currentBriefingIndex]) || {};
+      const parsed = parseSummarySections(currentDoc);
+
+      if (type === 'line_briefing' && parsed) {
+        htmlToInsert = `
+          <div style="border: 1px solid #CBD5E0; border-radius: 8px; padding: 16px; margin: 16px 0; background-color: #F7FAFC;">
+            <h2 style="font-size: 15pt; color: #2B6CB0; margin-bottom: 8px;">☀️ สรุปข่าวเช้าจาก LINE (${parsed.date})</h2>
+            <p><strong>คำทักทาย:</strong> ${parsed.sec1}</p>
+            <p><strong>ตารางคิวงาน:</strong> ${parsed.sec2}</p>
+          </div>
+          <p></p>
+        `;
+      } else if (type === 'news_5dim' && parsed && parsed.dimensions) {
+        htmlToInsert = `<h2 style="font-size: 15pt; color: #D69E2E; margin-top: 16px;">🌍 สาระร่วมสมัย 5 มิติ</h2>`;
+        parsed.dimensions.forEach((d, i) => {
+          htmlToInsert += `
+            <div style="border-left: 3px solid #D69E2E; padding-left: 12px; margin: 12px 0;">
+              <h3 style="font-size: 12pt; margin: 0 0 4px 0; color: #2D3748;">${i+1}. [${d.category}] ${d.title}</h3>
+              <p style="margin: 0 0 6px 0;">${d.summary}</p>
+              ${d.think ? `<p style="color: #B7791F; font-size: 10pt; margin: 0;"><strong>💡 ชวนคิดในห้องเรียน:</strong> "${d.think}"</p>` : ''}
+            </div>
+          `;
+        });
+        htmlToInsert += '<p></p>';
+      } else if (type === 'pedagogy' && parsed && parsed.pedagogies) {
+        htmlToInsert = `<h2 style="font-size: 15pt; color: #319795; margin-top: 16px;">🌐 กรณีศึกษานวัตกรรมการสอนสากล</h2>`;
+        parsed.pedagogies.forEach((p, i) => {
+          htmlToInsert += `
+            <div style="border: 1px solid #CBD5E0; border-radius: 8px; padding: 14px; margin: 12px 0;">
+              <h3 style="font-size: 13pt; margin: 0 0 4px 0; color: #2D3748;">${i+1}. ${p.title}</h3>
+              <p style="color: #2B6CB0; font-size: 10pt; margin: 0 0 6px 0;"><strong>🎯 งานวิจัย:</strong> ${p.researchName}</p>
+              <p style="margin: 0 0 6px 0;"><strong>🔍 แก่นสำคัญ:</strong> ${p.essence}</p>
+              <div style="background-color: #EDF2F7; padding: 10px; border-radius: 6px; margin: 8px 0; font-size: 10pt; white-space: pre-line;">${p.steps}</div>
+              <p style="font-size: 10pt; color: #718096; margin: 0;"><strong>🛠️ สื่อการสอน:</strong> ${p.mediaGuide}</p>
+            </div>
+          `;
+        });
+        htmlToInsert += '<p></p>';
+      } else if (type === 'starred') {
+        const stNews = newsData.filter(n => isItemStarred(n.id));
+        const stPed = pedagogyData.filter(p => isItemStarred(p.id));
+        htmlToInsert = `<h2 style="font-size: 15pt; color: #DD6B20; margin-top: 16px;">⭐ รายการติดดาวคัดสรรพิเศษ (${stNews.length + stPed.length} รายการ)</h2>`;
+        stNews.forEach(n => {
+          htmlToInsert += `<div style="margin: 8px 0; padding: 8px; background: #FFFAF0; border-left: 3px solid #DD6B20;"><strong>⭐ [${n.category}] ${n.title}</strong><p style="margin: 4px 0;">${n.summary}</p></div>`;
+        });
+        stPed.forEach(p => {
+          htmlToInsert += `<div style="margin: 8px 0; padding: 8px; background: #F0FFF4; border-left: 3px solid #38A169;"><strong>⭐ ${p.title}</strong><p style="margin: 4px 0;">${p.essence}</p></div>`;
+        });
+        htmlToInsert += '<p></p>';
+      } else if (type === 'tasks') {
+        htmlToInsert = `
+          <h2 style="font-size: 15pt; color: #C05621; margin-top: 16px;">📋 ตารางคิวงานและภารกิจครู</h2>
+          <table border="1" cellpadding="6" cellspacing="0" style="width: 100%; border-collapse: collapse; border-color: #CBD5E0; margin: 10px 0;">
+            <tr style="background-color: #F7FAFC;"><th>สถานะ</th><th>ภารกิจ</th><th>หมวดหมู่</th><th>กำหนดส่ง</th></tr>
+            ${taskList.map(t => `<tr><td style="text-align:center;">${t.completed ? '✅ เสร็จ' : '⏳ รอ'}</td><td>${t.title}</td><td>${t.category}</td><td>${t.dueDate}</td></tr>`).join('')}
+          </table>
+          <p></p>
+        `;
+      }
+
+      if (htmlToInsert) {
+        canvas.innerHTML += htmlToInsert;
+        onWordEditorInput();
+        showToast('แทรกเนื้อหาลงในกระดานเวิร์ดเรียบร้อย 📝', 'success');
+      }
+    };
+
+    window.sendNewsToWord = function(idx) {
+      const currentDoc = (window.lineSummariesData && window.lineSummariesData[window.currentBriefingIndex]) || {};
+      const parsed = parseSummarySections(currentDoc);
+      if (!parsed || !parsed.dimensions || !parsed.dimensions[idx]) return;
+
+      const dim = parsed.dimensions[idx];
+      const html = `
+        <div style="border: 1px solid #CBD5E0; border-radius: 8px; padding: 14px; margin: 14px 0; border-left: 4px solid #D69E2E;">
+          <h3 style="font-size: 13pt; margin: 0 0 6px 0; color: #2D3748;">[${dim.category}] ${dim.title}</h3>
+          <p style="margin: 0 0 8px 0;">${dim.summary}</p>
+          ${dim.think ? `<p style="color: #B7791F; font-size: 10pt; margin: 0 0 4px 0;"><strong>💡 ชวนคิดในห้องเรียน:</strong> "${dim.think}"</p>` : ''}
+          ${dim.link ? `<p style="font-size: 9pt; color: #718096; margin: 0;"><strong>แหล่งอ้างอิง:</strong> ${dim.link}</p>` : ''}
+        </div>
+        <p></p>
+      `;
+
+      const canvas = document.getElementById('wordPaperCanvas');
+      if (canvas) {
+        canvas.innerHTML += html;
+        onWordEditorInput();
+      }
+      switchMainTab('word');
+      showToast('ส่งเนื้อหาไปที่กระดานเวิร์ดเรียบร้อย 📝', 'success');
+    };
+
+    window.sendPedagogyToWord = function(idx) {
+      const currentDoc = (window.lineSummariesData && window.lineSummariesData[window.currentBriefingIndex]) || {};
+      const parsed = parseSummarySections(currentDoc);
+      if (!parsed || !parsed.pedagogies || !parsed.pedagogies[idx]) return;
+
+      const ped = parsed.pedagogies[idx];
+      const html = `
+        <div style="border: 1px solid #CBD5E0; border-radius: 8px; padding: 14px; margin: 14px 0; border-left: 4px solid #319795;">
+          <h3 style="font-size: 14pt; margin: 0 0 4px 0; color: #2D3748;">${ped.title}</h3>
+          <p style="color: #2B6CB0; font-size: 10pt; margin: 0 0 6px 0;"><strong>🎯 งานวิจัย:</strong> ${ped.researchName}</p>
+          <p style="margin: 0 0 8px 0;"><strong>🔍 แก่นสำคัญ:</strong> ${ped.essence}</p>
+          <div style="background-color: #EDF2F7; padding: 10px; border-radius: 6px; margin: 8px 0; font-size: 10pt; white-space: pre-line;"><strong>🏫 การสอนในห้องเรียน:</strong><br/>${ped.steps}</div>
+          <p style="font-size: 10pt; color: #4A5568; margin: 0 0 4px 0;"><strong>🛠️ สื่อการสอน:</strong> ${ped.mediaGuide}</p>
+          ${ped.refUrl ? `<p style="font-size: 9pt; color: #718096; margin: 0;"><strong>แหล่งอ้างอิง:</strong> ${ped.refText} (${ped.refUrl})</p>` : ''}
+        </div>
+        <p></p>
+      `;
+
+      const canvas = document.getElementById('wordPaperCanvas');
+      if (canvas) {
+        canvas.innerHTML += html;
+        onWordEditorInput();
+      }
+      switchMainTab('word');
+      showToast('ส่งกรณีศึกษาไปที่กระดานเวิร์ดเรียบร้อย 📝', 'success');
+    };
+
+    // ==========================================
+    // 14. GPT STUDIO AI WORKSPACE LOGIC
+    // ==========================================
+    window.openExternalChatGPT = function() {
+      window.open('https://chatgpt.com', '_blank', 'width=1100,height=750,menubar=no,toolbar=no,location=no');
+    };
+
+    let gptChatHistory = JSON.parse(localStorage.getItem('krusos_gpt_chat_history') || '[]');
+
+    window.sendGptPreset = function(promptText) {
+      document.getElementById('gptUserQuestion').value = promptText;
+      sendGptMessage();
+    };
+
+    window.sendGptMessage = async function() {
+      const input = document.getElementById('gptUserQuestion');
+      const q = input.value.trim();
+      if (!q) return;
+
+      input.value = '';
+      const historyContainer = document.getElementById('gptMessageHistory');
+
+      // Add user message
+      const userBubble = `
+        <div class="flex justify-end mb-4">
+          <div class="max-w-xl bg-emerald-600 text-white rounded-2xl p-4 text-xs shadow-xs">
+            <p class="whitespace-pre-wrap">${q}</p>
+          </div>
+        </div>
+      `;
+      historyContainer.innerHTML += userBubble;
+
+      // Add AI loading bubble
+      const loadId = 'gpt_load_' + Date.now();
+      const loadBubble = `
+        <div id="${loadId}" class="flex justify-start mb-4">
+          <div class="max-w-2xl bg-white border border-[#E3DDD2] rounded-2xl p-4 text-xs shadow-xs space-y-2">
+            <div class="flex items-center gap-2 text-emerald-600 font-bold">
+              <i data-lucide="sparkles" class="w-4 h-4 animate-spin"></i> GPT กำลังประมวลผล...
+            </div>
+            <p class="text-heritage-muted">กำลังค้นคว้าแนวคิดและเรียบเรียงข้อมูลเพื่อการศึกษา...</p>
+          </div>
+        </div>
+      `;
+      historyContainer.innerHTML += loadBubble;
+      historyContainer.scrollTop = historyContainer.scrollHeight;
+      lucide.createIcons();
+
+      try {
+        const apiKey = atob(ENCODED_GEMINI_KEY);
+        const systemPrompt = "คุณคือ GPT เพื่อการศึกษาสำหรับ KruSos (ครูสังคมศึกษา วิจัย ป.โท) เชี่ยวชาญการออกแบบแผนการสอนเชิงรุก (Active Learning), นวัตกรรมการสอนสากล, และข้อตกลง ว.PA ให้ตอบอย่างละเอียด เป็นขั้นตอน มีโครงสร้างชัดเจน สุภาพ และพร้อมนำไปใช้ในห้องเรียนจริง";
+        
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
+              { role: 'user', parts: [{ text: systemPrompt + "\n\nคำถาม: " + q }] }
+            ]
+          })
+        });
+
+        const data = await response.json();
+        const loadEl = document.getElementById(loadId);
+        if (loadEl) loadEl.remove();
+
+        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+          const aiText = data.candidates[0].content.parts[0].text;
+          const msgIdx = Date.now();
+          window['gpt_msg_' + msgIdx] = aiText;
+
+          const aiBubble = `
+            <div class="flex justify-start mb-5">
+              <div class="max-w-2xl bg-white border border-[#E3DDD2] rounded-2xl p-5 text-xs shadow-xs space-y-3">
+                <div class="flex items-center justify-between border-b border-[#FAF8F5] pb-2">
+                  <div class="flex items-center gap-1.5 text-emerald-600 font-bold">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i> GPT Studio Response
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button onclick="copyGptMsg(${msgIdx})" class="text-[11px] text-heritage-muted hover:text-heritage-text flex items-center gap-1">
+                      <i data-lucide="copy" class="w-3 h-3"></i> คัดลอก
+                    </button>
+                    <button onclick="sendGptMsgToWord(${msgIdx})" class="text-[11px] text-blue-600 font-semibold hover:text-blue-800 flex items-center gap-1 bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded-md transition">
+                      <i data-lucide="file-plus" class="w-3 h-3"></i> 📝 ส่งเข้าหน้าเวิร์ด
+                    </button>
+                  </div>
+                </div>
+                <div class="text-heritage-text leading-relaxed whitespace-pre-wrap">${aiText}</div>
+              </div>
+            </div>
+          `;
+          historyContainer.innerHTML += aiBubble;
+        } else {
+          historyContainer.innerHTML += `<div class="p-3 bg-red-50 text-red-600 rounded-xl text-xs">ไม่สามารถประมวลผลคำตอบได้ กรุณาลองใหม่อีกครั้ง</div>`;
+        }
+      } catch (err) {
+        console.error(err);
+        const loadEl = document.getElementById(loadId);
+        if (loadEl) loadEl.remove();
+        historyContainer.innerHTML += `<div class="p-3 bg-red-50 text-red-600 rounded-xl text-xs">เกิดข้อผิดพลาดในการเชื่อมต่อ AI: ${err.message}</div>`;
+      }
+
+      historyContainer.scrollTop = historyContainer.scrollHeight;
+      lucide.createIcons();
+    };
+
+    window.copyGptMsg = function(msgIdx) {
+      const text = window['gpt_msg_' + msgIdx] || '';
+      copyRawText(text);
+      showToast('คัดลอกคำตอบ GPT เรียบร้อย 📋', 'success');
+    };
+
+    window.sendGptMsgToWord = function(msgIdx) {
+      const text = window['gpt_msg_' + msgIdx] || '';
+      if (!text) return;
+
+      const html = `
+        <div style="border: 1px solid #CBD5E0; border-radius: 8px; padding: 14px; margin: 14px 0; background-color: #F7FAFC; border-left: 4px solid #38A169;">
+          <h3 style="font-size: 13pt; margin: 0 0 6px 0; color: #234E52;">✨ สาระจาก GPT Studio</h3>
+          <div style="font-size: 10.5pt; line-height: 1.6; white-space: pre-line;">${text}</div>
+        </div>
+        <p></p>
+      `;
+
+      const canvas = document.getElementById('wordPaperCanvas');
+      if (canvas) {
+        canvas.innerHTML += html;
+        onWordEditorInput();
+      }
+      switchMainTab('word');
+      showToast('ส่งเนื้อหาเข้ากระดานเวิร์ดเรียบร้อย 📝', 'success');
+    };
 
     window.addEventListener('DOMContentLoaded', init);
   </script>
