@@ -542,19 +542,65 @@
     <!-- VIEW: 2. ภารกิจครู (TASKS & SCHEDULE) -->
     <!-- ============================================== -->
     <section id="view-tasks" class="main-view hidden">
-      <div class="mb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
           <h2 class="text-lg font-bold text-heritage-text flex items-center gap-2 font-heading">
             <i data-lucide="calendar-check" class="w-5 h-5 text-heritage-terracotta"></i> ภารกิจครูและตารางคิวงาน (My Tasks)
           </h2>
           <p class="text-xs text-heritage-muted mt-0.5">จัดการแผนการสอน งานเวรโรงเรียน โครงงานคุณธรรม และภารกิจวิจัย ป.โท</p>
         </div>
-        <button onclick="exportTasksToWord()" class="px-3.5 py-1.5 bg-white border border-[#E3DDD2] text-heritage-text hover:bg-[#FAF8F5] rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-2xs">
-          <i data-lucide="download" class="w-3.5 h-3.5 text-heritage-terracotta"></i> ส่งออกตารางงานเป็น Word
-        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="exportTasksToWord()" class="px-3.5 py-1.5 bg-white border border-[#E3DDD2] text-heritage-text hover:bg-[#FAF8F5] rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-2xs">
+            <i data-lucide="download" class="w-3.5 h-3.5 text-heritage-terracotta"></i> ส่งออกตารางงานเป็น Word
+          </button>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Tasks Sub-tabs (คิวงานจาก LINE vs ตารางภารกิจของฉัน) -->
+      <div class="mb-5 flex items-center justify-between border-b border-[#E3DDD2] pb-2 flex-wrap gap-2">
+        <div class="flex items-center gap-1.5 p-1 bg-white rounded-xl border border-[#E3DDD2] shadow-2xs">
+          <button id="taskSubTabBtn-line" onclick="switchTasksSubTab('line')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition bg-heritage-terracotta text-white shadow-2xs">
+            <i data-lucide="bell" class="w-3.5 h-3.5"></i> 📡 คิวงานจาก LINE (ดึงอัตโนมัติ)
+            <span id="lineTasksCountBadge" class="text-[9px] bg-white/25 px-1.5 py-0.2 rounded-full font-bold">0</span>
+          </button>
+          <button id="taskSubTabBtn-custom" onclick="switchTasksSubTab('custom')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition text-heritage-muted hover:text-heritage-text">
+            <i data-lucide="check-square" class="w-3.5 h-3.5"></i> ✍️ ตารางภารกิจของฉัน (Check-list)
+            <span id="customTasksCountBadge" class="text-[9px] bg-heritage-terracotta/10 text-heritage-terracotta px-1.5 py-0.2 rounded-full font-bold">3</span>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs">
+          <button onclick="syncTasksFromCloud()" class="px-3 py-1.5 bg-white border border-[#E3DDD2] hover:bg-[#FAF8F5] text-heritage-muted rounded-xl text-xs font-medium flex items-center gap-1.5 shadow-2xs transition">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> ซิงก์ข้อมูล Firebase
+          </button>
+        </div>
+      </div>
+
+      <!-- Sub-Tab 1: 📡 คิวงานจาก LINE (ดึงอัตโนมัติ) -->
+      <div id="tasksSubView-line" class="space-y-4">
+        <div class="p-3.5 bg-gradient-to-r from-amber-500/10 via-amber-50/50 to-transparent border border-amber-200 rounded-2xl flex items-center justify-between flex-wrap gap-2 text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold">
+              <i data-lucide="bell-ring" class="w-4 h-4"></i>
+            </span>
+            <div>
+              <p class="font-bold text-heritage-text">รายการคิวงานและภารกิจที่สรุปแจ้งเตือนใน LINE ประจำวัน</p>
+              <p class="text-[11px] text-heritage-muted">ข้อมูลถูกดึงมาจากระบบสรุปยามเช้าของ LINE และคำสั่งเตือนทางแชต คุณครูสามารถกดบันทึกเข้าตารางส่วนตัวได้ทันที</p>
+            </div>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full font-bold border border-emerald-300">
+            📡 ซิงก์กับ LINE & Firebase
+          </span>
+        </div>
+
+        <!-- LINE Tasks Cards Container -->
+        <div id="lineTasksListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+          <!-- Will be rendered by renderLineTasksCards() -->
+        </div>
+      </div>
+
+      <!-- Sub-Tab 2: ✍️ ตารางภารกิจของฉัน (Check-list & จัดการงาน) -->
+      <div id="tasksSubView-custom" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- New Task Form -->
         <div class="bg-white rounded-2xl border border-[#E3DDD2] p-5 h-fit shadow-xs">
           <h3 class="text-sm font-bold text-heritage-text mb-3 flex items-center gap-1.5 font-heading">
@@ -719,12 +765,12 @@
     <!-- VIEW: 5. CORTEX AI สนทนา (CHAT & ASSISTANT) -->
     <!-- ============================================== -->
     <section id="view-chat" class="main-view hidden">
-      <div class="mb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
           <h2 class="text-lg font-bold text-heritage-text flex items-center gap-2 font-heading">
-            <i data-lucide="bot" class="w-5 h-5 text-heritage-purple"></i> สนทนาถาม-ตอบ Cortex AI & LINE
+            <i data-lucide="bot" class="w-5 h-5 text-heritage-purple"></i> สนทนาถาม-ตอบ Cortex AI & LINE Hub
           </h2>
-          <p class="text-xs text-heritage-muted mt-0.5">ปรึกษาไอเดียจัดการเรียนรู้ 4 คิด, การจัดทำข้อตกลง ว.PA, หรือการวิจัย ป.โท</p>
+          <p class="text-xs text-heritage-muted mt-0.5">ปรึกษาไอเดียจัดการเรียนรู้สากล, การจัดทำข้อตกลง ว.PA, หรือการวิจัย ป.โท</p>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
           <div class="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-emerald-200 shadow-2xs" title="ระบบฝัง API Key ให้อัตโนมัติในตัว ไม่ต้องตั้งค่าหรือแก้ไขใดๆ">
@@ -735,49 +781,87 @@
             <span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
             <span>Vercel Cloud ฝังถาวร 100%</span>
           </div>
+        </div>
+      </div>
+
+      <!-- Segmented Control: แยกกระดาน ถามส่วนตัว vs ดึงจากแชท LINE -->
+      <div class="mb-4 flex items-center justify-between border-b border-[#E3DDD2] pb-2 flex-wrap gap-2">
+        <div class="flex items-center gap-1.5 p-1 bg-white rounded-xl border border-[#E3DDD2] shadow-2xs">
+          <button id="chatTabBtn-personal" onclick="switchChatSubTab('personal')" class="px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition bg-heritage-purple text-white shadow-2xs">
+            <i data-lucide="message-square" class="w-4 h-4"></i> 💬 ถาม-ตอบส่วนตัว (Cortex AI)
+          </button>
+          <button id="chatTabBtn-line" onclick="switchChatSubTab('line')" class="px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition text-heritage-muted hover:text-heritage-text">
+            <i data-lucide="bell" class="w-4 h-4"></i> 📡 ดึงจากแชท LINE (LINE Hub & สรุปเช้า)
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
           <button onclick="clearChatHistory()" class="px-3 py-1.5 bg-white hover:bg-red-50 text-red-600 rounded-xl text-xs font-medium flex items-center gap-1 border border-red-200 transition">
             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> ล้างประวัติแช็ต
           </button>
-          <button onclick="loadLineChatHistory(true)" class="px-3 py-1.5 bg-heritage-purple hover:bg-[#5848CE] text-white rounded-xl text-xs font-medium flex items-center gap-1.5 shadow-2xs transition">
+          <button onclick="loadLineChatHistory(true)" class="px-3.5 py-1.5 bg-heritage-purple hover:bg-[#5848CE] text-white rounded-xl text-xs font-medium flex items-center gap-1.5 shadow-2xs transition">
             <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> ดึงข้อมูลจาก LINE
           </button>
         </div>
       </div>
 
-      <!-- Quick Prompt Chips -->
-      <div class="mb-3 flex items-center gap-2 overflow-x-auto pb-1 text-xs no-scrollbar">
-        <span class="text-[11px] text-heritage-muted font-bold whitespace-nowrap">💡 ตัวอย่างคำถาม:</span>
-        <button onclick="sendPredefinedQuestion('ช่วยนำเสนอโมเดลการสอนประวัติศาสตร์แบบสืบสอบระดับสากล เช่น กรณีศึกษาจากสหราชอาณาจักรหรือสหรัฐอเมริกา')" class="px-3 py-1 bg-white border border-[#E3DDD2] hover:border-heritage-purple text-heritage-text rounded-lg whitespace-nowrap transition shadow-2xs">
-          🌐 โมเดลสอนประวัติศาสตร์สากล
-        </button>
-        <button onclick="sendPredefinedQuestion('ขอแนวทางจัดกิจกรรม ว.PA เรื่องประชาธิปไตยในโรงเรียนที่เน้นผู้เรียนเป็นสำคัญ')" class="px-3 py-1 bg-white border border-[#E3DDD2] hover:border-heritage-purple text-heritage-text rounded-lg whitespace-nowrap transition shadow-2xs">
-          📋 กิจกรรม ว.PA ประชาธิปไตย
-        </button>
-        <button onclick="sendPredefinedQuestion('ขอตัวอย่างการจัดการเรียนรู้เรื่องการเปลี่ยนแปลงสภาพภูมิอากาศสไตล์ฟินแลนด์ (Phenomenon-Based Learning)')" class="px-3 py-1 bg-white border border-[#E3DDD2] hover:border-heritage-purple text-heritage-text rounded-lg whitespace-nowrap transition shadow-2xs">
-          🌍 ปรากฏการณ์ศึกษา (ฟินแลนด์)
-        </button>
-      </div>
-
-      <div class="bg-white rounded-2xl border border-[#E3DDD2] shadow-xs max-w-4xl mx-auto flex flex-col h-[560px] overflow-hidden">
-        <!-- Chat History Window -->
-        <div id="chatMessageHistory" class="flex-1 p-4 overflow-y-auto space-y-4 bg-[#FAF8F5]">
-          <div class="text-center py-8 text-heritage-muted text-xs">
-            กำลังโหลดข้อมูลบทสนทนา...
-          </div>
+      <!-- Sub-Board 1: 💬 สนทนาถาม-ตอบส่วนตัวกับ AI -->
+      <div id="chatSubView-personal" class="space-y-3">
+        <!-- Quick Prompt Chips -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs no-scrollbar">
+          <span class="text-[11px] text-heritage-muted font-bold whitespace-nowrap">💡 ตัวอย่างคำถาม:</span>
+          <button onclick="sendPredefinedQuestion('ช่วยนำเสนอโมเดลการสอนประวัติศาสตร์แบบสืบสอบระดับสากล เช่น กรณีศึกษาจากสหราชอาณาจักรหรือสหรัฐอเมริกา')" class="px-3 py-1 bg-white border border-[#E3DDD2] hover:border-heritage-purple text-heritage-text rounded-lg whitespace-nowrap transition shadow-2xs">
+            🌐 โมเดลสอนประวัติศาสตร์สากล
+          </button>
+          <button onclick="sendPredefinedQuestion('ขอแนวทางจัดกิจกรรม ว.PA เรื่องประชาธิปไตยในโรงเรียนที่เน้นผู้เรียนเป็นสำคัญ')" class="px-3 py-1 bg-white border border-[#E3DDD2] hover:border-heritage-purple text-heritage-text rounded-lg whitespace-nowrap transition shadow-2xs">
+            📋 กิจกรรม ว.PA ประชาธิปไตย
+          </button>
+          <button onclick="sendPredefinedQuestion('ขอตัวอย่างการจัดการเรียนรู้เรื่องการเปลี่ยนแปลงสภาพภูมิอากาศสไตล์ฟินแลนด์ (Phenomenon-Based Learning)')" class="px-3 py-1 bg-white border border-[#E3DDD2] hover:border-heritage-purple text-heritage-text rounded-lg whitespace-nowrap transition shadow-2xs">
+            🌍 ปรากฏการณ์ศึกษา (ฟินแลนด์)
+          </button>
         </div>
 
-        <!-- Chat Input Bar -->
-        <div class="p-3 border-t border-[#E3DDD2] bg-white flex gap-2">
-          <input 
-            type="text" 
-            id="chatUserQuestion" 
-            placeholder="พิมพ์คำถาม เช่น 'ขอไอเดียจัดกิจกรรมประวัติศาสตร์ ม.2 เรื่องอยุธยา'..." 
-            class="flex-1 px-4 py-2.5 text-xs bg-[#FAF8F5] border border-[#E3DDD2] rounded-xl focus:outline-none focus:ring-2 focus:ring-heritage-purple focus:bg-white transition"
-            onkeypress="if(event.key === 'Enter') sendWebChatMessage()"
-          />
-          <button onclick="sendWebChatMessage()" class="px-5 py-2.5 bg-heritage-purple hover:bg-[#5848CE] text-white rounded-xl text-xs font-semibold shadow-xs flex items-center gap-1.5 transition">
-            <i data-lucide="send" class="w-4 h-4"></i> ส่ง
-          </button>
+        <div class="bg-white rounded-3xl border border-[#E3DDD2] shadow-xs max-w-4xl mx-auto flex flex-col h-[560px] overflow-hidden">
+          <!-- Chat History Window (Chronological: Older on top, Newest at bottom) -->
+          <div id="personalChatMessageHistory" class="flex-1 p-5 overflow-y-auto space-y-4 bg-[#FAF8F5]">
+            <!-- Rendered by renderPersonalChat() -->
+          </div>
+
+          <!-- Input Bar -->
+          <div class="p-3 bg-white border-t border-[#E3DDD2] flex gap-2">
+            <textarea 
+              id="chatUserQuestion" 
+              rows="1" 
+              placeholder="พิมพ์คำถามวิชาการ เช่น 'ขอไอเดียจัดกิจกรรมประวัติศาสตร์ ม.1'..." 
+              class="flex-1 px-4 py-3 text-xs bg-[#FAF8F5] border border-[#E3DDD2] rounded-2xl focus:outline-none focus:ring-2 focus:ring-heritage-purple focus:bg-white resize-none transition"
+              onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendWebChatMessage(); }"
+            ></textarea>
+            <button onclick="sendWebChatMessage()" id="chatSendBtn" class="px-5 py-3 bg-heritage-purple hover:bg-[#5848CE] text-white rounded-2xl text-xs font-semibold shadow-xs flex items-center gap-1.5 transition shrink-0">
+              <i data-lucide="send" class="w-4 h-4"></i> ส่ง
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-Board 2: 📡 กระดานดึงจากแชท LINE (LINE Hub) -->
+      <div id="chatSubView-line" class="hidden space-y-4 max-w-4xl mx-auto">
+        <div class="p-3.5 bg-gradient-to-r from-emerald-500/10 via-emerald-50 to-transparent border border-emerald-200 rounded-2xl flex items-center justify-between flex-wrap gap-2 text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-xl bg-[#06C755] text-white flex items-center justify-center font-bold">
+              <i data-lucide="bell" class="w-4 h-4"></i>
+            </span>
+            <div>
+              <p class="font-bold text-heritage-text">คลังสรุปข่าวเช้า & ข้อมูลสนทนาจาก LINE</p>
+              <p class="text-[11px] text-heritage-muted">ข้อมูลส่งตรงจาก LINE Bot และ Firebase ทุกเช้า แยกกระดานออกจากแช็ตส่วนตัว</p>
+            </div>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 bg-white text-emerald-800 rounded-full font-bold border border-emerald-200 shadow-2xs">
+            🟢 LINE Connected
+          </span>
+        </div>
+
+        <div id="lineChatHistoryContainer" class="space-y-4">
+          <!-- Rendered by renderLineChatBoard() -->
         </div>
       </div>
     </section>
@@ -791,6 +875,35 @@
           <i data-lucide="file-down" class="w-5 h-5 text-heritage-rose"></i> ศูนย์สรุปสาระสำคัญ & ส่งออกไฟล์ (Export Center)
         </h2>
         <p class="text-xs text-heritage-muted mt-0.5">ดาวน์โหลดข้อมูลออกเป็นไฟล์ Microsoft Word (.doc), สั่งพิมพ์/บันทึก PDF (.pdf), หรือจับภาพความละเอียดสูง (PNG)</p>
+      </div>
+
+      
+      <!-- Night Research & Poem Card (21:00 น.) -->
+      <div class="mb-6 p-5 rounded-3xl bg-gradient-to-br from-[#1E1B4B] via-[#2E2870] to-[#1E1B4B] text-white shadow-md border border-indigo-400/30 flex flex-col md:flex-row items-center justify-between gap-5">
+        <div class="space-y-2">
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <span class="w-9 h-9 rounded-2xl bg-indigo-500/30 text-amber-300 flex items-center justify-center font-bold text-lg border border-indigo-400/40 shadow-inner">
+              <i data-lucide="moon" class="w-5 h-5"></i>
+            </span>
+            <h3 class="text-base font-bold text-white font-heading">
+              🌙 สาระวิจัยการศึกษาสากล & บทกลอนพักใจครูก่อนนิทรา (21:00 น.)
+            </h3>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40 flex items-center gap-1">
+              <i data-lucide="clock" class="w-3 h-3"></i> อัตโนมัติทุกคืน 21:00 น.
+            </span>
+          </div>
+          <p class="text-xs text-indigo-200 leading-relaxed max-w-3xl">
+            ระบบจัดส่งสรุปงานวิจัยชั้นนำจากสถาบันระดับโลก (Harvard, Stanford, Oxford, UNESCO) เจาะลึกระเบียบวิธีวิจัยและข้อค้นพบเชิงประจักษ์ พร้อมประพันธ์บทกลอนแปดพักใจ 1 บท ส่งเข้า LINE ของคุณครูทุกคืน เพื่อการเรียนรู้ ป.โท และการนอนหลับฝันดี
+          </p>
+        </div>
+        <div class="flex items-center gap-2.5 shrink-0 flex-wrap">
+          <span class="px-3.5 py-2 bg-indigo-500/25 text-indigo-200 border border-indigo-400/30 rounded-xl text-xs font-semibold flex items-center gap-1.5">
+            <i data-lucide="bell-ring" class="w-3.5 h-3.5 text-amber-300"></i> ส่งเข้า LINE อัตโนมัติทุกคืน 21:00 น.
+          </span>
+          <button onclick="insertContentToWord('night_research')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition">
+            <i data-lucide="file-plus" class="w-4 h-4"></i> ส่งเข้า Word Studio
+          </button>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
@@ -858,6 +971,222 @@
     </section>
 
     <!-- ============================================== -->
+    
+    <!-- ============================================== -->
+    <!-- VIEW: 7. กระดานเอกสารเวิร์ด (WORD STUDIO) -->
+    <!-- ============================================== -->
+    <section id="view-word" class="main-view hidden">
+      <!-- Header -->
+      <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-bold text-heritage-text flex items-center gap-2 font-heading">
+            <i data-lucide="file-edit" class="w-5 h-5 text-blue-600"></i> กระดานเอกสารเวิร์ด (Word Studio)
+          </h2>
+          <p class="text-xs text-heritage-muted mt-0.5">คัดลอกข้อความมาวาง จัดเรียง พิมพ์แก้ไข และจัดหน้า A4 ได้เหมือน Microsoft Word</p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="clearWordEditor()" class="px-3 py-1.5 bg-white border border-[#E3DDD2] hover:bg-red-50 hover:text-red-600 text-heritage-muted rounded-xl text-xs font-medium flex items-center gap-1.5 transition">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> ล้างหน้ากระดาษ
+          </button>
+          <button onclick="downloadWordFromEditor()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-xs transition">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i> ดาวน์โหลด Word (.doc)
+          </button>
+          <button onclick="printWordEditorPDF()" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-xs transition">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i> สั่งพิมพ์ / PDF (A4)
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Insert Bar (ดึงข้อมูลจากระบบมาวางในคลิกเดียว) -->
+      <div class="mb-3 bg-white rounded-2xl border border-[#E3DDD2] p-3 shadow-2xs flex items-center gap-2 overflow-x-auto text-xs no-scrollbar">
+        <span class="text-[11px] font-bold text-heritage-muted shrink-0 flex items-center gap-1">
+          <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-blue-600"></i> แทรกข้อมูลอัตโนมัติ:
+        </span>
+        <button onclick="insertContentToWord('line_briefing')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg whitespace-nowrap border border-emerald-200 font-medium transition flex items-center gap-1">
+          ☀️ ข่าวเช้าจาก LINE
+        </button>
+        <button onclick="insertContentToWord('news_5dim')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-lg whitespace-nowrap border border-amber-200 font-medium transition flex items-center gap-1">
+          🌍 สาระ 5 มิติ
+        </button>
+        <button onclick="insertContentToWord('pedagogy')" class="px-2.5 py-1 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-lg whitespace-nowrap border border-teal-200 font-medium transition flex items-center gap-1">
+          🌐 นวัตกรรมการสอนสากล
+        </button>
+        <button onclick="insertContentToWord('starred')" class="px-2.5 py-1 bg-yellow-50 hover:bg-yellow-100 text-yellow-800 rounded-lg whitespace-nowrap border border-yellow-200 font-medium transition flex items-center gap-1">
+          ⭐ รายการติดดาว
+        </button>
+        <button onclick="insertContentToWord('tasks')" class="px-2.5 py-1 bg-orange-50 hover:bg-orange-100 text-orange-800 rounded-lg whitespace-nowrap border border-orange-200 font-medium transition flex items-center gap-1">
+          📋 ตารางภารกิจครู
+        </button>
+        <button onclick="insertContentToWord('night_research')" class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 rounded-lg whitespace-nowrap border border-indigo-200 font-medium transition flex items-center gap-1">
+          🌙 วิจัย & กลอนก่อนนอน (21:00 น.)
+        </button>
+      </div>
+
+      <!-- Word Editor Sticky Toolbar -->
+      <div class="sticky top-2 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-[#E3DDD2] p-2.5 shadow-md mb-4 flex items-center gap-1.5 flex-wrap text-xs">
+        <!-- Format Block / Styles -->
+        <select onchange="formatDoc('formatBlock', this.value); this.value='';" class="px-2 py-1 bg-[#FAF8F5] border border-[#E3DDD2] rounded-lg text-heritage-text text-xs font-semibold focus:outline-none">
+          <option value="">รูปแบบข้อความ</option>
+          <option value="p">เนื้อหาปกติ (Paragraph)</option>
+          <option value="h1">หัวข้อหลัก (Heading 1)</option>
+          <option value="h2">หัวข้อย่อย (Heading 2)</option>
+          <option value="h3">หัวข้อย่อย (Heading 3)</option>
+          <option value="blockquote">กล่องข้อความอ้างอิง</option>
+        </select>
+
+        <div class="h-5 w-[1px] bg-[#E3DDD2] mx-1"></div>
+
+        <!-- Text Styles -->
+        <button onclick="formatDoc('bold')" class="p-1.5 hover:bg-[#FAF8F5] rounded-lg text-heritage-text font-bold" title="ตัวหนา (Ctrl+B)">
+          <i data-lucide="bold" class="w-4 h-4"></i>
+        </button>
+        <button onclick="formatDoc('italic')" class="p-1.5 hover:bg-[#FAF8F5] rounded-lg text-heritage-text" title="ตัวเอียง (Ctrl+I)">
+          <i data-lucide="italic" class="w-4 h-4"></i>
+        </button>
+        <button onclick="formatDoc('underline')" class="p-1.5 hover:bg-[#FAF8F5] rounded-lg text-heritage-text" title="ขีดเส้นใต้ (Ctrl+U)">
+          <i data-lucide="underline" class="w-4 h-4"></i>
+        </button>
+        <button onclick="formatDoc('strikeThrough')" class="p-1.5 hover:bg-[#FAF8F5] rounded-lg text-heritage-text" title="ขีดฆ่า">
+          <i data-lucide="strikethrough" class="w-4 h-4"></i>
+        </button>
+
+        <div class="h-5 w-[1px] bg-[#E3DDD2] mx-1"></div>
+
+        <!-- Alignment -->
+        <button onclick="formatDoc('justifyLeft')" class="p-1.5 hover:bg-[#FAF8F5] rounded-lg text-heritage-text" title="ชิดซ้าย">
+          <i data-lucide="align-left" class="w-4 h-4"></i>
+        </button>
+        <button onclick="formatDoc('justifyCenter')" class="p-1.5 hover:bg-[#FAF8F5] rounded-lg text-heritage-text" title="กึ่งกลาง">
+          <i data-lucide="align-center" class="w-4 h-4"></i>
+        </button>
+        <button onclick="formatDoc('justifyRight')" class="p-1.5 hover:bg-[#FAF8F5] rounded-lg text-heritage-text" title="ชิดขวา">
+          <i data-lucide="align-right" class="w-4 h-4"></i>
+        </button>
+        <button onclick="formatDoc('justifyFull')" class="p-1.5 hover:bg-[#FAF8F5] rounded-lg text-heritage-text" title="จัดเต็มบรรทัด">
+          <i data-lucide="align-justify" class="w-4 h-4"></i>
+        </button>
+
+        <div class="h-5 w-[1px] bg-[#E3DDD2] mx-1"></div>
+
+        <!-- Lists -->
+        <button onclick="formatDoc('insertUnorderedList')" class="p-1.5 hover:bg-[#FAF8F5] rounded-lg text-heritage-text" title="รายการแบบจุด">
+          <i data-lucide="list" class="w-4 h-4"></i>
+        </button>
+        <button onclick="formatDoc('insertOrderedList')" class="p-1.5 hover:bg-[#FAF8F5] rounded-lg text-heritage-text" title="รายการแบบตัวเลข">
+          <i data-lucide="list-ordered" class="w-4 h-4"></i>
+        </button>
+
+        <div class="h-5 w-[1px] bg-[#E3DDD2] mx-1"></div>
+
+        <!-- Table & Elements -->
+        <button onclick="insertWordTable()" class="p-1.5 hover:bg-[#FAF8F5] rounded-lg text-heritage-text" title="แทรกตาราง">
+          <i data-lucide="table" class="w-4 h-4"></i>
+        </button>
+        <button onclick="formatDoc('insertHorizontalRule')" class="p-1.5 hover:bg-[#FAF8F5] rounded-lg text-heritage-text" title="เส้นคั่น">
+          <i data-lucide="minus" class="w-4 h-4"></i>
+        </button>
+
+        <div class="h-5 w-[1px] bg-[#E3DDD2] mx-1"></div>
+
+        <!-- Undo / Redo -->
+        <button onclick="formatDoc('undo')" class="p-1.5 hover:bg-[#FAF8F5] rounded-lg text-heritage-text" title="เลิกทำ (Undo)">
+          <i data-lucide="undo" class="w-4 h-4"></i>
+        </button>
+        <button onclick="formatDoc('redo')" class="p-1.5 hover:bg-[#FAF8F5] rounded-lg text-heritage-text" title="ทำซ้ำ (Redo)">
+          <i data-lucide="redo" class="w-4 h-4"></i>
+        </button>
+
+        <div class="ml-auto flex items-center gap-1.5 text-[11px] text-heritage-muted">
+          <span id="wordSaveStatus" class="flex items-center gap-1 text-emerald-600 font-semibold">
+            <i data-lucide="check" class="w-3.5 h-3.5"></i> บันทึกอัตโนมัติ
+          </span>
+        </div>
+      </div>
+
+      <!-- Simulated A4 Paper Canvas -->
+      <div class="bg-[#EFECE6] p-4 sm:p-8 rounded-3xl border border-[#DDD7CC] overflow-x-auto flex justify-center">
+        <div 
+          id="wordPaperCanvas" 
+          contenteditable="true" 
+          class="w-full max-w-3xl min-h-[960px] bg-white shadow-xl p-8 sm:p-14 border border-[#DDD7CC] rounded-xl text-heritage-text text-sm sm:text-base leading-relaxed focus:outline-none"
+          style="font-family: 'Sarabun', sans-serif;"
+          oninput="onWordEditorInput()"
+        >
+          <div style="text-align: center; margin-bottom: 24px;">
+            <h1 style="font-size: 20pt; font-weight: bold; color: #2D3748; margin-bottom: 6px;">บันทึกรายงานการจัดการเรียนรู้</h1>
+            <p style="font-size: 11pt; color: #718096; margin: 0;">ครูศรัญญู (KruSos) • โรงเรียนวัดบางปูน</p>
+          </div>
+          <hr style="border: 0; border-top: 1px solid #CBD5E0; margin-bottom: 20px;"/>
+          <p>คลิกเพื่อพิมพ์ข้อความ คัดลอกเนื้อหาจากที่อื่นมาวาง หรือกดปุ่ม <strong>"แทรกข้อมูลอัตโนมัติ"</strong> ด้านบนเพื่อดึงข่าวเช้า สาระ 5 มิติ และกรณีศึกษาจาก LINE มาจัดวางได้ทันทีครับ...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- VIEW: 8. GPT อัจฉริยะ (GPT STUDIO) -->
+    <!-- ============================================== -->
+    <section id="view-gpt" class="main-view hidden">
+      <!-- Header -->
+      <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-bold text-heritage-text flex items-center gap-2 font-heading">
+            <i data-lucide="sparkles" class="w-5 h-5 text-emerald-600"></i> GPT อัจฉริยะ (GPT Studio)
+          </h2>
+          <p class="text-xs text-heritage-muted mt-0.5">ผู้ช่วย AI สนทนา ออกแบบแผนการสอนเชิงรุก และสร้างข้อสอบ พร้อมส่งข้อความเข้าสู่หน้าเวิร์ดได้ทันที</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <!-- External Official ChatGPT Launcher Button -->
+          <button onclick="openExternalChatGPT()" class="px-3.5 py-1.5 bg-[#10A37F] hover:bg-[#0E8C6D] text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-xs transition" title="เปิดเว็บไซต์ทางการ chatgpt.com ในหน้าต่างคู่ขนาน">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i> เปิดเว็บทางการ ChatGPT.com
+          </button>
+        </div>
+      </div>
+
+      <!-- GPT Workspace Container -->
+      <div class="bg-white rounded-3xl border border-[#E3DDD2] shadow-xs flex flex-col h-[650px] overflow-hidden">
+        <!-- Chat Messages -->
+        <div id="gptMessageHistory" class="flex-1 p-5 overflow-y-auto space-y-4 bg-[#FAF8F5]">
+          <div class="max-w-2xl mx-auto p-6 bg-white rounded-2xl border border-[#E3DDD2] text-center space-y-3 shadow-2xs">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center font-bold">
+              <i data-lucide="sparkles" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-sm font-bold text-heritage-text font-heading">ยินดีต้อนรับสู่ GPT Studio เพื่อการศึกษา</h3>
+            <p class="text-xs text-heritage-muted leading-relaxed">
+              พิมพ์คำถาม ให้ AI ช่วยร่างแผนการสอน คิดประเด็นคำถามเชิงรุก หรือวิจัย ว.PA เมื่อได้คำตอบแล้ว สามารถคลิกปุ่ม <strong>"📝 ส่งเข้าหน้าเวิร์ด"</strong> เพื่อนำไปจัดหน้าเอกสารต่อได้ทันที!
+            </p>
+          </div>
+        </div>
+
+        <!-- Prompt Shortcuts Bar -->
+        <div class="px-4 py-2 bg-white border-t border-[#F0EAE1] flex items-center gap-2 overflow-x-auto no-scrollbar text-xs">
+          <span class="text-[11px] font-bold text-heritage-muted whitespace-nowrap">⚡ คำสั่งยอดนิยม:</span>
+          <button onclick="sendGptPreset('ช่วยออกแบบแผนการสอนประวัติศาสตร์ ม.2 เรื่อง อยุธยากับการค้าโลก โดยเน้นกิจกรรมเชิงรุก (Active Learning)')" class="px-3 py-1 bg-[#FAF8F5] hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 border border-[#E3DDD2] rounded-lg whitespace-nowrap transition">
+            📜 แผนสอนประวัติศาสตร์เชิงรุก
+          </button>
+          <button onclick="sendGptPreset('ขอข้อสอบอัตนัยวิชาสังคมศึกษา ม.ปลาย 3 ข้อ ที่วัดทักษะการคิดวิเคราะห์ขั้นสูงตามเกณฑ์ PISA')" class="px-3 py-1 bg-[#FAF8F5] hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 border border-[#E3DDD2] rounded-lg whitespace-nowrap transition">
+            🎯 ข้อสอบคิดวิเคราะห์ PISA
+          </button>
+          <button onclick="sendGptPreset('ช่วยเขียนข้อตกลงในการพัฒนางาน (ว.PA) ประเด็นท้าทายเรื่องการจัดการเรียนรู้ประวัติศาสตร์ท้องถิ่น')" class="px-3 py-1 bg-[#FAF8F5] hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 border border-[#E3DDD2] rounded-lg whitespace-nowrap transition">
+            📋 ประเด็นท้าทาย ว.PA
+          </button>
+        </div>
+
+        <!-- Input Bar -->
+        <div class="p-3 bg-white border-t border-[#E3DDD2] flex gap-2">
+          <textarea 
+            id="gptUserQuestion" 
+            rows="1"
+            placeholder="พิมพ์คำถาม เช่น 'ช่วยร่างใบงานวิชาประวัติศาสตร์เรื่องหลักฐานชั้นต้น'..." 
+            class="flex-1 px-4 py-3 text-xs bg-[#FAF8F5] border border-[#E3DDD2] rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white resize-none transition"
+            onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendGptMessage(); }"
+          ></textarea>
+          <button onclick="sendGptMessage()" id="gptSendBtn" class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-semibold shadow-xs flex items-center gap-1.5 transition shrink-0">
+            <i data-lucide="send" class="w-4 h-4"></i> ส่ง
+          </button>
+        </div>
+      </div>
+    </section>
+
     <!-- VIEW: 7. คลังข้อมูลทางการ (OFFICIAL HUB) -->
     <!-- ============================================== -->
     <section id="view-sources" class="main-view hidden">
@@ -946,57 +1275,35 @@
     <!-- ============================================== -->
     <!-- 8. INSTITUTIONAL FOOTER (ส่วนท้ายระบบดีเด่น) -->
     <!-- ============================================== -->
-    <footer class="mt-12 pt-8 pb-4 border-t border-[#E3DDD2] text-xs text-heritage-muted space-y-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Col 1: System Vision -->
-        <div class="space-y-2">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-xl bg-heritage-primary text-white flex items-center justify-center font-bold shadow-2xs">
-              <i data-lucide="cpu" class="w-4 h-4"></i>
-            </div>
-            <span class="font-bold text-heritage-text text-sm font-heading">KruSos Cortex</span>
+    <footer class="mt-12 pt-6 pb-6 border-t border-[#E3DDD2] text-xs text-heritage-muted">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4 py-2">
+        <!-- Brand & Vision -->
+        <div class="flex items-center gap-3 text-center md:text-left">
+          <div class="w-9 h-9 rounded-2xl bg-heritage-primary text-white flex items-center justify-center font-bold shadow-xs shrink-0">
+            <i data-lucide="cpu" class="w-5 h-5"></i>
           </div>
-          <p class="text-[11px] leading-relaxed text-heritage-muted">
-            ระบบสารสนเทศนวัตกรรมการจัดการเรียนรู้เพื่อครูยุคใหม่ มุ่งมั่นขับเคลื่อนการเรียนรู้เชิงรุก (Active Learning) บูรณาการคุณธรรม และยกระดับสมรรถนะผู้เรียนสู่ศตวรรษที่ 21 สอดรับเกณฑ์การประเมินตำแหน่งและวิทยฐานะ ว.PA
-          </p>
+          <div>
+            <h4 class="font-bold text-heritage-text text-sm font-heading">KruSos Cortex</h4>
+            <p class="text-[11px] text-heritage-muted">ระบบสารสนเทศนวัตกรรมการจัดการเรียนรู้เพื่อครูสังคมศึกษายุคใหม่</p>
+          </div>
         </div>
 
-        <!-- Col 2: Pedagogical Pillars -->
-        <div class="space-y-2">
-          <h4 class="font-bold text-heritage-text text-xs font-heading">เสาหลักการขับเคลื่อน</h4>
-          <ul class="space-y-1 text-[11px]">
-            <li>• สาระร่วมสมัย 5 มิติ (AI, สิ่งแวดล้อม, เศรษฐกิจ, สังคม, นวัตกรรม)</li>
-            <li>• กระบวนการ Active Learning & โมเดลสากลยอดนิยม</li>
-            <li>• การวิจัยในชั้นเรียน และการพัฒนาวิชาชีพสู่ผลงานวิชาการ ป.โท</li>
-            <li>• ระบบอำนวยความสะดวกในการจัดทำเอกสารและส่งออกรายงาน</li>
-          </ul>
-        </div>
-
-        <!-- Col 3: Social & Community "เพจตามติดชีวิต KruSos" -->
-        <div class="space-y-2.5">
-          <h4 class="font-bold text-heritage-text text-xs font-heading flex items-center gap-1.5">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-heritage-terracotta"></i> 
-            <span>เครือข่ายครู & แหล่งเรียนรู้</span>
-          </h4>
-          <div class="p-3.5 bg-white rounded-2xl border border-[#E3DDD2] shadow-2xs hover:border-heritage-terracotta transition">
-            <p class="text-[10px] text-heritage-muted">ติดตามสาระความรู้ เทคนิคการจัดการเรียนรู้ และแรงบันดาลใจเพื่อครูได้ที่:</p>
-            <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" class="mt-1.5 inline-flex items-center gap-2 text-xs font-bold text-[#1877F2] hover:underline">
-              <span class="w-6 h-6 rounded-full bg-[#1877F2] text-white flex items-center justify-center text-xs font-bold shrink-0">f</span>
-              <span>เพจ: ตามติดชีวิต KruSos</span>
-              <i data-lucide="external-link" class="w-3 h-3"></i>
-            </a>
-            <p class="text-[10px] text-heritage-muted mt-1 leading-relaxed">แบ่งปันไอเดียการสอน ประวัติศาสตร์ชุมชน และวิถีชีวิตครูสังคมศึกษาร่วมสมัย</p>
-          </div>
+        <!-- Social & Page Link -->
+        <div class="flex items-center gap-3 flex-wrap justify-center">
+          <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 bg-white hover:bg-[#F3F6FD] border border-[#D5E1F5] text-[#1877F2] rounded-xl text-xs font-semibold flex items-center gap-2 shadow-2xs hover:shadow-xs transition">
+            <span class="w-5 h-5 rounded-full bg-[#1877F2] text-white flex items-center justify-center text-[11px] font-bold">f</span>
+            <span>เพจ: ตามติดชีวิต KruSos</span>
+            <i data-lucide="external-link" class="w-3.5 h-3.5 text-blue-400"></i>
+          </a>
+          <span class="px-2.5 py-1 bg-[#FAF8F5] border border-[#E3DDD2] rounded-lg text-[10px] text-heritage-muted font-medium">
+            Modern Heritage Edition
+          </span>
         </div>
       </div>
 
-      <!-- Bottom Copyright Line -->
-      <div class="pt-4 border-t border-[#F0ECE4] flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] text-heritage-muted">
-        <p>© 2026 KruSos Cortex | The Intelligent Core for Next-Gen Teaching. พัฒนาเพื่อเพื่อนครูไทยทุกคน 🍃</p>
-        <p class="font-semibold text-heritage-terracotta flex items-center gap-1">
-          <i data-lucide="heart" class="w-3 h-3 text-heritage-terracotta fill-current"></i>
-          <span>จบด้วยเพจตามติดชีวิต KruSos • Modern Heritage Edition</span>
-        </p>
+      <!-- Copyright -->
+      <div class="mt-4 pt-3 border-t border-[#F0ECE4] text-center text-[10px] text-heritage-muted">
+        © 2026 KruSos Cortex | The Intelligent Core for Next-Gen Teaching. พัฒนาเพื่อเพื่อนครูไทยทุกคน 🍃
       </div>
     </footer>
 
@@ -1023,7 +1330,7 @@
     </div>
     <div id="quickAiChatList" class="p-3 overflow-y-auto flex-1 space-y-3 bg-[#FAF8F5] text-xs max-h-[360px]">
       <div class="bg-white p-3 rounded-2xl border border-[#E3DDD2] text-xs text-heritage-text shadow-2xs leading-relaxed">
-        👋 สวัสดีครับคุณครู! มีหัวข้อใดในใจที่ต้องการไอเดียจัดกิจกรรม 4 คิด หรือข้อตกลง ว.PA พิมพ์สอบถามได้ทันทีครับ
+        👋 สวัสดีครับคุณครูซอส! มีหัวข้อใดในใจที่ต้องการค้นคว้า ออกแบบการจัดการเรียนรู้สากล หรือข้อตกลง ว.PA พิมพ์สอบถามได้ทันทีครับ ✨
       </div>
     </div>
     <div class="p-2.5 bg-white border-t border-[#E3DDD2] flex gap-2">
@@ -1553,10 +1860,430 @@
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      if (tabName === 'chat') loadLineChatHistory();
+      if (tabName === 'chat') { loadLineChatHistory(); renderPersonalChat(); }
+      if (tabName === 'word') {
+        const saved = localStorage.getItem('krusos_word_content');
+        const canvas = document.getElementById('wordPaperCanvas');
+        if (saved && canvas && !canvas.getAttribute('data-loaded')) {
+          canvas.innerHTML = saved;
+          canvas.setAttribute('data-loaded', 'true');
+        }
+      }
       if (tabName === 'home') renderHomeOverview();
       if (tabName === 'tasks') syncTasksFromCloud(true);
 
+      lucide.createIcons();
+    };
+
+    
+    // ==========================================
+    // SUB-TABS: TASKS & CHAT BOARDS
+    // ==========================================
+    window.currentTasksSubTab = 'line';
+    window.switchTasksSubTab = function(sub) {
+      window.currentTasksSubTab = sub;
+      const lineBtn = document.getElementById('taskSubTabBtn-line');
+      const customBtn = document.getElementById('taskSubTabBtn-custom');
+      const lineView = document.getElementById('tasksSubView-line');
+      const customView = document.getElementById('tasksSubView-custom');
+
+      if (sub === 'line') {
+        if (lineBtn) {
+          lineBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition bg-heritage-terracotta text-white shadow-2xs';
+        }
+        if (customBtn) {
+          customBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition text-heritage-muted hover:text-heritage-text';
+        }
+        if (lineView) lineView.classList.remove('hidden');
+        if (customView) customView.classList.add('hidden');
+      } else {
+        if (customBtn) {
+          customBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition bg-heritage-terracotta text-white shadow-2xs';
+        }
+        if (lineBtn) {
+          lineBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition text-heritage-muted hover:text-heritage-text';
+        }
+        if (lineView) lineView.classList.add('hidden');
+        if (customView) customView.classList.remove('hidden');
+      }
+      lucide.createIcons();
+    };
+
+    window.currentChatSubTab = 'personal';
+    window.switchChatSubTab = function(sub) {
+      window.currentChatSubTab = sub;
+      const personalBtn = document.getElementById('chatTabBtn-personal');
+      const lineBtn = document.getElementById('chatTabBtn-line');
+      const personalView = document.getElementById('chatSubView-personal');
+      const lineView = document.getElementById('chatSubView-line');
+
+      if (sub === 'personal') {
+        if (personalBtn) {
+          personalBtn.className = 'px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition bg-heritage-purple text-white shadow-2xs';
+        }
+        if (lineBtn) {
+          lineBtn.className = 'px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition text-heritage-muted hover:text-heritage-text';
+        }
+        if (personalView) personalView.classList.remove('hidden');
+        if (lineView) lineView.classList.add('hidden');
+
+        // Auto-scroll personal chat to bottom
+        const container = document.getElementById('personalChatMessageHistory');
+        if (container) container.scrollTop = container.scrollHeight;
+      } else {
+        if (lineBtn) {
+          lineBtn.className = 'px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition bg-heritage-purple text-white shadow-2xs';
+        }
+        if (personalBtn) {
+          personalBtn.className = 'px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition text-heritage-muted hover:text-heritage-text';
+        }
+        if (personalView) personalView.classList.add('hidden');
+        if (lineView) lineView.classList.remove('hidden');
+      }
+      lucide.createIcons();
+    };
+
+    // ==========================================
+    // RENDER: LINE TASKS VIEW
+    // ==========================================
+    window.lineTasksData = [];
+    window.renderLineTasksCards = function(sec2Text) {
+      const container = document.getElementById('lineTasksListContainer');
+      const badgeCount = document.getElementById('lineTasksCountBadge');
+      if (!container) return;
+
+      if (!sec2Text || typeof sec2Text !== 'string' || sec2Text.trim().length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-10 bg-white rounded-2xl border border-[#E3DDD2] p-6 space-y-2">
+            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 mx-auto flex items-center justify-center">
+              <i data-lucide="calendar" class="w-5 h-5"></i>
+            </div>
+            <p class="font-bold text-xs text-heritage-text">ยังไม่พบข้อมูลคิวงานจาก LINE ในขณะนี้</p>
+            <p class="text-[11px] text-heritage-muted">เมื่อระบบรันสรุปยามเช้าส่งเข้า LINE คิวงานจะปรากฏที่นี่โดยอัตโนมัติครับ</p>
+          </div>
+        `;
+        if (badgeCount) badgeCount.innerText = '0';
+        lucide.createIcons();
+        return;
+      }
+
+      // Parse tasks from lines
+      const rawLines = sec2Text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      const tasks = [];
+
+      rawLines.forEach((line, idx) => {
+        if (line.includes('หมวดที่ 1') || line.includes('Daily Priorities') || line.includes('ตารางคิวงาน')) return;
+        
+        let priority = 'normal';
+        let priorityLabel = '📌 คิวงาน';
+        let badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
+
+        if (line.includes('ครบกำหนดส่งวันนี้') || line.includes('🚨') || line.includes('วันนี้')) {
+          priority = 'today';
+          priorityLabel = '🚨 ส่งวันนี้!';
+          badgeClass = 'bg-rose-50 text-rose-700 border-rose-200 animate-pulse';
+        } else if (line.includes('ค้างส่ง') || line.includes('เลยกำหนด') || line.includes('⚠️')) {
+          priority = 'overdue';
+          priorityLabel = '⚠️ ค้างส่ง/เลยกำหนด';
+          badgeClass = 'bg-amber-50 text-amber-800 border-amber-200';
+        } else if (line.includes('เร็วๆ นี้') || line.includes('กำลังจะมาถึง')) {
+          priority = 'upcoming';
+          priorityLabel = '📋 เร็วๆ นี้';
+          badgeClass = 'bg-purple-50 text-purple-700 border-purple-200';
+        }
+
+        // Clean task text
+        let cleanText = line
+          .replace(/^[•\-\*d\.]+\s*/, '')
+          .replace(/\[🚨.*?\]/g, '')
+          .replace(/\[⚠️.*?\]/g, '')
+          .replace(/\[📌.*?\]/g, '')
+          .trim();
+
+        if (cleanText.length > 3) {
+          tasks.push({
+            id: 'line_task_' + idx,
+            text: cleanText,
+            raw: line,
+            priority: priority,
+            priorityLabel: priorityLabel,
+            badgeClass: badgeClass
+          });
+        }
+      });
+
+      window.lineTasksData = tasks;
+      if (badgeCount) badgeCount.innerText = tasks.length.toString();
+
+      if (tasks.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full bg-white rounded-2xl border border-[#E3DDD2] p-6 text-xs text-heritage-text leading-relaxed whitespace-pre-line">
+            ${sec2Text}
+          </div>
+        `;
+      } else {
+        container.innerHTML = tasks.map((t, idx) => {
+          const isStarred = window.savedStars && window.savedStars[t.id];
+          return `
+            <div class="p-4 bg-white rounded-2xl border ${isStarred ? 'border-amber-400 ring-2 ring-amber-300/40 bg-amber-50/20' : 'border-[#E3DDD2]'} shadow-2xs hover:shadow-xs transition space-y-2.5">
+              <div class="flex items-start justify-between gap-2">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${t.badgeClass}">
+                  ${t.priorityLabel}
+                </span>
+                <div class="flex items-center gap-1">
+                  <!-- ปุ่มติดดาว -->
+                  <button onclick="toggleStar('${t.id}', 'ภารกิจ LINE', '${t.text.replace(/'/g, "\\'")}', 'ภารกิจที่สรุปจาก LINE')" class="p-1 rounded-md hover:bg-amber-50 text-heritage-muted ${isStarred ? 'text-amber-500 fill-amber-400' : ''}" title="ติดดาวภารกิจนี้">
+                    <i data-lucide="star" class="w-4 h-4 ${isStarred ? 'fill-amber-400 text-amber-500' : ''}"></i>
+                  </button>
+                  <span class="text-[9px] px-1.5 py-0.5 bg-emerald-50 text-emerald-700 font-bold rounded">LINE Auto</span>
+                </div>
+              </div>
+
+              <p class="text-xs font-semibold text-heritage-text leading-relaxed">
+                ${t.text}
+              </p>
+
+              <div class="pt-2 border-t border-[#F2ECE1] flex items-center justify-between gap-2 flex-wrap text-xs">
+                <!-- ปุ่มบันทึกเข้าตารางภารกิจของฉัน -->
+                <button onclick="saveLineTaskToMyTasks(${idx})" class="px-2.5 py-1 bg-heritage-terracotta hover:bg-[#A36D52] text-white rounded-lg text-[11px] font-semibold flex items-center gap-1 shadow-2xs transition" title="เพิ่มภารกิจนี้ลงใน Check-list และ Firebase ทันที">
+                  <i data-lucide="plus-circle" class="w-3 h-3"></i> บันทึกเข้าตารางงานของฉัน
+                </button>
+
+                <!-- ปุ่มส่งไปหน้าเวิร์ด -->
+                <button onclick="sendLineTaskToWord(${idx})" class="text-[11px] text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium transition" title="ส่งรายการนี้เข้าหน้าเวิร์ด">
+                  <i data-lucide="file-plus" class="w-3 h-3"></i> ส่งไปหน้าเวิร์ด
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      lucide.createIcons();
+    };
+
+    window.saveLineTaskToMyTasks = function(idx) {
+      const task = window.lineTasksData[idx];
+      if (!task) return;
+
+      const newTask = {
+        id: Date.now().toString(),
+        title: task.text,
+        dueDate: new Date().toISOString().split('T')[0],
+        category: task.priority === 'today' ? 'เตรียมสอน / สื่อ' : 'งานโรงเรียน / เวร',
+        completed: false
+      };
+
+      taskList.unshift(newTask);
+      localStorage.setItem('krusos_tasks_data', JSON.stringify(taskList));
+      renderTasks();
+      saveTasksLocallyAndSync();
+      showToast('📥 เพิ่มงาน "' + task.text.substring(0, 30) + '..." เข้าตารางภารกิจแล้ว!', 'success');
+      
+      // Update badge count
+      const customBadge = document.getElementById('customTasksCountBadge');
+      if (customBadge) customBadge.innerText = taskList.length.toString();
+    };
+
+    window.sendLineTaskToWord = function(idx) {
+      const task = window.lineTasksData[idx];
+      if (!task) return;
+
+      const htmlToInsert = `
+        <div style="background-color: #FFFDF9; border-left: 4px solid #C07A54; padding: 12px; margin: 12px 0;">
+          <h3 style="margin: 0 0 6px 0; color: #C07A54; font-size: 14pt;">📋 ภารกิจสำคัญ (จาก LINE): ${task.text}</h3>
+          <p style="margin: 0; color: #4A5568; font-size: 11pt;">สถานะ: ${task.priorityLabel} | ข้อมูลจาก LINE Morning Briefing</p>
+        </div>
+      `;
+
+      const canvas = document.getElementById('wordPaperCanvas');
+      if (canvas) {
+        canvas.innerHTML += htmlToInsert;
+        onWordEditorInput();
+      }
+      switchMainTab('word');
+      showToast('ส่งภารกิจเข้ากระดานเวิร์ดเรียบร้อย 📝', 'success');
+    };
+
+    // ==========================================
+    // RENDER: PERSONAL CHAT (CHRONOLOGICAL)
+    // ==========================================
+    window.renderPersonalChat = function() {
+      const container = document.getElementById('personalChatMessageHistory');
+      if (!container) return;
+
+      if (!webChatHistory || webChatHistory.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-heritage-muted text-xs space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-purple-50 text-heritage-purple mx-auto flex items-center justify-center font-bold">
+              <i data-lucide="bot" class="w-6 h-6"></i>
+            </div>
+            <p class="font-bold text-heritage-text text-sm font-heading">ยินดีต้อนรับสู่ Cortex AI Chat ส่วนตัว 🍃</p>
+            <p class="max-w-md mx-auto text-heritage-muted leading-relaxed">
+              พื้นที่ปรึกษาการจัดการเรียนการสอนเชิงรุก ออกแบบแผน ว.PA และสอบถามข้อเท็จจริงทางประวัติศาสตร์และสังคมศึกษา พิมพ์คำถามด้านล่างเพื่อเริ่มสนทนาได้เลยครับ
+            </p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      // Sort chronologically: oldest at top, newest at bottom
+      const sortedChats = [...webChatHistory];
+
+      container.innerHTML = sortedChats.map((c, idx) => `
+        <div class="space-y-2 mb-4">
+          <!-- Question by Teacher (Right) -->
+          <div class="flex justify-end gap-2">
+            <div class="bg-heritage-purple text-white p-3.5 rounded-2xl rounded-tr-none text-xs max-w-[85%] leading-relaxed shadow-xs">
+              <div class="text-[10px] text-purple-200 mb-1 font-medium flex items-center gap-1 justify-end">
+                <span>💬 คุณครู</span> • <span>${c.time || 'ก่อนหน้านี้'}</span>
+              </div>
+              ${c.question}
+            </div>
+          </div>
+
+          <!-- Answer by AI (Left) -->
+          <div class="flex gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-white border border-[#E3DDD2] text-heritage-purple flex items-center justify-center shrink-0 text-xs font-bold shadow-xs">
+              <i data-lucide="bot" class="w-4 h-4"></i>
+            </div>
+            <div class="bg-white p-4 rounded-2xl rounded-tl-none border border-[#E3DDD2] shadow-xs text-xs text-heritage-text max-w-[85%] leading-relaxed whitespace-pre-line space-y-2">
+              <div>${c.answer}</div>
+              <div class="pt-2 border-t border-[#FAF8F5] flex items-center justify-end gap-2">
+                <button onclick="sendAiMessageToWord(${idx})" class="text-[11px] text-blue-600 hover:text-blue-800 flex items-center gap-1 font-semibold transition" title="ส่งคำตอบนี้ไปที่กระดานเวิร์ด">
+                  <i data-lucide="file-plus" class="w-3 h-3"></i> ส่งเข้าหน้าเวิร์ด
+                </button>
+                <button onclick="copyAiAnswer(${idx})" class="text-[11px] text-heritage-purple hover:underline flex items-center gap-1 font-semibold">
+                  <i data-lucide="copy" class="w-3 h-3"></i> คัดลอก
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      container.scrollTop = container.scrollHeight;
+      lucide.createIcons();
+    };
+
+    window.copyAiAnswer = function(idx) {
+      if (webChatHistory && webChatHistory[idx]) {
+        copyRawText(webChatHistory[idx].answer);
+      }
+    };
+
+    window.copyLineSummaryRaw = function(idx) {
+      if (window.lineSummariesData && window.lineSummariesData[idx]) {
+        copyRawText(window.lineSummariesData[idx].rawContent || '');
+      }
+    };
+
+    window.copyLineSection = function(idx, sIdx) {
+      if (window.lineSummariesData && window.lineSummariesData[idx] && window.lineSummariesData[idx].sections) {
+        copyRawText(window.lineSummariesData[idx].sections[sIdx] || '');
+      }
+    };
+
+    window.sendAiMessageToWord = function(idx) {
+      const c = webChatHistory[idx];
+      if (!c) return;
+
+      const htmlToInsert = `
+        <div style="background-color: #FAF5FF; border-left: 4px solid #7C3AED; padding: 14px; margin: 14px 0; border-radius: 4px;">
+          <h3 style="margin: 0 0 6px 0; color: #7C3AED; font-size: 13pt;">💬 คำถาม: ${c.question}</h3>
+          <div style="color: #2D3748; font-size: 11pt; line-height: 1.6; white-space: pre-line;">${c.answer}</div>
+        </div>
+      `;
+
+      const canvas = document.getElementById('wordPaperCanvas');
+      if (canvas) {
+        canvas.innerHTML += htmlToInsert;
+        onWordEditorInput();
+      }
+      switchMainTab('word');
+      showToast('ส่งคำตอบเข้ากระดานเวิร์ดเรียบร้อย 📝', 'success');
+    };
+
+    // ==========================================
+    // RENDER: LINE CHAT BOARD
+    // ==========================================
+    window.renderLineChatBoard = function(lineSummaries) {
+      const container = document.getElementById('lineChatHistoryContainer');
+      if (!container) return;
+
+      let html = '';
+
+      if (lineSummaries && lineSummaries.length > 0) {
+        html += lineSummaries.map((item, idx) => {
+          const sections = item.sections || [];
+          const sectionTitles = [
+            '☀️ คำทักทายยามเช้า',
+            '📋 คิวงาน & ภารกิจประจำวัน',
+            '🌍 เจาะลึกข่าวเด่น 5 มิติ',
+            '🌐 นวัตกรรมการสอนสากล',
+            '💬 สรุปปิดท้าย'
+          ];
+
+          return `
+            <div class="bg-white rounded-2xl border border-[#E3DDD2] shadow-xs overflow-hidden">
+              <div class="p-3.5 bg-gradient-to-r from-emerald-500/10 via-emerald-50 to-transparent border-b border-[#E3DDD2] flex items-center justify-between flex-wrap gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="w-7 h-7 rounded-xl bg-[#06C755] text-white flex items-center justify-center font-bold text-xs shadow-2xs">
+                    <i data-lucide="bell" class="w-4 h-4"></i>
+                  </span>
+                  <div>
+                    <h4 class="font-bold text-xs text-heritage-text font-heading">
+                      สรุปข่าวเช้า & นวัตกรรมการสอนสากล (LINE Sync)
+                    </h4>
+                    <p class="text-[10px] text-heritage-muted">${item.date || 'ข้อมูลล่าสุด'}</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button onclick="insertContentToWord('line_briefing')" class="px-2.5 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 text-[11px] rounded-lg border border-blue-200 flex items-center gap-1 font-medium transition shadow-2xs">
+                    <i data-lucide="file-plus" class="w-3 h-3"></i> ส่งไปเวิร์ด
+                  </button>
+                  <button onclick="copyLineSummaryRaw(${idx})" class="px-2.5 py-1 bg-white hover:bg-[#FAF8F5] text-heritage-muted text-[11px] rounded-lg border border-[#E3DDD2] flex items-center gap-1 font-medium transition shadow-2xs">
+                    <i data-lucide="copy" class="w-3 h-3"></i> คัดลอกทั้งหมด
+                  </button>
+                </div>
+              </div>
+
+              <div class="p-4 space-y-3 bg-[#FAF8F5] text-xs">
+                ${sections.length > 0 ? sections.map((sec, sIdx) => `
+                  <div class="p-3 bg-white rounded-xl border border-[#E3DDD2] shadow-2xs">
+                    <div class="font-bold text-heritage-primary text-[11px] mb-1.5 flex items-center justify-between">
+                      <span>${sectionTitles[sIdx] || `ส่วนที่ ${sIdx+1}`}</span>
+                      <button onclick="copyLineSection(${idx}, ${sIdx})" class="text-[10px] text-heritage-muted hover:text-heritage-primary flex items-center gap-0.5">
+                        <i data-lucide="copy" class="w-2.5 h-2.5"></i> คัดลอก
+                      </button>
+                    </div>
+                    <p class="text-heritage-text leading-relaxed whitespace-pre-line text-xs">${sec}</p>
+                  </div>
+                `).join('') : `
+                  <div class="p-3 bg-white rounded-xl border border-[#E3DDD2] shadow-2xs leading-relaxed whitespace-pre-line">
+                    ${item.rawContent || ''}
+                  </div>
+                `}
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        html = `
+          <div class="text-center py-12 text-heritage-muted text-xs space-y-3 bg-white rounded-2xl border border-[#E3DDD2] p-8">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center font-bold">
+              <i data-lucide="cloud-download" class="w-6 h-6"></i>
+            </div>
+            <p class="font-bold text-heritage-text text-sm">ยังไม่มีข้อมูลสรุปข่าวเช้าจาก LINE</p>
+            <p class="max-w-md mx-auto text-heritage-muted leading-relaxed">
+              คลิกปุ่ม "ดึงข้อมูลจาก LINE" ด้านบน เพื่อเชื่อมต่อ Firebase และนำข้อมูลสรุปข่าวเช้ามาแสดงผลที่นี่ครับ
+            </p>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
       lucide.createIcons();
     };
 
@@ -2764,6 +3491,9 @@
       // 3. เรนเดอร์บนหน้า นวัตกรรมการสอนสากล (Live Tab)
       renderPedagogyLiveCards(parsed.pedagogies);
 
+      // 4. เรนเดอร์บนหน้า ภารกิจครู (คิวงานจาก LINE)
+      renderLineTasksCards(parsed.sec2);
+
       lucide.createIcons();
     };
 
@@ -3081,7 +3811,8 @@
             const result = await res.json();
             if (result.success && Array.isArray(result.data) && result.data.length > 0) {
               localStorage.setItem('krusos_line_saved_summaries', JSON.stringify(result.data));
-              renderMergedChatAndSummaries(result.data, webChatHistory);
+              renderPersonalChat();
+              renderLineChatBoard(result.data);
               if (forceFetch) showToast(`ดึงข้อมูลสำเร็จ ${result.data.length} รายการจาก LINE & Firebase`);
               return;
             } else if (result.success && result.data.length === 0) {
@@ -3098,7 +3829,8 @@
       }
 
       if (cachedLineSummaries.length > 0 || webChatHistory.length > 0) {
-        renderMergedChatAndSummaries(cachedLineSummaries, webChatHistory);
+        renderPersonalChat();
+        renderLineChatBoard(cachedLineSummaries);
         return;
       }
 
@@ -3230,7 +3962,7 @@
       const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} น.`;
 
       // แสดงข้อความของผู้ใช้ทันที
-      const history = document.getElementById('chatMessageHistory');
+      const history = document.getElementById('personalChatMessageHistory');
       const tempUserDiv = document.createElement('div');
       tempUserDiv.className = 'space-y-2 mb-4';
       tempUserDiv.innerHTML = `
