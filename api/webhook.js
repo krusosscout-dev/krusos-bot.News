@@ -103,7 +103,12 @@ export default async function handler(req, res) {
      "confirmationMessage": "ข้อความยืนยันพร้อมอิโมจิ ⏰"
    }`;
 
-    const candidateModels = ['gemini-3.8-flash', 'gemini-3.8-flash-lite'];
+    const candidateModels = [
+      'gemini-3.8-flash',
+      'gemini-3.5-flash',
+      'gemini-3.5-flash-lite',
+      'gemini-flash-latest'
+    ];
     let replyRaw = '';
 
     for (const model of candidateModels) {
@@ -118,19 +123,30 @@ export default async function handler(req, res) {
                 role: 'user',
                 parts: [{ text: `${systemPromptText}\n\nข้อความจากผู้ใช้: ${userMessage}` }]
               }
-            ]
+            ],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 3500
+            }
           })
         });
 
         const geminiData = await geminiRes.json();
-        if (geminiRes.ok && geminiData.candidates?.[0]?.content?.parts?.[0]?.text) {
-          replyRaw = geminiData.candidates[0].content.parts[0].text;
+        const parts = geminiData.candidates?.[0]?.content?.parts || [];
+        const fullText = parts
+          .filter(p => p.text && !p.thought)
+          .map(p => p.text)
+          .join('\n')
+          .trim();
+
+        if (geminiRes.ok && fullText) {
+          replyRaw = fullText;
           break;
         } else {
-          console.error(`Model ${model} failed:`, JSON.stringify(geminiData));
+          console.error(`Model ${model} failed in webhook:`, JSON.stringify(geminiData));
         }
       } catch (err) {
-        console.error(`Error requesting model ${model}:`, err);
+        console.error(`Error requesting model ${model} in webhook:`, err);
       }
     }
 
@@ -187,6 +203,24 @@ export default async function handler(req, res) {
       }
     }
 
+    // แบ่งข้อความไม่เกิน 4800 ตัวอักษรต่อฟองสบู่ (ไม่เกิน 5 ฟองสบู่ใน reply)
+    const replyMessages = [];
+    if (finalReplyText.length <= 4800) {
+      replyMessages.push({ type: 'text', text: finalReplyText });
+    } else {
+      const paras = finalReplyText.split('\n\n');
+      let currentChunk = '';
+      for (const p of paras) {
+        if ((currentChunk + '\n\n' + p).length <= 4800) {
+          currentChunk = currentChunk ? currentChunk + '\n\n' + p : p;
+        } else {
+          if (currentChunk) replyMessages.push({ type: 'text', text: currentChunk });
+          currentChunk = p;
+        }
+      }
+      if (currentChunk) replyMessages.push({ type: 'text', text: currentChunk });
+    }
+
     // ตอบกลับผู้ใช้ใน LINE
     await fetch('https://api.line.me/v2/bot/message/reply', {
       method: 'POST',
@@ -196,7 +230,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         replyToken: replyToken,
-        messages: [{ type: 'text', text: finalReplyText }]
+        messages: replyMessages.slice(0, 5)
       })
     });
   }

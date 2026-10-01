@@ -61,34 +61,50 @@ export default async function handler(req, res) {
     day: 'numeric' 
   });
 
-  const prompt = `คุณคือผู้เชี่ยวชาญด้านการวิจัยทางการศึกษาเปรียบเทียบระดับนานาชาติและกวีเอกผู้เข้าใจจิตวิญญาณของครูไทย
-ภารกิจของคุณคือ: จัดเตรียมข้อความก่อนนอนเวลา 21:00 น. สำหรับครูสังคมศึกษาที่กำลังศึกษาระดับปริญญาโท และมุ่งมั่นพัฒนาวิชาชีพสู่ผลงานวิชาการ ว.PA
+  // ตรวจสอบรอบ 3 วันสำหรับสาระวิจัย (3-Day Cycle) หรือบังคับผ่าน Query ?full=true / ?mode=full
+  const daysSinceEpoch = Math.floor(now.getTime() / (1000 * 60 * 60 * 24));
+  const isResearchNight = (daysSinceEpoch % 3 === 0) || (req.query && (req.query.full === 'true' || req.query.mode === 'full'));
 
-ให้จัดเตรียมเนื้อหาแยกเป็น 2 ส่วน โดยคั่นระหว่างแต่ละส่วนด้วยคำว่า "[SPLIT]" เพียงคำเดียวเท่านั้น (ห้ามใส่สิ่งอื่นในบรรทัดคั่น):
+  let prompt = "";
+  if (isResearchNight) {
+    prompt = `คุณคือผู้เชี่ยวชาญด้านการวิจัยทางการศึกษาเปรียบเทียบระดับนานาชาติและกวีเอกผู้เข้าใจจิตวิญญาณของครูไทย
+ภารกิจของคุณคือ: จัดเตรียมข้อความก่อนนอนเวลา 21:00 น. (รอบ 3 วัน: เจาะลึกบทความวิจัยด้านสังคมศึกษา/ประวัติศาสตร์/การศึกษา)
+สำหรับครูสังคมศึกษาที่กำลังศึกษาระดับปริญญาโท และมุ่งมั่นพัฒนาวิชาชีพสู่ผลงานวิชาการ ว.PA
 
-ส่วนที่ 1: 🌙 สาระวิจัยทางการศึกษาสากลก่อนนอน (ระบุวันที่ชัดเจน)
-- ต้องระบุวันที่และเวลาอย่างชัดเจนที่บรรทัดแรกสุด: "🌙 สาระวิจัยสากลก่อนนอน • ${thaiDateFull} (เวลา 21:00 น.)"
-คัดเลือกงานวิจัยทางการศึกษาหรือนวัตกรรมการเรียนรู้สังคมศึกษา/ประวัติศาสตร์ระดับสากล 1 เรื่อง ที่มีคุณภาพสูงและน่าสนใจ (เช่น งานวิจัยจาก Stanford Graduate School of Education, Harvard GSE, Oxford Review of Education, UNESCO-IBE, Comparative Education Review หรือ สแกนดิเนเวีย/ฟินแลนด์)
-เขียนอธิบายอย่างลึกซึ้ง ลำดับความคิดเป็นระบบ และอ่านง่าย:
-- 📖 ชื่องานวิจัย & สถาบันต้นทาง: [ชื่อเต็มภาษาอังกฤษพร้อมแปลไทย ระบุชื่อนักวิจัย สถาบัน และปีตีพิมพ์]
-- 🎯 คำถามวิจัยและวัตถุประสงค์ (Research Inquiry & Objective): [อธิบายปัญหา ที่มา และเป้าหมายที่ต้องการค้นหาอย่างชัดเจน]
-- 🔬 ระเบียบวิธีวิจัยและกลุ่มตัวอย่าง (Methodology & Sample): [ระบุระเบียบวิธีวิจัย วิธีเก็บข้อมูล และบริบทกลุ่มตัวอย่าง]
-- 💡 ข้อค้นพบสำคัญเชิงประจักษ์ (Key Findings): [สรุปสิ่งที่งานวิจัยค้นพบเป็นข้อๆ 3-4 ประเด็นสำคัญอย่างลึกซึ้ง]
-- 🏫 การประยุกต์ใช้ในการสอน & แนวคิดต่อยอด ป.โท (Practical Implications): [ข้อเสนอแนะว่าครูไทยสามารถนำแก่นวิจัยนี้ไปปรับใช้ในห้องเรียนจริง หรือนำไปต่อยอดกรอบแนวคิดวิจัย ป.โท ได้อย่างไร]
-- 🔗 แหล่งอ้างอิงทางวิชาการ (Citation & Link): [รูปแบบการอ้างอิง APA 7th พร้อม URL หรือ DOI]
+ให้จัดเตรียมเนื้อหาแยกเป็น 2 ส่วน โดยคั่นระหว่างแต่ละส่วนด้วยคำว่า "[SPLIT]" เพียงคำเดียวเท่านั้น:
+
+กติกาความยาวและคุณภาพ: สรุปให้กระชับ ชัดเจน ลึกซึ้ง เน้นเฉพาะส่วนที่สำคัญ ไม่เยิ่นเย้อ ได้ใจความทางวิชาการครบถ้วน
+กฎสำคัญด้านแหล่งข้อมูล: ต้องแนบลิงก์แหล่งข้อมูลจริงหรือ DOI ที่คลิกเข้าไปอ่าน/ศึกษาต่อได้จริง (Real URL https://... เช่น https://doi.org/..., scholar.google.com, eric.ed.gov, jstor.org, unesco.org)
+
+ส่วนที่ 1: 🌙 สาระวิจัยทางการศึกษาสากลก่อนนอน (รอบ 3 วัน)
+- บรรทัดแรกสุด: "🌙 สาระวิจัยสากลก่อนนอน • ${thaiDateFull} (เวลา 21:00 น.)"
+คัดเลือกงานวิจัยคุณภาพสูงด้านการสอนสังคมศึกษา ประวัติศาสตร์ หรือนวัตกรรมการศึกษา 1 เรื่อง (เช่น Stanford, Harvard, Oxford, UNESCO หรือสแกนดิเนเวีย):
+- 📖 ชื่องานวิจัย & แหล่งที่มา: [ชื่อภาษาอังกฤษและไทย ระบุสถาบัน/ปี]
+- 🎯 วัตถุประสงค์การวิจัย: [ปัญหาและเป้าหมายสั้นกระชับ 2-3 บรรทัด]
+- 🔬 ระเบียบวิธีและกลุ่มตัวอย่าง: [วิธีวิจัยและกลุ่มตัวอย่างสั้นๆ]
+- 💡 ข้อค้นพบสำคัญ: [สรุป 3 ข้อสั้นกระชับ คมชัด]
+- 🏫 การนำไปใช้สอน & วิจัย ป.โท: [ประโยชน์ต่อการสอนสังคมศึกษาหรือต่อยอดโครงร่างวิจัย ป.โท]
+- 🔗 ลิงก์แหล่งข้อมูลจริง/DOI: [ระบุ URL จริง https://... ที่คลิกเข้าไปศึกษาต่อได้จริง]
 
 [SPLIT]
 
-ส่วนที่ 2: ✍️ กลอนกวีพักใจครูก่อนนิทรา (ระบุวันที่ชัดเจน)
-- ต้องระบุหัวข้อและวันที่ที่บรรทัดแรก: "✍️ กลอนกวีพักใจครู • ประจำค่ำคืน${thaiDateFull}"
-ประพันธ์กลอนแปด (กลอนสุภาพ) จำนวน 1-2 บท ที่ไพเราะ สัมผัสนอกสัมผัสในถูกต้องตามฉันทลักษณ์
-เนื้อหากลอน: ปลอบประโลมความเหนื่อยล้าจากการสอนและการทุ่มเทเพื่อศิษย์ตลอดทั้งวัน สรรเสริญอุดมการณ์ความเสียสละของครู เติมพลังบวกและความสงบในจิตใจ ส่งคุณครูเข้านอนด้วยความสุขใจ หลับฝันดี และพร้อมตื่นมารับวันใหม่อย่างสดใส`;
+ส่วนที่ 2: ✍️ กลอนกวีพักใจครูก่อนนิทรา
+- บรรทัดแรก: "✍️ กลอนกวีพักใจครู • ประจำค่ำคืน ${thaiDateFull}"
+ประพันธ์กลอนแปด (กลอนสุภาพ) 1-2 บทที่ไพเราะ สัมผัสนอกในถูกต้อง ปลอบประโลมความเหนื่อยล้า ส่งคุณครูเข้านอนด้วยความสุขใจ หลับฝันดี ราตรีสวัสดิ์`;
+  } else {
+    prompt = `คุณคือกวีเอกและผู้ช่วยส่วนตัวผู้เข้าใจจิตวิญญาณของครูไทย
+ภารกิจของคุณคือ: จัดเตรียมข้อความพักผ่อนก่อนนอนเวลา 21:00 น. สำหรับครูสังคมศึกษา
+
+ให้จัดเตรียมเนื้อหา 1 ส่วนถ้วน:
+- บรรทัดแรก: "🌙 ข้อคิด & กลอนพักใจครูก่อนนิทรา • ${thaiDateFull} (21:00 น.)"
+- 🌿 ถ้อยคำพักใจ: ข้อคิดสั้นๆ 1 ย่อหน้า ปลอบประโลมความเหนื่อยล้าจากการสอนและสร้างพลังบวก
+- ✍️ กลอนสุภาพ: ประพันธ์กลอนแปด 1-2 บทที่ไพเราะ สัมผัสถูกต้อง ส่งคุณครูเข้านอนอย่างผ่อนคลาย หลับฝันดี ราตรีสวัสดิ์`;
+  }
 
   try {
     const candidateModels = [
       'gemini-3.8-flash',
-      'gemini-2.5-flash',
-      'gemini-1.5-flash',
+      'gemini-3.5-flash',
       'gemini-flash-latest'
     ];
 
@@ -103,9 +119,10 @@ export default async function handler(req, res) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
+            tools: [{ google_search: {} }],
             generationConfig: {
               temperature: 0.7,
-              maxOutputTokens: 3500
+              maxOutputTokens: 4000
             }
           })
         });
@@ -115,10 +132,10 @@ export default async function handler(req, res) {
           selectedModel = model;
           break;
         } else {
-          console.warn(`Model ${model} returned status ${resCandidate.status}, trying fallback...`);
+          console.warn(`Night research model ${model} returned status ${resCandidate.status}, trying fallback...`);
         }
       } catch (err) {
-        console.warn(`Model ${model} threw error:`, err.message);
+        console.warn(`Night research model ${model} threw error:`, err.message);
       }
     }
 
@@ -129,25 +146,46 @@ export default async function handler(req, res) {
 
     const geminiData = await geminiRes.json();
     
-    // ดึงเฉพาะเนื้อหาข้อความจริง
+    // ดึงเฉพาะเนื้อหาข้อความจริงครบทุก Part
     const parts = geminiData.candidates?.[0]?.content?.parts || [];
-    const textPart = parts.find(p => p.text && !p.thought) || parts[parts.length - 1];
-    const fullText = textPart?.text;
+    const fullText = parts
+      .filter(p => p.text && !p.thought)
+      .map(p => p.text)
+      .join('\n')
+      .trim();
 
     if (!fullText) {
-      throw new Error("No response from Gemini: " + JSON.stringify(geminiData));
+      throw new Error("No text response from Gemini: " + JSON.stringify(geminiData));
     }
 
-    // หั่นข้อความเป็น 2 ส่วนตามสัญลักษณ์ [SPLIT]
-    const splitMessages = fullText
+    // หั่นข้อความตามสัญลักษณ์ [SPLIT]
+    const rawSections = fullText
       .split("[SPLIT]")
       .map(msg => msg.trim())
-      .filter(msg => msg.length > 0)
-      .slice(0, 3)
-      .map(text => ({ 
-        type: "text", 
-        text: text.length > 4900 ? text.substring(0, 4900) + '...' : text 
-      }));
+      .filter(msg => msg.length > 0);
+
+    const splitMessages = [];
+    for (const sec of rawSections) {
+      if (sec.length <= 4800) {
+        splitMessages.push({ type: "text", text: sec });
+      } else {
+        const paragraphs = sec.split('\n\n');
+        let currentChunk = '';
+        for (const p of paragraphs) {
+          if ((currentChunk + '\n\n' + p).length <= 4800) {
+            currentChunk = currentChunk ? currentChunk + '\n\n' + p : p;
+          } else {
+            if (currentChunk) splitMessages.push({ type: "text", text: currentChunk });
+            currentChunk = p;
+          }
+        }
+        if (currentChunk) splitMessages.push({ type: "text", text: currentChunk });
+      }
+    }
+
+    // สกัดรายการ URL แหล่งข้อมูลจริงทั้งหมดเพื่อเก็บเป็นคลังอ้างอิง
+    const extractedUrls = fullText.match(/(https?:\/\/[^\s\)\"\'\<\>]+)/g) || [];
+    const uniqueSources = [...new Set(extractedUrls)];
 
     // บันทึกลง Firestore ใน collection "daily_summaries" (type: night_research)
     let firestoreStatus = { saved: false, reason: "ไม่ได้เชื่อมต่อฐานข้อมูล" };
@@ -158,12 +196,16 @@ export default async function handler(req, res) {
         const docRef = await db.collection('daily_summaries').add({
           date: today.toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' }),
           type: 'night_research',
-          title: 'สาระวิจัยสากลก่อนนอนและกลอนกวีพักใจครู (21:00 น.)',
+          cycle: isResearchNight ? '3day_research' : 'daily_relaxation',
+          title: isResearchNight 
+            ? 'สาระวิจัยสากลสังคมศึกษา/ประวัติศาสตร์ & กลอนก่อนนอน (รอบ 3 วัน)' 
+            : 'กลอนกวีพักใจครูก่อนนิทรา (21:00 น.)',
           rawContent: fullText,
-          sections: splitMessages.map(m => m.text),
+          sections: rawSections,
+          sources: uniqueSources,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
         });
-        firestoreStatus = { saved: true, docId: docRef.id };
+        firestoreStatus = { saved: true, docId: docRef.id, sourcesCount: uniqueSources.length };
         console.log('Successfully saved night research to Firestore:', docRef.id);
       } catch (dbErr) {
         firestoreStatus = { saved: false, error: dbErr.message };
@@ -171,18 +213,26 @@ export default async function handler(req, res) {
       }
     }
 
-    // ยิงส่งข้อความ Push แจ้งเตือนเข้า LINE
-    const lineRes = await fetch("https://api.line.me/v2/bot/message/push", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${LINE_ACCESS_TOKEN}`
-      },
-      body: JSON.stringify({
-        to: LINE_USER_ID,
-        messages: splitMessages
-      })
-    });
+    // ยิงส่งข้อความ Push แจ้งเตือนเข้า LINE (ยิงเป็นชุด Batch ละไม่เกิน 5 ข้อความ)
+    for (let i = 0; i < splitMessages.length; i += 5) {
+      const batch = splitMessages.slice(i, i + 5);
+      const lineRes = await fetch("https://api.line.me/v2/bot/message/push", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${LINE_ACCESS_TOKEN}`
+        },
+        body: JSON.stringify({
+          to: LINE_USER_ID,
+          messages: batch
+        })
+      });
+
+      if (!lineRes.ok) {
+        const lineError = await lineRes.text();
+        console.error("LINE Push Error in night-research:", lineError);
+      }
+    }
 
     if (!lineRes.ok) {
       const lineError = await lineRes.text();
