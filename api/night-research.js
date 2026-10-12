@@ -97,14 +97,15 @@ export default async function handler(req, res) {
 
 ให้จัดเตรียมเนื้อหา 1 ส่วนถ้วน:
 - บรรทัดแรก: "🌙 ข้อคิด & กลอนพักใจครูก่อนนิทรา • ${thaiDateFull} (21:00 น.)"
+คำสั่งเด็ดขาด: ให้แสดงเฉพาะผลลัพธ์สุดท้ายตามโครงสร้างที่ระบุเท่านั้น ห้ามแสดงกระบวนการคิด การทดคำสัมผัส หรือความคิดเบื้องหลังใดๆ ทั้งสิ้น
 - 🌿 ถ้อยคำพักใจ: ข้อคิดสั้นๆ 1 ย่อหน้า ปลอบประโลมความเหนื่อยล้าจากการสอนและสร้างพลังบวก
 - ✍️ กลอนสุภาพ: ประพันธ์กลอนแปด 1-2 บทที่ไพเราะ สัมผัสถูกต้อง ส่งคุณครูเข้านอนอย่างผ่อนคลาย หลับฝันดี ราตรีสวัสดิ์`;
   }
 
   try {
     const candidateModels = [
-      'gemini-3.8-flash',
       'gemini-3.5-flash',
+      'gemini-3.8-flash',
       'gemini-flash-latest'
     ];
 
@@ -114,17 +115,24 @@ export default async function handler(req, res) {
     for (const model of candidateModels) {
       try {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+        
+        const reqBody = {
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 3000,
+            thinkingConfig: { thinkingBudget: 0 }
+          }
+        };
+        // เรียกใช้ Google Search เฉพาะคืนที่มีสาระวิจัยสากล เพื่อความเร็วและป้องกัน Timeout
+        if (isResearchNight) {
+          reqBody.tools = [{ google_search: {} }];
+        }
+
         const resCandidate = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            tools: [{ google_search: {} }],
-            generationConfig: {
-              temperature: 0.7,
-              maxOutputTokens: 4000
-            }
-          })
+          body: JSON.stringify(reqBody)
         });
 
         if (resCandidate.ok) {
@@ -146,13 +154,18 @@ export default async function handler(req, res) {
 
     const geminiData = await geminiRes.json();
     
-    // ดึงเฉพาะเนื้อหาข้อความจริงครบทุก Part
+    // ดึงเฉพาะเนื้อหาข้อความจริงครบทุก Part และกรองข้อความกระบวนการคิดออกอย่างสมบูรณ์
     const parts = geminiData.candidates?.[0]?.content?.parts || [];
-    const fullText = parts
+    let cleanedText = parts
       .filter(p => p.text && !p.thought)
       .map(p => p.text)
       .join('\n')
+      .replace(/<thought>[\s\S]*?<\/thought>/gi, '')
+      .replace(/\):[\s\S]*?(?=(?:🌙|✍️|🌿|ส่วนที่|$))/g, '')
+      .replace(/Let's review:[\s\S]*?(?=(?:🌙|✍️|🌿|ส่วนที่|$))/gi, '')
       .trim();
+
+    const fullText = cleanedText;
 
     if (!fullText) {
       throw new Error("No text response from Gemini: " + JSON.stringify(geminiData));

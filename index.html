@@ -3306,7 +3306,7 @@
 
       // 3. พยายามเรียก Google Gemini API ด้วย API Key ที่ฝังไว้
       if (geminiApiKey) {
-        const candidateModels = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-flash-latest'];
+        const candidateModels = ['gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-flash-latest'];
         const systemPrompt = `คุณคือ Cortex AI ผู้ช่วยส่วนตัวอัจฉริยะของผู้สอนสังคมศึกษา (KruSos Cortex)
 กติกาสำคัญ:
 1. หากถามเนื้อหาสาระ/ข้อเท็จจริง ให้ตอบเนื้อหาตรงจุด กระชับ ถูกต้อง ชัดเจน มีอิโมจิประกอบ ไม่ต้องแถมแผนการสอน
@@ -3325,14 +3325,20 @@
                 }],
                 generationConfig: {
                   temperature: 0.7,
-                  maxOutputTokens: 4000
+                  maxOutputTokens: 3500,
+                  thinkingConfig: { thinkingBudget: 0 }
                 }
               })
             });
             if (res.ok) {
               const data = await res.json();
               const parts = data.candidates?.[0]?.content?.parts || [];
-              const reply = parts.filter(p => p.text && !p.thought).map(p => p.text).join('\n').trim();
+              const reply = parts
+                .filter(p => p.text && !p.thought)
+                .map(p => p.text)
+                .join('\n')
+                .replace(/<thought>[\s\S]*?<\/thought>/gi, '')
+                .trim();
               if (reply) return reply;
             }
           } catch (e) {
@@ -4808,7 +4814,7 @@
         const apiKey = DEFAULT_EMBEDDED_KEY;
         const systemPrompt = "คุณคือ GPT เพื่อการศึกษาสำหรับ KruSos (ครูสังคมศึกษา วิจัย ป.โท) เชี่ยวชาญการออกแบบแผนการสอนเชิงรุก (Active Learning), นวัตกรรมการสอนสากล, และข้อตกลง ว.PA ให้ตอบอย่างละเอียด เป็นขั้นตอน มีโครงสร้างชัดเจน สุภาพ และพร้อมนำไปใช้ในห้องเรียนจริง";
         
-        const candidateModels = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-flash-latest'];
+        const candidateModels = ['gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-flash-latest'];
         let data = null;
 
         for (const model of candidateModels) {
@@ -4822,7 +4828,8 @@
                 ],
                 generationConfig: {
                   temperature: 0.7,
-                  maxOutputTokens: 6000
+                  maxOutputTokens: 5000,
+                  thinkingConfig: { thinkingBudget: 0 }
                 }
               })
             });
@@ -4840,7 +4847,12 @@
         if (loadEl) loadEl.remove();
 
         const parts = data?.candidates?.[0]?.content?.parts || [];
-        const aiText = parts.filter(p => p.text && !p.thought).map(p => p.text).join('\n').trim();
+        const aiText = parts
+          .filter(p => p.text && !p.thought)
+          .map(p => p.text)
+          .join('\n')
+          .replace(/<thought>[\s\S]*?<\/thought>/gi, '')
+          .trim();
 
         if (aiText) {
           const msgIdx = Date.now();

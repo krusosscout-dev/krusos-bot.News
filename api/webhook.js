@@ -104,9 +104,8 @@ export default async function handler(req, res) {
    }`;
 
     const candidateModels = [
-      'gemini-3.8-flash',
       'gemini-3.5-flash',
-      'gemini-3.5-flash-lite',
+      'gemini-3.8-flash',
       'gemini-flash-latest'
     ];
     let replyRaw = '';
@@ -126,21 +125,23 @@ export default async function handler(req, res) {
             ],
             generationConfig: {
               temperature: 0.7,
-              maxOutputTokens: 3500
+              maxOutputTokens: 3000,
+              thinkingConfig: { thinkingBudget: 0 }
             }
           })
         });
 
         const geminiData = await geminiRes.json();
         const parts = geminiData.candidates?.[0]?.content?.parts || [];
-        const fullText = parts
+        let cleanedText = parts
           .filter(p => p.text && !p.thought)
           .map(p => p.text)
           .join('\n')
+          .replace(/<thought>[\s\S]*?<\/thought>/gi, '')
           .trim();
 
-        if (geminiRes.ok && fullText) {
-          replyRaw = fullText;
+        if (geminiRes.ok && cleanedText) {
+          replyRaw = cleanedText;
           break;
         } else {
           console.error(`Model ${model} failed in webhook:`, JSON.stringify(geminiData));

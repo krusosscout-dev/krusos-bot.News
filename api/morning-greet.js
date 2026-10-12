@@ -178,8 +178,8 @@ ${realTasksText ? realTasksText : "• เตรียมการจัดก�
   }
 
   const candidateModels = [
-    'gemini-3.8-flash',
     'gemini-3.5-flash',
+    'gemini-3.8-flash',
     'gemini-flash-latest'
   ];
 
@@ -198,7 +198,8 @@ ${realTasksText ? realTasksText : "• เตรียมการจัดก�
             tools: [{ google_search: {} }],
             generationConfig: {
               temperature: 0.7,
-              maxOutputTokens: 6000
+              maxOutputTokens: 5000,
+              thinkingConfig: { thinkingBudget: 0 }
             }
           })
         });
@@ -219,13 +220,16 @@ ${realTasksText ? realTasksText : "• เตรียมการจัดก�
       throw new Error("All Gemini models failed in morning-greet");
     }
     
-    // ดึงเฉพาะเนื้อหาข้อความจริงครบทุก Part (คัดแยก thinking ออก)
+    // ดึงเฉพาะเนื้อหาข้อความจริงครบทุก Part (คัดแยก thinking ออกอย่างสมบูรณ์)
     const parts = geminiData.candidates?.[0]?.content?.parts || [];
-    const fullText = parts
+    let cleanedText = parts
       .filter(p => p.text && !p.thought)
       .map(p => p.text)
       .join('\n')
+      .replace(/<thought>[\s\S]*?<\/thought>/gi, '')
       .trim();
+
+    const fullText = cleanedText;
 
     if (!fullText) {
       throw new Error("No text response from Gemini: " + JSON.stringify(geminiData));
