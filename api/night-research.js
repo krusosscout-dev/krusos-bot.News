@@ -181,22 +181,51 @@ export default async function handler(req, res) {
       .map(msg => msg.trim())
       .filter(msg => msg.length > 0);
 
-    const splitMessages = [];
-    for (const sec of rawSections) {
-      if (sec.length <= 4800) {
-        splitMessages.push({ type: "text", text: sec });
-      } else {
-        const paragraphs = sec.split('\n\n');
-        let currentChunk = '';
-        for (const p of paragraphs) {
-          if ((currentChunk + '\n\n' + p).length <= 4800) {
-            currentChunk = currentChunk ? currentChunk + '\n\n' + p : p;
-          } else {
-            if (currentChunk) splitMessages.push({ type: "text", text: currentChunk });
-            currentChunk = p;
-          }
+    // สร้างรายการข้อความที่จะส่งเข้า LINE
+    // สถาปัตยกรรม Dual-Layer: LINE ส่งสรุปกระชับ 1 บับเบิ้ล ส่วน Firestore เก็บฉบับเต็ม 100%
+    const isFullPush = req.query && (req.query.full_line === 'true' || req.query.mode === 'full_line');
+    
+    let linePushMessages = [];
+    if (isFullPush) {
+      linePushMessages = splitMessages;
+    } else {
+      if (isResearchNight && rawSections.length >= 2) {
+        const researchSec = rawSections[0];
+        const poemSec = rawSections[1];
+
+        // สกัดชื่องานวิจัย
+        const titleMatch = researchSec.match(/(?:📖|\*\*📖)\s*(?:\*\*)?ชื่องานวิจัย[^\n:]*(?:\*\*)?:?\s*([^\n]+)/);
+        const paperTitle = titleMatch ? titleMatch[1].replace(/[\*\_\"]/g, '').trim() : 'สาระวิจัยสากลทางสังคมศึกษา';
+
+        // สกัดข้อค้นพบสำคัญ
+        const findingsMatch = researchSec.match(/(?:💡|\*\*💡)\s*(?:\*\*)?ข้อค้นพบ[^\n:]*(?:\*\*)?:?\s*([\s\S]*?)(?=(?:\n\n|\n🏫|\n🔗|\n\[SPLIT\]|$))/);
+        let findingsText = findingsMatch ? findingsMatch[1].trim() : '';
+        const findingLines = findingsText.split('\n').filter(l => l.trim().length > 0).slice(0, 3).join('\n');
+
+        // สกัดลิงก์ DOI
+        const doiMatch = researchSec.match(/(https?:\/\/[^\s\)\"\'\<\>]+)/);
+        const doiUrl = doiMatch ? doiMatch[1] : '';
+
+        // สกัดบทกลอน
+        let cleanPoem = poemSec.replace(/^ส่วนที่\s*2:\s*/i, '').trim();
+
+        let compactText = `🌙 สาระวิจัยสากล & กลอนพักใจ • ${thaiDateFull} (21:00 น.)\n\n`;
+        compactText += `📖 งานวิจัยเด่น:\n"${paperTitle}"\n\n`;
+        if (findingLines) {
+          compactText += `💡 ข้อค้นพบสำคัญ:\n${findingLines}\n\n`;
         }
-        if (currentChunk) splitMessages.push({ type: "text", text: currentChunk });
+        if (doiUrl) {
+          compactText += `🔗 แหล่งข้อมูล/DOI: ${doiUrl}\n\n`;
+        }
+        compactText += `${cleanPoem}\n\n`;
+        compactText += `━━━━━━━━━━━━━━━━━━━━\n📲 อ่านบทวิเคราะห์วิจัยฉบับเต็ม & แนวทาง ว.PA ในระบบ:\n👉 https://krusos-bot-news-02.vercel.app/\n━━━━━━━━━━━━━━━━━━━━`;
+
+        linePushMessages.push({ type: "text", text: compactText.trim() });
+      } else {
+        // คืนทั่วไป (กลอนกวีพักใจครูก่อนนิทรา)
+        let poemSec = (rawSections[0] || '').replace(/^ส่วนที่\s*1:\s*/i, '').trim();
+        let compactText = `${poemSec}\n\n━━━━━━━━━━━━━━━━━━━━\n📲 เปิดดูระบบผู้ช่วยครูซอส:\n👉 https://krusos-bot-news-02.vercel.app/\n━━━━━━━━━━━━━━━━━━━━`;
+        linePushMessages.push({ type: "text", text: compactText.trim() });
       }
     }
 
@@ -204,7 +233,7 @@ export default async function handler(req, res) {
     const extractedUrls = fullText.match(/(https?:\/\/[^\s\)\"\'\<\>]+)/g) || [];
     const uniqueSources = [...new Set(extractedUrls)];
 
-    // บันทึกลง Firestore ใน collection "daily_summaries" (type: night_research)
+    // บันทึกลง Firestore ใน collection "daily_summaries" (type: night_research) - เก็บฉบับเต็ม 100%
     let firestoreStatus = { saved: false, reason: "ไม่ได้เชื่อมต่อฐานข้อมูล" };
 
     if (db) {
@@ -232,8 +261,8 @@ export default async function handler(req, res) {
 
     // ยิงส่งข้อความ Push แจ้งเตือนเข้า LINE (ยิงเป็นชุด Batch ละไม่เกิน 5 ข้อความ)
     let lastPushError = null;
-    for (let i = 0; i < splitMessages.length; i += 5) {
-      const batch = splitMessages.slice(i, i + 5);
+    for (let i = 0; i < linePushMessages.length; i += 5) {
+      const batch = linePushMessages.slice(i, i + 5);
       const lineRes = await fetch("https://api.line.me/v2/bot/message/push", {
         method: "POST",
         headers: {

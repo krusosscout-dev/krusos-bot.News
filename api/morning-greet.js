@@ -256,31 +256,46 @@ ${realTasksText ? realTasksText : "• เตรียมการจัดก�
       .map(msg => msg.trim())
       .filter(msg => msg.length > 0);
 
-    // สร้างรายการข้อความที่จะส่งเข้า LINE (ไม่ตัดทิ้งด้วย ... หากยาวเกินจะแบ่งย่อหน้าอย่างฉลาด)
-    const splitMessages = [];
-    for (const sec of rawSections) {
-      if (sec.length <= 4800) {
-        splitMessages.push({ type: "text", text: sec });
-      } else {
-        const paragraphs = sec.split('\n\n');
-        let currentChunk = '';
-        for (const p of paragraphs) {
-          if ((currentChunk + '\n\n' + p).length <= 4800) {
-            currentChunk = currentChunk ? currentChunk + '\n\n' + p : p;
-          } else {
-            if (currentChunk) splitMessages.push({ type: "text", text: currentChunk });
-            currentChunk = p;
-          }
+    // สร้างรายการข้อความที่จะส่งเข้า LINE
+    // สถาปัตยกรรม Dual-Layer: LINE ส่งสรุปกระชับอ่านง่าย 2 บับเบิ้ล ส่วน Firestore เก็บฉบับเต็ม 100%
+    const isFullPush = req.query && (req.query.full_line === 'true' || req.query.mode === 'full_line');
+    
+    let linePushMessages = [];
+    if (isFullPush) {
+      linePushMessages = splitMessages;
+    } else {
+      // 1. บับเบิ้ลที่ 1: คำทักทาย & ภารกิจเร่งด่วนประจำวัน
+      let sec1 = (rawSections[0] || '').replace(/^ส่วนที่\s*1:\s*/i, '').trim();
+      let sec2 = (rawSections[1] || '').replace(/^ส่วนที่\s*2:\s*/i, '').trim();
+      let msg1 = `${sec1}\n\n${sec2}`.trim();
+      linePushMessages.push({ type: "text", text: msg1 });
+
+      // 2. บับเบิ้ลที่ 2: นวัตกรรมยอดฮิต & ไฮไลต์ข่าว/การสอน + ลิงก์เข้าสู่ระบบ
+      let sec3 = (rawSections[2] || '').replace(/^ส่วนที่\s*3:\s*/i, '').trim();
+      let msg2 = `${sec3}`;
+
+      if (isThreeDayCycle && rawSections.length >= 4) {
+        let sec4 = (rawSections[3] || '').replace(/^ส่วนที่\s*4:\s*/i, '').trim();
+        const newsLines = sec4.split('\n')
+          .filter(l => /^\s*\d+\.|\bด้าน/.test(l))
+          .slice(0, 5)
+          .map(l => l.replace(/-\s*🔗[\s\S]*$/, '').trim())
+          .join('\n');
+
+        if (newsLines) {
+          msg2 += `\n\n🌍 ไฮไลต์ข่าวเด่น 5 มิติ (รอบ 3 วัน):\n${newsLines}`;
         }
-        if (currentChunk) splitMessages.push({ type: "text", text: currentChunk });
       }
+
+      msg2 += `\n\n━━━━━━━━━━━━━━━━━━━━\n📲 อ่านสรุปฉบับเต็ม & สาระการสอนเชิงลึกในระบบ:\n👉 https://krusos-bot-news-02.vercel.app/\n━━━━━━━━━━━━━━━━━━━━`;
+      linePushMessages.push({ type: "text", text: msg2.trim() });
     }
 
     // สกัดรายการ URL แหล่งข้อมูลจริงทั้งหมดเพื่อเก็บเป็นคลังอ้างอิง
     const extractedUrls = fullText.match(/(https?:\/\/[^\s\)\"\'\<\>]+)/g) || [];
     const uniqueSources = [...new Set(extractedUrls)];
 
-    // บันทึกลง Firestore ใน collection "daily_summaries" พร้อม sources
+    // บันทึกลง Firestore ใน collection "daily_summaries" พร้อม sources (เก็บฉบับเต็ม 100%)
     let firestoreStatus = { saved: false, reason: "ไม่ได้เชื่อมต่อฐานข้อมูล" };
 
     if (db) {
@@ -310,8 +325,9 @@ ${realTasksText ? realTasksText : "• เตรียมการจัดก�
     }
 
     // ยิงส่งข้อความ Push แจ้งเตือนเข้า LINE (ยิงเป็นชุด Batch ละไม่เกิน 5 ข้อความตามโควตา LINE)
-    for (let i = 0; i < splitMessages.length; i += 5) {
-      const batch = splitMessages.slice(i, i + 5);
+    let lastPushError = null;
+    for (let i = 0; i < linePushMessages.length; i += 5) {
+      const batch = linePushMessages.slice(i, i + 5);
       const lineRes = await fetch("https://api.line.me/v2/bot/message/push", {
         method: "POST",
         headers: {
@@ -325,9 +341,13 @@ ${realTasksText ? realTasksText : "• เตรียมการจัดก�
       });
 
       if (!lineRes.ok) {
-        const lineError = await lineRes.text();
-        console.error("LINE Push Error:", lineError);
+        lastPushError = await lineRes.text();
+        console.error("LINE Push Error:", lastPushError);
       }
+    }
+
+    if (lastPushError) {
+      throw new Error("LINE Push Error: " + lastPushError);
     }
 
     // ส่งผลลัพธ์ตอบกลับ
