@@ -187,9 +187,9 @@ ${realTasksText ? realTasksText : "• เตรียมการจัดก�
   }
 
   const candidateModels = [
-    'gemini-3.5-flash',
-    'gemini-3.8-flash',
-    'gemini-flash-latest'
+    'gemini-2.5-flash',
+    'gemini-flash-latest',
+    'gemini-2.0-flash'
   ];
 
   try {
@@ -237,6 +237,12 @@ ${realTasksText ? realTasksText : "• เตรียมการจัดก�
       .join('\n')
       .replace(/<thought>[\s\S]*?<\/thought>/gi, '')
       .trim();
+
+    // กรองรอยทดคิดก่อนหน้าส่วนที่ 1 (หากมีข้อความทดก่อน ส่วนที่ 1:)
+    const startIdx = cleanedText.indexOf('ส่วนที่ 1:');
+    if (startIdx !== -1) {
+      cleanedText = cleanedText.substring(startIdx).trim();
+    }
 
     const fullText = cleanedText;
 

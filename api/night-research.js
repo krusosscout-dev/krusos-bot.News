@@ -104,9 +104,9 @@ export default async function handler(req, res) {
 
   try {
     const candidateModels = [
-      'gemini-3.5-flash',
-      'gemini-3.8-flash',
-      'gemini-flash-latest'
+      'gemini-2.5-flash',
+      'gemini-flash-latest',
+      'gemini-2.0-flash'
     ];
 
     let geminiRes = null;
@@ -120,7 +120,7 @@ export default async function handler(req, res) {
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
             temperature: 0.7,
-            maxOutputTokens: 3000,
+            maxOutputTokens: 5000,
             thinkingConfig: { thinkingBudget: 0 }
           }
         };
@@ -161,9 +161,13 @@ export default async function handler(req, res) {
       .map(p => p.text)
       .join('\n')
       .replace(/<thought>[\s\S]*?<\/thought>/gi, '')
-      .replace(/\):[\s\S]*?(?=(?:🌙|✍️|🌿|ส่วนที่|$))/g, '')
-      .replace(/Let's review:[\s\S]*?(?=(?:🌙|✍️|🌿|ส่วนที่|$))/gi, '')
       .trim();
+
+    // กรองรอยทดคิดก่อนหน้าหัวข้อหลัก (หากมีข้อความทดคำกลอนก่อน 🌙)
+    const startIdx = cleanedText.indexOf('🌙');
+    if (startIdx !== -1) {
+      cleanedText = cleanedText.substring(startIdx).trim();
+    }
 
     const fullText = cleanedText;
 
@@ -227,6 +231,7 @@ export default async function handler(req, res) {
     }
 
     // ยิงส่งข้อความ Push แจ้งเตือนเข้า LINE (ยิงเป็นชุด Batch ละไม่เกิน 5 ข้อความ)
+    let lastPushError = null;
     for (let i = 0; i < splitMessages.length; i += 5) {
       const batch = splitMessages.slice(i, i + 5);
       const lineRes = await fetch("https://api.line.me/v2/bot/message/push", {
@@ -242,14 +247,13 @@ export default async function handler(req, res) {
       });
 
       if (!lineRes.ok) {
-        const lineError = await lineRes.text();
-        console.error("LINE Push Error in night-research:", lineError);
+        lastPushError = await lineRes.text();
+        console.error("LINE Push Error in night-research:", lastPushError);
       }
     }
 
-    if (!lineRes.ok) {
-      const lineError = await lineRes.text();
-      throw new Error("LINE Push Error: " + lineError);
+    if (lastPushError) {
+      throw new Error("LINE Push Error: " + lastPushError);
     }
 
     // ส่งผลลัพธ์ตอบกลับ
