@@ -195,14 +195,35 @@ export default async function handler(req, res) {
         const researchSec = rawSections[0];
         const poemSec = rawSections[1];
 
-        // สกัดชื่องานวิจัย
-        const titleMatch = researchSec.match(/(?:📖|\*\*📖)\s*(?:\*\*)?ชื่องานวิจัย[^\n:]*(?:\*\*)?:?\s*([^\n]+)/);
-        const paperTitle = titleMatch ? titleMatch[1].replace(/[\*\_\"]/g, '').trim() : 'สาระวิจัยสากลทางสังคมศึกษา';
+        // สกัดชื่องานวิจัย (รองรับทั้งอยู่บรรทัดเดียวกัน หรือขึ้นบรรทัดใหม่)
+        let paperTitle = '';
+        const lines = researchSec.split('\n').map(l => l.trim()).filter(Boolean);
+        const titleLineIdx = lines.findIndex(l => /ชื่องานวิจัย/i.test(l));
+        if (titleLineIdx !== -1) {
+          const inlineText = lines[titleLineIdx].replace(/^.*ชื่องานวิจัย[^\:]*[\:]?\s*/i, '').replace(/[\*\_\"]/g, '').trim();
+          if (inlineText.length > 3) {
+            paperTitle = inlineText;
+          } else if (lines[titleLineIdx + 1] && !lines[titleLineIdx + 1].startsWith('💡') && !lines[titleLineIdx + 1].startsWith('**💡')) {
+            paperTitle = lines[titleLineIdx + 1].replace(/[\*\_\"]/g, '').trim();
+          }
+        }
+        if (!paperTitle) {
+          paperTitle = 'สาระวิจัยสากลทางสังคมศึกษา';
+        }
 
         // สกัดข้อค้นพบสำคัญ
-        const findingsMatch = researchSec.match(/(?:💡|\*\*💡)\s*(?:\*\*)?ข้อค้นพบ[^\n:]*(?:\*\*)?:?\s*([\s\S]*?)(?=(?:\n\n|\n🏫|\n🔗|\n\[SPLIT\]|$))/);
-        let findingsText = findingsMatch ? findingsMatch[1].trim() : '';
-        const findingLines = findingsText.split('\n').filter(l => l.trim().length > 0).slice(0, 3).join('\n');
+        let findingLines = '';
+        const findingsLineIdx = lines.findIndex(l => /ข้อค้นพบ/i.test(l));
+        if (findingsLineIdx !== -1) {
+          const inlineFindings = lines[findingsLineIdx].replace(/^.*ข้อค้นพบ[^\:]*[\:]?\s*/i, '').replace(/[\*\_]/g, '').trim();
+          const findingsList = [];
+          if (inlineFindings.length > 5) findingsList.push(inlineFindings);
+          for (let i = findingsLineIdx + 1; i < lines.length && findingsList.length < 3; i++) {
+            if (/^(🏫|🔗|📱|ส่วนที่|\[SPLIT\]|\*\*🏫|\*\*🔗)/.test(lines[i])) break;
+            findingsList.push(lines[i].replace(/^[\-\*\•]\s*/, ''));
+          }
+          findingLines = findingsList.join('\n');
+        }
 
         // สกัดลิงก์ DOI
         const doiMatch = researchSec.match(/(https?:\/\/[^\s\)\"\'\<\>]+)/);
