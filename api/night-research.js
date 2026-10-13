@@ -84,7 +84,9 @@ export default async function handler(req, res) {
 - 🔬 ระเบียบวิธีและกลุ่มตัวอย่าง: [วิธีวิจัยและกลุ่มตัวอย่างสั้นๆ]
 - 💡 ข้อค้นพบสำคัญ: [สรุป 3 ข้อสั้นกระชับ คมชัด]
 - 🏫 การนำไปใช้สอน & วิจัย ป.โท: [ประโยชน์ต่อการสอนสังคมศึกษาหรือต่อยอดโครงร่างวิจัย ป.โท]
-- 🔗 ลิงก์แหล่งข้อมูลจริง/DOI: [ระบุ URL จริง https://... ที่คลิกเข้าไปศึกษาต่อได้จริง]
+- 🔗 ลิงก์แหล่งข้อมูลจริง/DOI: [ระบุ URL จริงหรือ DOI https://... ที่คลิกเข้าไปศึกษาต่อได้จริง 100% เช่น https://doi.org/... หรือหน้าหลักองค์กรวิจัย เช่น https://sheg.stanford.edu, https://eric.ed.gov]
+
+กฎสำคัญด้านแหล่งข้อมูล: ต้องเป็น URL หรือ DOI จริงที่สามารถคลิกเปิดอ่านได้จริง 100% ห้ามแต่งหรือเดา URL path ย่อยที่ไม่มีอยู่จริงจนเกิด 404 เด็ดขาด หากไม่ทราบ path ย่อยที่แน่นอน ให้ระบุ DOI กลาง หรือ URL หน้าหลักของสถาบันวิจัยนั้นๆ
 
 [SPLIT]
 
@@ -252,8 +254,10 @@ export default async function handler(req, res) {
       }
     }
 
-    // สกัดรายการ URL แหล่งข้อมูลจริงทั้งหมดเพื่อเก็บเป็นคลังอ้างอิง
-    const extractedUrls = fullText.match(/(https?:\/\/[^\s\)\"\'\<\>]+)/g) || [];
+    // สกัดรายการ URL แหล่งข้อมูลจริงทั้งหมดเพื่อเก็บเป็นคลังอ้างอิง (ลบเครื่องหมายวรรคตอนท้ายลิงก์ และคัดเฉพาะลิงก์ภายนอก)
+    const extractedUrls = (fullText.match(/(https?:\/\/[^\s\)\"\'\<\>]+)/g) || [])
+      .map(u => u.replace(/[\.\,\*\_\)\<\>]+$/, '').trim())
+      .filter(u => u.startsWith('http') && !u.includes('krusos-bot-news-02.vercel.app'));
     const uniqueSources = [...new Set(extractedUrls)];
 
     // บันทึกลง Firestore ใน collection "daily_summaries" (type: night_research) - เก็บฉบับเต็ม 100%

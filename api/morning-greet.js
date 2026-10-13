@@ -330,8 +330,10 @@ ${realTasksText ? realTasksText : "• เตรียมการจัดก�
       linePushMessages.push({ type: "text", text: msg2.trim() });
     }
 
-    // สกัดรายการ URL แหล่งข้อมูลจริงทั้งหมดเพื่อเก็บเป็นคลังอ้างอิง
-    const extractedUrls = fullText.match(/(https?:\/\/[^\s\)\"\'\<\>]+)/g) || [];
+    // สกัดรายการ URL แหล่งข้อมูลจริงทั้งหมดเพื่อเก็บเป็นคลังอ้างอิง (ลบเครื่องหมายวรรคตอนท้ายลิงก์ และคัดเฉพาะลิงก์ภายนอก)
+    const extractedUrls = (fullText.match(/(https?:\/\/[^\s\)\"\'\<\>]+)/g) || [])
+      .map(u => u.replace(/[\.\,\*\_\)\<\>]+$/, '').trim())
+      .filter(u => u.startsWith('http') && !u.includes('krusos-bot-news-02.vercel.app'));
     const uniqueSources = [...new Set(extractedUrls)];
 
     // บันทึกลง Firestore ใน collection "daily_summaries" พร้อม sources (เก็บฉบับเต็ม 100%)
