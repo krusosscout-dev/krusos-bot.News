@@ -32,7 +32,7 @@ export const config = {
 export default async function handler(req, res) {
   // 1. เปิด CORS Header เพื่อให้หน้าเว็บสามารถเรียกดูข้อมูลได้ทุกที่
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
@@ -46,6 +46,21 @@ export default async function handler(req, res) {
       success: false, 
       error: "ยังไม่ได้เชื่อมต่อ Firebase (ตรวจสอบตัวแปร FIREBASE_PROJECT_ID หรือ FIREBASE_PRIVATE_KEY บน Vercel)" 
     });
+  }
+
+  // 3. รองรับการลบรายการสรุปเดี่ยว (Delete single summary item)
+  if (req.method === 'DELETE' || (req.method === 'POST' && req.body?.action === 'delete') || (req.method === 'GET' && req.query?.action === 'delete')) {
+    const id = req.query?.id || req.body?.id;
+    if (!id) {
+      return res.status(400).json({ success: false, error: 'กรุณาระบุ id ของรายการสรุปที่ต้องการลบ' });
+    }
+    try {
+      await db.collection('daily_summaries').doc(id).delete();
+      return res.status(200).json({ success: true, message: `ลบรายการสรุป id ${id} สำเร็จ` });
+    } catch (delErr) {
+      console.error('Delete summary error:', delErr);
+      return res.status(500).json({ success: false, error: delErr.message });
+    }
   }
 
   try {

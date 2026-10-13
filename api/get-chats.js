@@ -32,7 +32,7 @@ export const config = {
 export default async function handler(req, res) {
   // 1. เปิด CORS Headers เพื่อให้หน้าเว็บดึงข้อมูลได้ทุกโดเมนและ localhost
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
@@ -47,6 +47,21 @@ export default async function handler(req, res) {
         data: [], 
         notice: 'Firebase ยังไม่ได้ตั้งค่าตัวแปรใน Vercel' 
       });
+    }
+
+    // รองรับการลบรายการบทสนทนาเดี่ยว (Delete single chat item)
+    if (req.method === 'DELETE' || (req.method === 'POST' && req.body?.action === 'delete') || (req.method === 'GET' && req.query?.action === 'delete')) {
+      const id = req.query?.id || req.body?.id;
+      if (!id) {
+        return res.status(400).json({ success: false, error: 'กรุณาระบุ id ของบทสนทนาที่ต้องการลบ' });
+      }
+      try {
+        await db.collection('chat_history').doc(id).delete();
+        return res.status(200).json({ success: true, message: `ลบบทสนทนา id ${id} สำเร็จ` });
+      } catch (delErr) {
+        console.error('Delete chat error:', delErr);
+        return res.status(500).json({ success: false, error: delErr.message });
+      }
     }
 
     const snapshot = await db.collection('chat_history')
