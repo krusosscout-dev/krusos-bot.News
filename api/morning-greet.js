@@ -256,6 +256,8 @@ ${realTasksText ? realTasksText : "• เตรียมการจัดก�
       .map(msg => msg.trim())
       .filter(msg => msg.length > 0);
 
+    const splitMessages = rawSections.map(s => ({ type: "text", text: s }));
+
     // สร้างรายการข้อความที่จะส่งเข้า LINE
     // สถาปัตยกรรม Dual-Layer: LINE ส่งสรุปกระชับอ่านง่าย 2 บับเบิ้ล ส่วน Firestore เก็บฉบับเต็ม 100%
     const isFullPush = req.query && (req.query.full_line === 'true' || req.query.mode === 'full_line');
