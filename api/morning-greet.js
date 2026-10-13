@@ -30,6 +30,15 @@ export const config = {
 };
 
 export default async function handler(req, res) {
+  // รองรับ CORS สำหรับการทดสอบยิงจากหน้าเว็บหรือระบบภายนอก
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   const LINE_ACCESS_TOKEN = process.env.LINE_ACCESS_TOKEN;
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
   const LINE_USER_ID = process.env.LINE_USER_ID;
@@ -330,5 +339,4 @@ ${realTasksText ? realTasksText : "• เตรียมการจัดก�
     console.error("Error:", error.message);
     return res.status(500).json({ success: false, error: error.message });
   }
-}
 }

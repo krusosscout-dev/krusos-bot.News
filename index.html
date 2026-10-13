@@ -851,13 +851,62 @@
               <i data-lucide="bell" class="w-4 h-4"></i>
             </span>
             <div>
-              <p class="font-bold text-heritage-text">คลังสรุปข่าวเช้า & ข้อมูลสนทนาจาก LINE</p>
-              <p class="text-[11px] text-heritage-muted">ข้อมูลส่งตรงจาก LINE Bot และ Firebase ทุกเช้า แยกกระดานออกจากแช็ตส่วนตัว</p>
+              <p class="font-bold text-heritage-text">คลังสรุปข่าวเช้า สาระวิจัย และข้อมูลสนทนาจาก LINE</p>
+              <p class="text-[11px] text-heritage-muted">ข้อมูลส่งตรงจาก LINE Bot และ Firebase แบบเรียลไทม์ แยกหมวดหมู่อัตโนมัติ</p>
             </div>
           </div>
-          <span class="text-[10px] px-2 py-0.5 bg-white text-emerald-800 rounded-full font-bold border border-emerald-200 shadow-2xs">
-            🟢 LINE Connected
-          </span>
+          <div id="lineLiveSyncStatusBadge" class="text-[11px] px-3 py-1 rounded-full bg-white text-emerald-800 border border-emerald-300 font-bold flex items-center gap-1.5 shadow-2xs">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="lineLiveSyncTimeText">ซิงก์เรียลไทม์ล่าสุด: กำลังเชื่อมต่อ...</span>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="bg-white p-3.5 rounded-2xl border border-[#E3DDD2] shadow-2xs space-y-3">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <span class="text-xs font-bold text-heritage-text flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-600"></i> แยกหมวดหมู่ข้อมูลจาก LINE:
+            </span>
+            <div class="flex items-center gap-1.5">
+              <button onclick="fetchLineHistoryAndPopulate(true)" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-[11px] font-semibold border border-emerald-200 flex items-center gap-1 transition">
+                <i data-lucide="refresh-cw" class="w-3 h-3"></i> รีเฟรชเดี๋ยวนี้
+              </button>
+            </div>
+          </div>
+
+          <!-- Category Filter Pills -->
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
+            <button onclick="filterLineBoardCategory('all')" id="lineCatBtn-all" class="line-cat-filter px-3 py-1.5 rounded-xl text-xs font-bold transition bg-emerald-600 text-white shadow-2xs whitespace-nowrap">
+              🌟 ทั้งหมด (<span id="lineCountAll">0</span>)
+            </button>
+            <button onclick="filterLineBoardCategory('news')" id="lineCatBtn-news" class="line-cat-filter px-3 py-1.5 rounded-xl text-xs font-semibold text-heritage-muted hover:bg-[#FAF8F5] transition border border-[#E3DDD2] whitespace-nowrap">
+              ☀️ ข่าวเช้า & 5 มิติ (<span id="lineCountNews">0</span>)
+            </button>
+            <button onclick="filterLineBoardCategory('research')" id="lineCatBtn-research" class="line-cat-filter px-3 py-1.5 rounded-xl text-xs font-semibold text-heritage-muted hover:bg-[#FAF8F5] transition border border-[#E3DDD2] whitespace-nowrap">
+              🔬 วิจัยสากล & กลอน (<span id="lineCountResearch">0</span>)
+            </button>
+            <button onclick="filterLineBoardCategory('pedagogy_chat')" id="lineCatBtn-pedagogy_chat" class="line-cat-filter px-3 py-1.5 rounded-xl text-xs font-semibold text-heritage-muted hover:bg-[#FAF8F5] transition border border-[#E3DDD2] whitespace-nowrap">
+              📚 ถาม-ตอบการสอน (<span id="lineCountPedChat">0</span>)
+            </button>
+            <button onclick="filterLineBoardCategory('task_chat')" id="lineCatBtn-task_chat" class="line-cat-filter px-3 py-1.5 rounded-xl text-xs font-semibold text-heritage-muted hover:bg-[#FAF8F5] transition border border-[#E3DDD2] whitespace-nowrap">
+              📋 ภารกิจที่บันทึก (<span id="lineCountTaskChat">0</span>)
+            </button>
+            <button onclick="filterLineBoardCategory('general_chat')" id="lineCatBtn-general_chat" class="line-cat-filter px-3 py-1.5 rounded-xl text-xs font-semibold text-heritage-muted hover:bg-[#FAF8F5] transition border border-[#E3DDD2] whitespace-nowrap">
+              💬 สนทนาทั่วไป (<span id="lineCountGeneralChat">0</span>)
+            </button>
+          </div>
+
+          <!-- Search filter input -->
+          <div class="relative">
+            <input 
+              type="text" 
+              id="lineSearchInput" 
+              oninput="filterLineBoardBySearch(this.value)" 
+              placeholder="🔍 ค้นหาในประวัติสรุปและแชต LINE (เช่น 'ประวัติศาสตร์', 'ส่งงาน', 'Stanford', 'แผนการสอน')..." 
+              class="w-full px-3.5 py-2 pl-9 text-xs bg-[#FAF8F5] border border-[#E3DDD2] rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 transition"
+            />
+            <i data-lucide="search" class="w-3.5 h-3.5 text-heritage-muted absolute left-3 top-3 pointer-events-none"></i>
+          </div>
         </div>
 
         <div id="lineChatHistoryContainer" class="space-y-4">
@@ -1861,6 +1910,8 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (tabName === 'chat') { loadLineChatHistory(); renderPersonalChat(); }
+      if (tabName === 'news' || tabName === 'pedagogy' || tabName === 'home') { populateAllLineViews(); }
+      if (tabName === 'tasks') { syncTasksFromCloud(true); populateAllLineViews(); }
       if (tabName === 'word') {
         const saved = localStorage.getItem('krusos_word_content');
         const canvas = document.getElementById('wordPaperCanvas');
@@ -1870,7 +1921,6 @@
         }
       }
       if (tabName === 'home') renderHomeOverview();
-      if (tabName === 'tasks') syncTasksFromCloud(true);
 
       lucide.createIcons();
     };
@@ -1947,82 +1997,87 @@
     // RENDER: LINE TASKS VIEW
     // ==========================================
     window.lineTasksData = [];
-    window.renderLineTasksCards = function(sec2Text) {
+    window.renderLineTasksCards = function(sec2Text, lineTaskChats) {
       const container = document.getElementById('lineTasksListContainer');
       const badgeCount = document.getElementById('lineTasksCountBadge');
       if (!container) return;
 
-      if (!sec2Text || typeof sec2Text !== 'string' || sec2Text.trim().length === 0) {
-        container.innerHTML = `
-          <div class="col-span-full text-center py-10 bg-white rounded-2xl border border-[#E3DDD2] p-6 space-y-2">
-            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 mx-auto flex items-center justify-center">
-              <i data-lucide="calendar" class="w-5 h-5"></i>
-            </div>
-            <p class="font-bold text-xs text-heritage-text">ยังไม่พบข้อมูลคิวงานจาก LINE ในขณะนี้</p>
-            <p class="text-[11px] text-heritage-muted">เมื่อระบบรันสรุปยามเช้าส่งเข้า LINE คิวงานจะปรากฏที่นี่โดยอัตโนมัติครับ</p>
-          </div>
-        `;
-        if (badgeCount) badgeCount.innerText = '0';
-        lucide.createIcons();
-        return;
+      // Smart fallback: if sec2Text is empty, scan lineSummariesData for latest morning tasks
+      let effectiveSec2 = sec2Text;
+      if (!effectiveSec2 || typeof effectiveSec2 !== 'string' || effectiveSec2.trim().length === 0) {
+        if (window.lineSummariesData && window.lineSummariesData.length > 0) {
+          for (const d of window.lineSummariesData) {
+            const p = parseSummarySections(d);
+            if (p && p.sec2 && p.sec2.trim().length > 0) {
+              effectiveSec2 = p.sec2;
+              break;
+            }
+          }
+        }
+      }
+
+      // If lineTaskChats not passed, scan window.lineChatsData
+      if (!lineTaskChats) {
+        lineTaskChats = (window.lineChatsData || []).filter(c => {
+          const cat = categorizeLineChat(c);
+          return cat.category === 'task';
+        });
       }
 
       // Parse tasks from lines
-      const rawLines = sec2Text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       const tasks = [];
+      if (effectiveSec2 && effectiveSec2.trim().length > 0) {
+        const rawLines = effectiveSec2.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        rawLines.forEach((line, idx) => {
+          if (line.includes('หมวดที่ 1') || line.includes('Daily Priorities') || line.includes('ตารางคิวงาน')) return;
+          
+          let priority = 'normal';
+          let priorityLabel = '📌 คิวงาน';
+          let badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
 
-      rawLines.forEach((line, idx) => {
-        if (line.includes('หมวดที่ 1') || line.includes('Daily Priorities') || line.includes('ตารางคิวงาน')) return;
-        
-        let priority = 'normal';
-        let priorityLabel = '📌 คิวงาน';
-        let badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
+          if (line.includes('ครบกำหนดส่งวันนี้') || line.includes('🚨') || line.includes('วันนี้')) {
+            priority = 'today';
+            priorityLabel = '🚨 ส่งวันนี้!';
+            badgeClass = 'bg-rose-50 text-rose-700 border-rose-200 animate-pulse';
+          } else if (line.includes('ค้างส่ง') || line.includes('เลยกำหนด') || line.includes('⚠️')) {
+            priority = 'overdue';
+            priorityLabel = '⚠️ ค้างส่ง/เลยกำหนด';
+            badgeClass = 'bg-amber-50 text-amber-800 border-amber-200';
+          } else if (line.includes('เร็วๆ นี้') || line.includes('กำลังจะมาถึง')) {
+            priority = 'upcoming';
+            priorityLabel = '📋 เร็วๆ นี้';
+            badgeClass = 'bg-purple-50 text-purple-700 border-purple-200';
+          }
 
-        if (line.includes('ครบกำหนดส่งวันนี้') || line.includes('🚨') || line.includes('วันนี้')) {
-          priority = 'today';
-          priorityLabel = '🚨 ส่งวันนี้!';
-          badgeClass = 'bg-rose-50 text-rose-700 border-rose-200 animate-pulse';
-        } else if (line.includes('ค้างส่ง') || line.includes('เลยกำหนด') || line.includes('⚠️')) {
-          priority = 'overdue';
-          priorityLabel = '⚠️ ค้างส่ง/เลยกำหนด';
-          badgeClass = 'bg-amber-50 text-amber-800 border-amber-200';
-        } else if (line.includes('เร็วๆ นี้') || line.includes('กำลังจะมาถึง')) {
-          priority = 'upcoming';
-          priorityLabel = '📋 เร็วๆ นี้';
-          badgeClass = 'bg-purple-50 text-purple-700 border-purple-200';
-        }
+          let cleanText = line
+            .replace(/^[•\-\*d\.]+\s*/, '')
+            .replace(/\[🚨.*?\]/g, '')
+            .replace(/\[⚠️.*?\]/g, '')
+            .replace(/\[📌.*?\]/g, '')
+            .trim();
 
-        // Clean task text
-        let cleanText = line
-          .replace(/^[•\-\*d\.]+\s*/, '')
-          .replace(/\[🚨.*?\]/g, '')
-          .replace(/\[⚠️.*?\]/g, '')
-          .replace(/\[📌.*?\]/g, '')
-          .trim();
-
-        if (cleanText.length > 3) {
-          tasks.push({
-            id: 'line_task_' + idx,
-            text: cleanText,
-            raw: line,
-            priority: priority,
-            priorityLabel: priorityLabel,
-            badgeClass: badgeClass
-          });
-        }
-      });
+          if (cleanText.length > 3) {
+            tasks.push({
+              id: 'line_task_' + idx,
+              text: cleanText,
+              raw: line,
+              priority: priority,
+              priorityLabel: priorityLabel,
+              badgeClass: badgeClass
+            });
+          }
+        });
+      }
 
       window.lineTasksData = tasks;
-      if (badgeCount) badgeCount.innerText = tasks.length.toString();
+      const totalCount = tasks.length + (lineTaskChats ? lineTaskChats.length : 0);
+      if (badgeCount) badgeCount.innerText = totalCount.toString();
 
-      if (tasks.length === 0) {
-        container.innerHTML = `
-          <div class="col-span-full bg-white rounded-2xl border border-[#E3DDD2] p-6 text-xs text-heritage-text leading-relaxed whitespace-pre-line">
-            ${sec2Text}
-          </div>
-        `;
-      } else {
-        container.innerHTML = tasks.map((t, idx) => {
+      let html = '';
+
+      // 1. Render morning briefing tasks
+      if (tasks.length > 0) {
+        html += tasks.map((t, idx) => {
           const isStarred = window.savedStars && window.savedStars[t.id];
           return `
             <div class="p-4 bg-white rounded-2xl border ${isStarred ? 'border-amber-400 ring-2 ring-amber-300/40 bg-amber-50/20' : 'border-[#E3DDD2]'} shadow-2xs hover:shadow-xs transition space-y-2.5">
@@ -2031,7 +2086,6 @@
                   ${t.priorityLabel}
                 </span>
                 <div class="flex items-center gap-1">
-                  <!-- ปุ่มติดดาว -->
                   <button onclick="toggleStar('${t.id}', 'ภารกิจ LINE', '${t.text.replace(/'/g, "\\'")}', 'ภารกิจที่สรุปจาก LINE')" class="p-1 rounded-md hover:bg-amber-50 text-heritage-muted ${isStarred ? 'text-amber-500 fill-amber-400' : ''}" title="ติดดาวภารกิจนี้">
                     <i data-lucide="star" class="w-4 h-4 ${isStarred ? 'fill-amber-400 text-amber-500' : ''}"></i>
                   </button>
@@ -2044,12 +2098,9 @@
               </p>
 
               <div class="pt-2 border-t border-[#F2ECE1] flex items-center justify-between gap-2 flex-wrap text-xs">
-                <!-- ปุ่มบันทึกเข้าตารางภารกิจของฉัน -->
                 <button onclick="saveLineTaskToMyTasks(${idx})" class="px-2.5 py-1 bg-heritage-terracotta hover:bg-[#A36D52] text-white rounded-lg text-[11px] font-semibold flex items-center gap-1 shadow-2xs transition" title="เพิ่มภารกิจนี้ลงใน Check-list และ Firebase ทันที">
                   <i data-lucide="plus-circle" class="w-3 h-3"></i> บันทึกเข้าตารางงานของฉัน
                 </button>
-
-                <!-- ปุ่มส่งไปหน้าเวิร์ด -->
                 <button onclick="sendLineTaskToWord(${idx})" class="text-[11px] text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium transition" title="ส่งรายการนี้เข้าหน้าเวิร์ด">
                   <i data-lucide="file-plus" class="w-3 h-3"></i> ส่งไปหน้าเวิร์ด
                 </button>
@@ -2059,7 +2110,62 @@
         }).join('');
       }
 
-      lucide.createIcons();
+      // 2. Render tasks detected from LINE Chats
+      if (lineTaskChats && lineTaskChats.length > 0) {
+        html += `
+          <div class="col-span-full mt-4 pt-4 border-t border-[#E3DDD2] space-y-3">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <h4 class="font-bold text-xs text-heritage-text flex items-center gap-1.5 font-heading">
+                <i data-lucide="messages-square" class="w-4 h-4 text-amber-600"></i>
+                <span>ภารกิจ & สิ่งที่บันทึกผ่านแชต LINE (${lineTaskChats.length} รายการล่าสุด)</span>
+              </h4>
+              <span class="text-[10px] px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200 rounded-full font-semibold">
+                ตรวจพบจาก LINE Chat อัตโนมัติ
+              </span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              ${lineTaskChats.map(c => `
+                <div class="p-4 bg-white rounded-2xl border border-amber-200 shadow-2xs space-y-2.5">
+                  <div class="flex items-center justify-between">
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                      📋 สั่งงานผ่าน LINE
+                    </span>
+                    <span class="text-[10px] text-heritage-muted">${c.timestamp ? new Date(c.timestamp).toLocaleString('th-TH') : ''}</span>
+                  </div>
+                  <p class="text-xs font-bold text-heritage-text">
+                    "${c.question || ''}"
+                  </p>
+                  <div class="text-[11px] text-heritage-muted line-clamp-2 leading-relaxed bg-[#FAF8F5] p-2 rounded-lg">
+                    ${c.answer || ''}
+                  </div>
+                  <div class="pt-2 border-t border-[#FAF8F5] flex items-center justify-between">
+                    <button onclick="addCloudTaskFromLineChat('${c.id}')" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-[11px] font-semibold flex items-center gap-1 transition shadow-2xs">
+                      <i data-lucide="plus-circle" class="w-3 h-3"></i> ➕ บันทึกเข้าตารางงานหลัก
+                    </button>
+                    <button onclick="copyRawText(\`${(c.question + '\n\n' + c.answer).replace(/`/g, '\\`')}\`)" class="p-1 text-heritage-muted hover:text-heritage-text">
+                      <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      if (!html) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-10 bg-white rounded-2xl border border-[#E3DDD2] p-6 space-y-2">
+            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 mx-auto flex items-center justify-center">
+              <i data-lucide="calendar" class="w-5 h-5"></i>
+            </div>
+            <p class="font-bold text-xs text-heritage-text">ยังไม่พบข้อมูลคิวงานจาก LINE ในขณะนี้</p>
+            <p class="text-[11px] text-heritage-muted">คุณครูสามารถพิมพ์แจ้งภารกิจใน LINE หรือรอสรุปเช้า ระบบจะดึงเข้าตารางนี้โดยอัตโนมัติครับ</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = html;
+      }
     };
 
     window.saveLineTaskToMyTasks = function(idx) {
@@ -2103,6 +2209,31 @@
       }
       switchMainTab('word');
       showToast('ส่งภารกิจเข้ากระดานเวิร์ดเรียบร้อย 📝', 'success');
+    };
+
+    window.addCloudTaskFromLineChat = async function(chatId) {
+      const chat = (window.lineChatsData || []).find(c => c.id === chatId);
+      if (!chat) return;
+
+      const now = new Date();
+      const dateStr = now.toISOString().split('T')[0];
+
+      const newTask = {
+        id: 'task_' + Date.now(),
+        title: chat.question || 'ภารกิจจาก LINE Chat',
+        dueDate: dateStr,
+        category: 'งานโรงเรียน / เวร',
+        completed: false
+      };
+
+      taskList.unshift(newTask);
+      localStorage.setItem('krusos_tasks_data', JSON.stringify(taskList));
+      renderTasks();
+      updateTaskCountBadges();
+      saveTasksLocallyAndSync();
+
+      showToast('เพิ่มภารกิจเข้าตารางงานหลักและคลาวด์เรียบร้อยแล้ว 📋', 'success');
+      switchMainTab('tasks');
     };
 
     // ==========================================
@@ -2221,24 +2352,166 @@
     };
 
     // ==========================================
-    // RENDER: LINE CHAT BOARD
+    // RENDER: LINE CHAT BOARD (CATEGORIZED & FILTERABLE)
     // ==========================================
+    window.currentLineBoardCategory = 'all';
+    window.lineSearchKeyword = '';
+
+    window.filterLineBoardCategory = function(cat) {
+      window.currentLineBoardCategory = cat;
+      document.querySelectorAll('.line-cat-filter').forEach(btn => {
+        btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-2xs');
+        btn.classList.add('text-heritage-muted', 'border', 'border-[#E3DDD2]');
+      });
+      const activeBtn = document.getElementById(`lineCatBtn-${cat}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-heritage-muted', 'border', 'border-[#E3DDD2]');
+        activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow-2xs');
+      }
+      renderLineChatBoard();
+    };
+
+    window.filterLineBoardBySearch = function(query) {
+      window.lineSearchKeyword = (query || '').trim().toLowerCase();
+      renderLineChatBoard();
+    };
+
+    // จำแนกหมวดหมู่ของสรุปสาระจาก LINE
+    window.categorizeLineSummary = function(item) {
+      const isNight = item.type === 'night_research' || (item.rawContent && (item.rawContent.includes('🌙') || item.rawContent.includes('พักใจ')));
+      const hasResearch = item.rawContent && (item.rawContent.includes('ชื่องานวิจัย') || item.rawContent.includes('สาระวิจัยสากล'));
+      
+      if (isNight && hasResearch) {
+        return {
+          category: 'research',
+          label: '🔬 สาระวิจัยสากล (รอบ 3 วัน)',
+          badgeClass: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+          icon: 'graduation-cap'
+        };
+      } else if (isNight) {
+        return {
+          category: 'research',
+          label: '🌙 กลอนกวีพักใจครู',
+          badgeClass: 'bg-purple-100 text-purple-800 border-purple-200',
+          icon: 'moon'
+        };
+      } else {
+        return {
+          category: 'news',
+          label: '☀️ สรุปข่าวเช้า & 5 มิติ',
+          badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+          icon: 'sun'
+        };
+      }
+    };
+
+    // จำแนกหมวดหมู่ของแชตถาม-ตอบจาก LINE
+    window.categorizeLineChat = function(chat) {
+      const q = (chat.question || '').toLowerCase();
+      const a = (chat.answer || '').toLowerCase();
+
+      if (q.includes('ส่ง') || q.includes('งาน') || q.includes('เก็บ') || q.includes('บันทึก') || q.includes('เตือน') || q.includes('การบ้าน') || q.includes('กำหนด') || q.includes('ภารกิจ') || a.includes('บันทึกหรือเก็บ') || a.includes('ภารกิจ')) {
+        return {
+          category: 'task',
+          label: '📋 ภารกิจ & สิ่งที่บันทึก',
+          badgeClass: 'bg-amber-100 text-amber-800 border-amber-200'
+        };
+      }
+
+      if (q.includes('http') || q.includes('www.') || q.includes('.app') || q.includes('.com') || q.includes('เว็บ') || q.includes('ลิงก์')) {
+        return {
+          category: 'resource',
+          label: '🔗 ลิงก์ & สื่อการเรียนรู้',
+          badgeClass: 'bg-blue-100 text-blue-800 border-blue-200'
+        };
+      }
+
+      if (q.includes('กลอน') || q.includes('พักใจ') || q.includes('นิทรา') || a.includes('บทกลอน') || a.includes('พักใจ')) {
+        return {
+          category: 'poem',
+          label: '🌙 บทกลอน & พักใจ',
+          badgeClass: 'bg-purple-100 text-purple-800 border-purple-200'
+        };
+      }
+
+      if (q.includes('ข่าว') || q.includes('เหตุการณ์') || a.includes('5 มิติ')) {
+        return {
+          category: 'news',
+          label: '🌍 ข่าวสาร & เหตุการณ์',
+          badgeClass: 'bg-purple-100 text-purple-800 border-purple-200'
+        };
+      }
+
+      if (q.includes('สอน') || q.includes('วิจัย') || q.includes('ประวัติศาสตร์') || q.includes('สังคม') || q.includes('แผน') || q.includes('สรุป') || q.includes('นวัตกรรม') || q.includes('ความรู้') || q.includes('สมบูรณ์') || a.includes('วิชาการ') || a.includes('สังคมศึกษา') || a.includes('ประวัติศาสตร์')) {
+        return {
+          category: 'pedagogy',
+          label: '📚 ถาม-ตอบการสอน & วิชาการ',
+          badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-200'
+        };
+      }
+
+      return {
+        category: 'general',
+        label: '💬 สนทนาทั่วไป',
+        badgeClass: 'bg-slate-100 text-slate-800 border-slate-200'
+      };
+    };
+
     window.renderLineChatBoard = function(lineSummaries, lineChats) {
       const container = document.getElementById('lineChatHistoryContainer');
       if (!container) return;
 
       if (!lineSummaries) {
-        lineSummaries = JSON.parse(localStorage.getItem('krusos_line_saved_summaries') || '[]');
+        lineSummaries = window.lineSummariesData || JSON.parse(localStorage.getItem('krusos_line_saved_summaries') || '[]');
       }
       if (!lineChats) {
-        lineChats = JSON.parse(localStorage.getItem('krusos_line_saved_chats') || '[]');
+        lineChats = window.lineChatsData || JSON.parse(localStorage.getItem('krusos_line_saved_chats') || '[]');
       }
+
+      // 1. คำนวณจำนวนในแต่ละหมวดหมู่อัปเดตบน Filter Pills
+      let countAll = 0, countNews = 0, countResearch = 0, countPedChat = 0, countTaskChat = 0, countGeneralChat = 0;
+
+      (lineSummaries || []).forEach(s => {
+        const catInfo = categorizeLineSummary(s);
+        if (catInfo.category === 'news') countNews++;
+        if (catInfo.category === 'research') countResearch++;
+        countAll++;
+      });
+
+      (lineChats || []).forEach(c => {
+        const catInfo = categorizeLineChat(c);
+        if (catInfo.category === 'pedagogy') countPedChat++;
+        else if (catInfo.category === 'task') countTaskChat++;
+        else countGeneralChat++;
+        countAll++;
+      });
+
+      const elAll = document.getElementById('lineCountAll'); if (elAll) elAll.innerText = countAll;
+      const elNews = document.getElementById('lineCountNews'); if (elNews) elNews.innerText = countNews;
+      const elRes = document.getElementById('lineCountResearch'); if (elRes) elRes.innerText = countResearch;
+      const elPed = document.getElementById('lineCountPedChat'); if (elPed) elPed.innerText = countPedChat;
+      const elTask = document.getElementById('lineCountTaskChat'); if (elTask) elTask.innerText = countTaskChat;
+      const elGen = document.getElementById('lineCountGeneralChat'); if (elGen) elGen.innerText = countGeneralChat;
+
+      const activeFilter = window.currentLineBoardCategory || 'all';
+      const searchKw = window.lineSearchKeyword || '';
 
       let html = '';
 
-      // 1. เรนเดอร์สรุปเช้า/ค่ำ (Daily Summaries & Night Research)
+      // 2. เรนเดอร์สรุปเช้า/ค่ำ (Daily Summaries & Night Research) ถ้าตรงกับตัวกรอง
       if (lineSummaries && lineSummaries.length > 0) {
-        html += lineSummaries.map((item, idx) => {
+        lineSummaries.forEach((item, idx) => {
+          const catInfo = categorizeLineSummary(item);
+          
+          // Check Category Filter
+          if (activeFilter === 'news' && catInfo.category !== 'news') return;
+          if (activeFilter === 'research' && catInfo.category !== 'research') return;
+          if (activeFilter === 'pedagogy_chat' || activeFilter === 'task_chat' || activeFilter === 'general_chat') return;
+
+          // Check Search Keyword
+          const fullText = (item.title || '') + ' ' + (item.rawContent || '') + ' ' + (item.date || '');
+          if (searchKw && !fullText.toLowerCase().includes(searchKw)) return;
+
           const sections = item.sections || (item.rawContent ? item.rawContent.split('[SPLIT]').map(s => s.trim()).filter(s => s.length > 0) : []);
           const isNight = item.type === 'night_research';
           const defaultTitles = isNight ? ['🌙 สาระวิจัยสากล', '✍️ กลอนกวีพักใจครู'] : [
@@ -2250,18 +2523,23 @@
             '💬 สรุปปิดท้าย'
           ];
 
-          return `
+          html += `
             <div class="bg-white rounded-2xl border border-[#E3DDD2] shadow-xs overflow-hidden mb-4">
               <div class="p-3.5 bg-gradient-to-r ${isNight ? 'from-indigo-500/10 via-indigo-50' : 'from-emerald-500/10 via-emerald-50'} to-transparent border-b border-[#E3DDD2] flex items-center justify-between flex-wrap gap-2">
                 <div class="flex items-center gap-2">
                   <span class="w-7 h-7 rounded-xl ${isNight ? 'bg-indigo-600' : 'bg-[#06C755]'} text-white flex items-center justify-center font-bold text-xs shadow-2xs">
-                    <i data-lucide="${isNight ? 'moon' : 'bell'}" class="w-4 h-4"></i>
+                    <i data-lucide="${catInfo.icon || (isNight ? 'moon' : 'bell')}" class="w-4 h-4"></i>
                   </span>
                   <div>
-                    <h4 class="font-bold text-xs text-heritage-text font-heading">
-                      ${item.title || (isNight ? 'สาระวิจัยสากลและกลอนก่อนนอน (21:00 น.)' : 'สรุปข่าวเช้า & นวัตกรรมการศึกษา (LINE Sync)')}
-                    </h4>
-                    <p class="text-[10px] text-heritage-muted">${item.date || 'ข้อมูลล่าสุด'}</p>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                      <span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${catInfo.badgeClass}">
+                        ${catInfo.label}
+                      </span>
+                      <h4 class="font-bold text-xs text-heritage-text font-heading">
+                        ${item.title || (isNight ? 'สาระวิจัยสากลและกลอนก่อนนอน' : 'สรุปข่าวเช้า & นวัตกรรมการศึกษา')}
+                      </h4>
+                    </div>
+                    <p class="text-[10px] text-heritage-muted mt-0.5">ประจำวันที่ ${item.date || 'ข้อมูลล่าสุด'}</p>
                   </div>
                 </div>
                 <div class="flex items-center gap-1.5">
@@ -2306,50 +2584,90 @@
               </div>
             </div>
           `;
-        }).join('');
+        });
       }
 
-      // 2. เรนเดอร์บทสนทนาถาม-ตอบจริงที่ครูคุยกับ LINE Bot (Real-time LINE Chat Q&A)
+      // 3. เรนเดอร์บทสนทนาถาม-ตอบจริงจาก LINE Bot ถ้าตรงกับตัวกรอง
       if (lineChats && lineChats.length > 0) {
-        html += `
-          <div class="mt-6 pt-4 border-t border-[#E3DDD2] space-y-3">
-            <div class="flex items-center justify-between">
-              <h3 class="font-bold text-xs text-heritage-text flex items-center gap-2">
-                <i data-lucide="messages-square" class="w-4 h-4 text-emerald-600"></i>
-                บทสนทนาถาม-ตอบโดยตรงจาก LINE Bot (${lineChats.length} ข้อความล่าสุด)
-              </h3>
-              <span class="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-medium">Sync จาก LINE</span>
+        const filteredChats = lineChats.filter(c => {
+          const catInfo = categorizeLineChat(c);
+          if (activeFilter === 'news') return catInfo.category === 'news';
+          if (activeFilter === 'research') return catInfo.category === 'poem';
+          if (activeFilter === 'pedagogy_chat') return catInfo.category === 'pedagogy';
+          if (activeFilter === 'task_chat') return catInfo.category === 'task';
+          if (activeFilter === 'general_chat') return catInfo.category === 'general' || catInfo.category === 'resource';
+          if (activeFilter === 'all') return true;
+          return true;
+        }).filter(c => {
+          if (!searchKw) return true;
+          const fullText = (c.question || '') + ' ' + (c.answer || '');
+          return fullText.toLowerCase().includes(searchKw);
+        });
+
+        if (filteredChats.length > 0) {
+          html += `
+            <div class="mt-6 pt-4 border-t border-[#E3DDD2] space-y-3">
+              <div class="flex items-center justify-between flex-wrap gap-2">
+                <h3 class="font-bold text-xs text-heritage-text flex items-center gap-2">
+                  <i data-lucide="messages-square" class="w-4 h-4 text-emerald-600"></i>
+                  บทสนทนาถาม-ตอบโดยตรงจาก LINE Bot (${filteredChats.length} รายการ)
+                </h3>
+                <span class="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-medium">แยกหมวดหมู่อัตโนมัติ</span>
+              </div>
+              <div class="space-y-3">
+                ${filteredChats.map(c => {
+                  const catInfo = categorizeLineChat(c);
+                  return `
+                    <div class="bg-white rounded-2xl border border-[#E3DDD2] p-4 shadow-2xs space-y-2.5 hover:border-emerald-300 transition">
+                      <div class="flex items-center justify-between text-[11px] text-heritage-muted border-b border-[#FAF8F5] pb-2 flex-wrap gap-2">
+                        <div class="flex items-center gap-2">
+                          <span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${catInfo.badgeClass}">
+                            ${catInfo.label}
+                          </span>
+                          <span class="font-bold text-heritage-text flex items-center gap-1">
+                            <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px] font-bold">L</span>
+                            คุณครูถาม: "${c.question || ''}"
+                          </span>
+                        </div>
+                        <span class="text-[10px]">${c.timestamp ? new Date(c.timestamp).toLocaleString('th-TH') : ''}</span>
+                      </div>
+
+                      <div class="text-xs text-heritage-text whitespace-pre-line leading-relaxed pl-3 border-l-2 border-emerald-500/40">
+                        ${makeTextUrlsClickable(c.answer || '')}
+                      </div>
+
+                      <div class="pt-2 border-t border-[#FAF8F5] flex items-center justify-end gap-2 text-xs">
+                        ${catInfo.category === 'task' ? `
+                          <button onclick="addCloudTaskFromLineChat('${c.id}')" class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 transition shadow-2xs">
+                            <i data-lucide="plus-circle" class="w-3 h-3"></i> ➕ เพิ่มเข้าคิวงานหลัก
+                          </button>
+                        ` : ''}
+                        <button onclick="copyRawText(\`${(c.question + '\n\n' + c.answer).replace(/`/g, '\\`').replace(/\\/g, '\\\\')}\`)" class="px-2 py-1 text-heritage-muted hover:text-heritage-text text-[11px] flex items-center gap-1 rounded-lg border border-[#E3DDD2]">
+                          <i data-lucide="copy" class="w-3 h-3"></i> คัดลอก
+                        </button>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
             </div>
-            <div class="space-y-3">
-              ${lineChats.map(c => `
-                <div class="bg-white rounded-2xl border border-[#E3DDD2] p-4 shadow-2xs space-y-2">
-                  <div class="flex items-center justify-between text-[11px] text-heritage-muted border-b border-[#FAF8F5] pb-2">
-                    <span class="font-bold text-heritage-text flex items-center gap-1.5">
-                      <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px] font-bold">L</span>
-                      คุณครูถาม: "${c.question || ''}"
-                    </span>
-                    <span class="text-[10px]">${c.timestamp ? new Date(c.timestamp).toLocaleString('th-TH') : ''}</span>
-                  </div>
-                  <div class="text-xs text-heritage-text whitespace-pre-line leading-relaxed pl-4 border-l-2 border-emerald-500/40">
-                    ${makeTextUrlsClickable(c.answer || '')}
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
+          `;
+        }
       }
 
       if (!html) {
         html = `
           <div class="text-center py-12 text-heritage-muted text-xs space-y-3 bg-white rounded-2xl border border-[#E3DDD2] p-8">
             <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center font-bold">
-              <i data-lucide="cloud-download" class="w-6 h-6"></i>
+              <i data-lucide="search-x" class="w-6 h-6"></i>
             </div>
-            <p class="font-bold text-heritage-text text-sm">ยังไม่มีข้อมูลสรุปหรือประวัติแชตจาก LINE</p>
+            <p class="font-bold text-heritage-text text-sm">ไม่พบข้อมูลในหมวดหมู่นี้</p>
             <p class="max-w-md mx-auto text-heritage-muted leading-relaxed">
-              คลิกปุ่ม "ดึงข้อมูลจาก LINE" ด้านบน เพื่อเชื่อมต่อ Firebase และนำข้อมูลสรุปข่าวเช้าและบทสนทนามาแสดงผลที่นี่ครับ
+              ลองเลือกหมวดหมู่อื่นด้านบน หรือคลิกปุ่ม "🌟 ทั้งหมด" เพื่อดูสรุปข่าวเช้า สาระวิจัย และประวัติแชตทั้งหมดจาก LINE ครับ
             </p>
+            <button onclick="filterLineBoardCategory('all')" class="mt-2 px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-semibold hover:bg-emerald-700 transition">
+              แสดงข้อมูลทั้งหมด
+            </button>
           </div>
         `;
       }
@@ -3457,19 +3775,37 @@
     window.lineSummariesData = JSON.parse(localStorage.getItem('krusos_line_saved_summaries') || '[]');
     window.currentBriefingIndex = 0;
 
-    // แยกและแจกแจงเนื้อหา 5 มิติ และ นวัตกรรมการสอนสากล (รองรับทั้งรอบ 3 วัน และ นวัตกรรมประจำวัน)
+    // ==========================================
+    // PARSE & POPULATE LINE VIEWS (MULTI-CYCLE & REAL-TIME)
+    // ==========================================
+    window.currentPedCategoryFilter = 'all';
+    window.allPedagogiesList = [];
+
+    window.filterPedCategory = function(cat) {
+      window.currentPedCategoryFilter = cat;
+      populateAllLineViews();
+    };
+
+    // แยกและแจกแจงเนื้อหา (รองรับทั้งรอบข่าวเช้า 5 มิติ และ รอบค่ำสาระวิจัยสากล & กลอนพักใจ)
     window.parseSummarySections = function(summaryDoc) {
       if (!summaryDoc) return null;
       let sections = summaryDoc.sections || [];
       if ((!sections || sections.length === 0) && summaryDoc.rawContent) {
         sections = summaryDoc.rawContent.split('[SPLIT]').map(s => s.trim()).filter(s => s.length > 0);
       }
+      const rawContent = summaryDoc.rawContent || sections.join('\n\n');
+      const isNight = summaryDoc.type === 'night_research' || rawContent.includes('🌙') || rawContent.includes('พักใจครู');
 
-      const secGreeting = sections.find(s => s.includes('อรุณสวัสดิ์') || s.includes('คำทักทาย')) || sections[0] || '';
-      const secTasks = sections.find(s => s.includes('📋') || s.includes('ภารกิจ') || s.includes('Daily Priorities') || s.includes('ส่งวันนี้')) || sections[1] || '';
+      // Morning sections
+      const secGreeting = sections.find(s => s.includes('อรุณสวัสดิ์') || s.includes('คำทักทาย')) || (isNight ? '' : sections[0] || '');
+      const secTasks = sections.find(s => s.includes('📋') || s.includes('ภารกิจ') || s.includes('Daily Priorities') || s.includes('ส่งวันนี้')) || (isNight ? '' : (sections.length > 1 ? sections[1] : ''));
       const secTrending = sections.find(s => s.includes('💡') || s.includes('นวัตกรรม') || s.includes('Trending EdTech')) || '';
       const secNews = sections.find(s => s.includes('🌍') || s.includes('5 มิติ') || s.includes('ข่าวเด่น')) || (sections.length >= 4 ? sections[3] : '');
       const secPedagogy = sections.find(s => s.includes('🌐') || s.includes('การสอนแบบใหม่') || s.includes('แนวคิด:')) || (sections.length >= 5 ? sections[4] : '');
+
+      // Night sections
+      const secNightWords = sections.find(s => s.includes('ถ้อยคำพักใจ') || s.includes('ข้อคิด & กลอนพักใจ')) || (isNight ? sections[0] : '');
+      const secNightPoem = sections.find(s => s.includes('กลอนกวีพักใจครู') || s.includes('กลอนพักใจ')) || '';
 
       // Parse 5 Dimensions News
       const dimensions = [];
@@ -3498,10 +3834,39 @@
         }
       }
 
-      // Parse Pedagogies & Trending Innovations
+      // Parse Pedagogies & Academic Research Papers
       const pedagogies = [];
 
-      // 1. ดึงนวัตกรรมการศึกษายอดฮิตประจำวัน (ถ้ามี)
+      // 1. ดึงงานวิจัยสากลรอบ 3 วัน (จาก night_research)
+      if (rawContent.includes('ชื่องานวิจัย') || rawContent.includes('สาระวิจัยสากล')) {
+        const titleM = rawContent.match(/📖\s*\*\*ชื่องานวิจัย[^\*]*\*\*:?\s*([\s\S]*?)(?=(?:\n\n|\n🎯|\n🔬|\n💡|$))/);
+        const objM = rawContent.match(/🎯\s*\*\*วัตถุประสงค์[^\*]*\*\*:?\s*([\s\S]*?)(?=(?:\n\n|\n🔬|\n💡|\n🏫|$))/);
+        const methodM = rawContent.match(/🔬\s*\*\*ระเบียบวิธี[^\*]*\*\*:?\s*([\s\S]*?)(?=(?:\n\n|\n💡|\n🏫|\n🔗|$))/);
+        const findingsM = rawContent.match(/💡\s*\*\*ข้อค้นพบ[^\*]*\*\*:?\s*([\s\S]*?)(?=(?:\n\n|\n🏫|\n🔗|\n\[SPLIT\]|$))/);
+        const useM = rawContent.match(/🏫\s*\*\*การนำไปใช้[^\*]*\*\*:?\s*([\s\S]*?)(?=(?:\n\n|\n🔗|\n\[SPLIT\]|$))/);
+        const linkM = rawContent.match(/(https?:\/\/[^\s\)\"\'\<\>]+)/);
+
+        const paperTitle = titleM ? titleM[1].replace(/[\*\_\"]/g, '').trim() : (summaryDoc.title || 'สาระวิจัยสากล');
+        let essenceText = '';
+        if (objM) essenceText += '🎯 วัตถุประสงค์: ' + objM[1].trim() + '\n\n';
+        if (findingsM) essenceText += '💡 ข้อค้นพบสำคัญ:\n' + findingsM[1].trim();
+
+        pedagogies.push({
+          num: '1',
+          title: paperTitle.length > 70 ? (paperTitle.slice(0, 70) + '...') : paperTitle,
+          researchName: paperTitle,
+          type: 'research',
+          category: 'สาระวิจัยสากล (รอบ 3 วัน)',
+          badgeBg: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+          essence: essenceText || 'งานวิจัยทางสังคมศึกษา/ประวัติศาสตร์ระดับสากล',
+          steps: useM ? useM[1].trim() : (methodM ? ('🔬 ระเบียบวิธี: ' + methodM[1].trim()) : ''),
+          mediaGuide: '',
+          refText: 'DOI / แหล่งวิจัยสากล',
+          refUrl: linkM ? linkM[1].trim() : (summaryDoc.sources && summaryDoc.sources[0]) || ''
+        });
+      }
+
+      // 2. ดึงนวัตกรรมการศึกษายอดฮิตประจำวัน (Trending EdTech)
       if (secTrending) {
         const titleMatch = secTrending.match(/🎯\s*(?:นวัตกรรมยอดฮิต|ชื่อแนวคิด\/งานวิจัย):\s*([^\n]+)/) || secTrending.match(/💡\s*([^\n]+)/);
         const essenceMatch = secTrending.match(/🔍\s*แก่นสำคัญ:\s*([\s\S]*?)(?=(?:🏫|🛠️|💬|$))/);
@@ -3510,9 +3875,12 @@
         const linkMatch = secTrending.match(/(https?:\/\/[^\s\)\"\'\<\>]+)/);
 
         pedagogies.push({
-          num: '1',
+          num: String(pedagogies.length + 1),
           title: titleMatch ? titleMatch[1].trim() : 'นวัตกรรมการศึกษายอดฮิต (ไทยและต่างประเทศ)',
           researchName: titleMatch ? titleMatch[1].trim() : 'นวัตกรรมการศึกษายอดฮิตประจำวัน',
+          type: 'trending',
+          category: 'นวัตกรรมการศึกษายอดฮิต',
+          badgeBg: 'bg-emerald-100 text-emerald-800 border-emerald-200',
           essence: essenceMatch ? essenceMatch[1].trim() : secTrending.slice(0, 160) + '...',
           steps: stepsMatch ? stepsMatch[1].trim() : '',
           mediaGuide: mediaMatch ? mediaMatch[1].trim() : '',
@@ -3521,7 +3889,7 @@
         });
       }
 
-      // 2. ดึงโมเดลการสอนระดับสากลรอบ 3 วัน (ถ้ามี)
+      // 3. ดึงโมเดลการสอนระดับสากลรอบ 3 วัน (Global Pedagogies)
       if (secPedagogy) {
         const pedRegex = /(?:^|\n)(\d+)\.\s*(?:แนวคิด|นวัตกรรม)[^:\n]*:\s*([^\n]+)([\s\S]*?)(?=(?:\n\d+\.\s*(?:แนวคิด|นวัตกรรม)|$))/g;
         let match;
@@ -3541,6 +3909,9 @@
             num: String(pedagogies.length + 1),
             title,
             researchName: researchMatch ? researchMatch[1].trim() : title,
+            type: 'pedagogy_model',
+            category: 'โมเดลการสอนสากล',
+            badgeBg: 'bg-purple-100 text-purple-800 border-purple-200',
             essence: essenceMatch ? essenceMatch[1].trim() : '',
             steps: stepsMatch ? stepsMatch[1].trim() : '',
             mediaGuide: mediaMatch ? mediaMatch[1].trim() : '',
@@ -3551,20 +3922,23 @@
       }
 
       return {
+        isNight,
         date: summaryDoc.date || 'ข้อมูลล่าสุด',
-        rawContent: summaryDoc.rawContent || '',
+        title: summaryDoc.title || (isNight ? 'สาระวิจัยและกลอนก่อนนอน' : 'สรุปข่าวเช้า'),
+        rawContent: rawContent,
         sources: summaryDoc.sources || [],
-        sec1: secGreeting,
+        sec1: isNight ? (secNightWords || secNightPoem || rawContent) : secGreeting,
         sec2: secTasks,
         sec3: secTrending || secNews,
         sec4: secPedagogy || secTrending,
         sec5: sections[sections.length - 1] || '',
+        secNightWords,
+        secNightPoem,
         dimensions,
         pedagogies
       };
     };
 
-    
     window.copyNewsDim = function(idx) {
       if (!window.lineSummariesData || window.lineSummariesData.length === 0) return;
       const currentDoc = window.lineSummariesData[window.currentBriefingIndex] || window.lineSummariesData[0];
@@ -3578,15 +3952,35 @@
     };
 
     window.copyPedItem = function(idx) {
-      if (!window.lineSummariesData || window.lineSummariesData.length === 0) return;
-      const currentDoc = window.lineSummariesData[window.currentBriefingIndex] || window.lineSummariesData[0];
-      const parsed = parseSummarySections(currentDoc);
-      if (parsed && parsed.pedagogies && parsed.pedagogies[idx]) {
-        const ped = parsed.pedagogies[idx];
-        const text = ped.title + '\n' + ped.researchName + '\n\n🔍 แก่นสำคัญ: ' + ped.essence + '\n\n🏫 การสอนจริงในห้องเรียน:\n' + ped.steps + '\n\n🛠️ แนวทางสื่อ:\n' + ped.mediaGuide + (ped.refUrl ? '\n\n📖 อ้างอิง: ' + ped.refUrl : '');
+      const ped = window.allPedagogiesList && window.allPedagogiesList[idx];
+      if (ped) {
+        const text = ped.title + '\n' + (ped.researchName || '') + '\n\n🔍 แก่นสำคัญ/ข้อค้นพบ:\n' + ped.essence + '\n\n🏫 การนำไปใช้ในห้องเรียน & วิจัย:\n' + ped.steps + (ped.mediaGuide ? '\n\n🛠️ สื่อการสอน:\n' + ped.mediaGuide : '') + (ped.refUrl ? '\n\n📖 อ้างอิง: ' + ped.refUrl : '');
         copyRawText(text);
-        showToast('คัดลอกโมเดลการสอนแล้ว 📋', 'success');
+        showToast('คัดลอกสาระการสอน/วิจัยแล้ว 📋', 'success');
       }
+    };
+
+    window.sendResearchToWord = function(idx) {
+      const card = window.allPedagogiesList && window.allPedagogiesList[idx];
+      if (!card) return;
+
+      const htmlToInsert = `
+        <div style="background-color: #F0FDF4; border-left: 4px solid #16A34A; padding: 14px; margin: 14px 0; border-radius: 4px;">
+          <h3 style="margin: 0 0 6px 0; color: #16A34A; font-size: 13pt;">🔬 ${card.title}</h3>
+          <p style="margin: 0 0 6px 0; font-weight: bold; color: #1E3A8A; font-size: 10pt;">${card.researchName || ''}</p>
+          ${card.essence ? `<div style="margin: 0 0 8px 0; color: #374151; font-size: 10.5pt; line-height: 1.6; white-space: pre-line;"><strong>แก่นสำคัญ/ข้อค้นพบ:</strong><br/>${card.essence}</div>` : ''}
+          ${card.steps ? `<div style="margin: 0 0 8px 0; color: #374151; font-size: 10.5pt; line-height: 1.6; white-space: pre-line;"><strong>การนำไปใช้สอน & วิจัย ป.โท (ว.PA):</strong><br/>${card.steps}</div>` : ''}
+          ${card.refUrl ? `<p style="margin: 0; color: #4B5563; font-size: 9.5pt;"><strong>แหล่งข้อมูลอ้างอิง:</strong> <a href="${card.refUrl}">${card.refUrl}</a></p>` : ''}
+        </div>
+      `;
+
+      const canvas = document.getElementById('wordPaperCanvas');
+      if (canvas) {
+        canvas.innerHTML += htmlToInsert;
+        onWordEditorInput();
+      }
+      switchMainTab('word');
+      showToast('ส่งสาระงานวิจัยเข้ากระดานเวิร์ดเรียบร้อย 📝', 'success');
     };
 
     window.populateAllLineViews = function() {
@@ -3595,73 +3989,152 @@
       const parsed = parseSummarySections(currentDoc);
       if (!parsed) return;
 
-      // 1. เรนเดอร์บนหน้าแรก (Dashboard Morning Briefing Hub)
+      // 1. Dashboard Briefing
       renderDashboardBriefing(parsed);
 
-      // 2. เรนเดอร์บนหน้า ทันโลก 5 มิติ (Live Tab)
-      renderNewsLiveCards(parsed.dimensions);
+      // 2. ทันโลก 5 มิติ (Multi-doc Fallback)
+      let activeDims = parsed.dimensions || [];
+      let dimsSourceDate = parsed.date;
+      if (activeDims.length === 0) {
+        for (const d of window.lineSummariesData) {
+          const p = parseSummarySections(d);
+          if (p && p.dimensions && p.dimensions.length > 0) {
+            activeDims = p.dimensions;
+            dimsSourceDate = p.date;
+            break;
+          }
+        }
+      }
+      renderNewsLiveCards(activeDims, dimsSourceDate);
 
-      // 3. เรนเดอร์บนหน้า นวัตกรรมการสอนสากล (Live Tab)
-      renderPedagogyLiveCards(parsed.pedagogies);
+      // 3. นวัตกรรมการสอนสากล & สาระวิจัย (Multi-doc Aggregation)
+      let allPedagogies = [];
+      const seenTitles = new Set();
 
-      // 4. เรนเดอร์บนหน้า ภารกิจครู (คิวงานจาก LINE)
-      renderLineTasksCards(parsed.sec2);
+      if (parsed.pedagogies) {
+        parsed.pedagogies.forEach(p => {
+          seenTitles.add(p.title);
+          allPedagogies.push({ ...p, sourceDate: parsed.date });
+        });
+      }
+
+      window.lineSummariesData.forEach(d => {
+        const p = parseSummarySections(d);
+        if (p && p.pedagogies) {
+          p.pedagogies.forEach(item => {
+            if (!seenTitles.has(item.title)) {
+              seenTitles.add(item.title);
+              allPedagogies.push({ ...item, sourceDate: p.date });
+            }
+          });
+        }
+      });
+
+      const pedagogyChats = (window.lineChatsData || []).filter(c => {
+        const cat = categorizeLineChat(c);
+        return cat.category === 'pedagogy';
+      });
+
+      renderPedagogyLiveCards(allPedagogies, pedagogyChats);
+
+      // 4. ภารกิจครู (Multi-doc Tasks + LINE Chat Tasks)
+      let taskText = parsed.sec2;
+      if (!taskText || taskText.trim().length === 0) {
+        for (const d of window.lineSummariesData) {
+          const p = parseSummarySections(d);
+          if (p && p.sec2 && p.sec2.trim().length > 0) {
+            taskText = p.sec2;
+            break;
+          }
+        }
+      }
+
+      const taskChats = (window.lineChatsData || []).filter(c => {
+        const cat = categorizeLineChat(c);
+        return cat.category === 'task';
+      });
+
+      renderLineTasksCards(taskText, taskChats);
+
+      // 5. อัปเดตกระดานแชต
+      renderLineChatBoard();
 
       lucide.createIcons();
     };
 
     function renderDashboardBriefing(parsed) {
-      // Date subtitle & Selector
       const sub = document.getElementById('homeBriefingDateSubtitle');
-      if (sub) sub.innerText = 'ข้อมูลประจำวันที่ ' + parsed.date;
+      if (sub) {
+        sub.innerText = (parsed.isNight ? '🌙 สาระค่ำคืนและวิจัยสากล ประจำวันที่ ' : '☀️ ข้อมูลประจำวันที่ ') + parsed.date;
+      }
 
       const sel = document.getElementById('homeBriefingDateSelect');
       if (sel) {
-        sel.innerHTML = window.lineSummariesData.map((doc, idx) => 
-          `<option value="${idx}" ${idx === window.currentBriefingIndex ? 'selected' : ''}>${doc.date || 'สรุปที่ ' + (idx+1)}</option>`
-        ).join('');
+        sel.innerHTML = window.lineSummariesData.map((doc, idx) => {
+          const isNight = doc.type === 'night_research';
+          return `<option value="${idx}" ${idx === window.currentBriefingIndex ? 'selected' : ''}>${isNight ? '🌙 ' : '☀️ '}${doc.date || 'สรุปที่ ' + (idx+1)}: ${doc.title || (isNight ? 'วิจัยสากล/กลอน' : 'ข่าวเช้า 5 มิติ')}</option>`;
+        }).join('');
       }
 
-      // Card 1: Greeting
+      // Card 1: Greeting or Night Reflection
       const greetEl = document.getElementById('homeGreetingText');
       if (greetEl) {
-        greetEl.innerText = parsed.sec1.split('\n')[0].includes('อรุณสวัสดิ์') ? parsed.sec1.split('\n').slice(1).join('\n').trim() : parsed.sec1;
+        let cleanGreet = parsed.sec1.replace(/🌙|\*\*|---/g, '').trim();
+        greetEl.innerText = cleanGreet.length > 200 ? cleanGreet.slice(0, 200) + '...' : cleanGreet;
       }
 
       // Card 2: Tasks
       const tasksEl = document.getElementById('homeBriefingTasksList');
       if (tasksEl) {
-        const taskLines = parsed.sec2.split('\n').filter(l => l.includes('- [ ]') || l.includes('•') || l.includes('ภารกิจ'));
-        if (taskLines.length > 0) {
-          tasksEl.innerHTML = taskLines.slice(0, 3).map(l => 
-            `<p class="truncate font-medium text-heritage-text">• ${l.replace(/- \[ \]|•/g, '').trim()}</p>`
-          ).join('');
+        let taskSource = parsed.sec2;
+        if (!taskSource || taskSource.trim().length === 0) {
+          for (const d of window.lineSummariesData) {
+            const p = parseSummarySections(d);
+            if (p && p.sec2 && p.sec2.trim().length > 0) { taskSource = p.sec2; break; }
+          }
+        }
+        if (taskSource) {
+          const taskLines = taskSource.split('\n').filter(l => l.includes('- [ ]') || l.includes('•') || l.includes('ภารกิจ'));
+          if (taskLines.length > 0) {
+            tasksEl.innerHTML = taskLines.slice(0, 3).map(l => 
+              `<p class="truncate font-medium text-heritage-text">• ${l.replace(/- \[ \]|•/g, '').trim()}</p>`
+            ).join('');
+          } else {
+            tasksEl.innerHTML = `<p class="text-heritage-muted leading-relaxed line-clamp-3">${taskSource.slice(0, 150)}...</p>`;
+          }
         } else {
-          tasksEl.innerHTML = `<p class="text-heritage-muted leading-relaxed line-clamp-3">${parsed.sec2.slice(0, 150)}...</p>`;
+          tasksEl.innerHTML = `<p class="text-heritage-muted text-xs">ไม่มีค้างส่ง / ตรวจสอบภารกิจใหม่ได้ในแท็บภารกิจครู</p>`;
         }
       }
 
       // Card 3: 5 Dims
       const newsEl = document.getElementById('homeBriefingNewsPreview');
       if (newsEl) {
-        if (parsed.dimensions && parsed.dimensions.length > 0) {
-          newsEl.innerHTML = parsed.dimensions.slice(0, 3).map(d => 
+        let dims = parsed.dimensions;
+        if (!dims || dims.length === 0) {
+          for (const d of window.lineSummariesData) {
+            const p = parseSummarySections(d);
+            if (p && p.dimensions && p.dimensions.length > 0) { dims = p.dimensions; break; }
+          }
+        }
+        if (dims && dims.length > 0) {
+          newsEl.innerHTML = dims.slice(0, 3).map(d => 
             `<p class="truncate font-medium text-heritage-text"><span class="text-heritage-primary font-bold">[${d.category.replace('ด้าน', '')}]</span> ${d.title}</p>`
           ).join('');
         } else {
-          newsEl.innerHTML = `<p class="text-heritage-muted leading-relaxed line-clamp-3">${parsed.sec3.slice(0, 150)}...</p>`;
+          newsEl.innerHTML = `<p class="text-heritage-muted leading-relaxed line-clamp-3">${parsed.sec3 ? parsed.sec3.slice(0, 150) : 'รอบข่าว 5 มิติอัปเดตทุกเช้า (รอบ 3 วัน)'}</p>`;
         }
       }
 
-      // Card 4: Pedagogy
+      // Card 4: Pedagogy / Research
       const pedEl = document.getElementById('homeBriefingPedagogyPreview');
       if (pedEl) {
         if (parsed.pedagogies && parsed.pedagogies.length > 0) {
-          pedEl.innerHTML = parsed.pedagogies.map(p => 
+          pedEl.innerHTML = parsed.pedagogies.slice(0, 2).map(p => 
             `<p class="truncate font-medium text-heritage-text"><span class="text-heritage-celadon font-bold">•</span> ${p.title}</p>`
           ).join('');
         } else {
-          pedEl.innerHTML = `<p class="text-heritage-muted leading-relaxed line-clamp-3">${parsed.sec4.slice(0, 150)}...</p>`;
+          pedEl.innerHTML = `<p class="text-heritage-muted leading-relaxed line-clamp-3">${parsed.sec4 ? parsed.sec4.slice(0, 150) : 'งานวิจัยสากลและโมเดลการสอนพร้อมใช้งานในแท็บนวัตกรรม'}</p>`;
         }
       }
     }
@@ -3681,15 +4154,25 @@
     };
 
     // เรนเดอร์การ์ด 5 มิติล่าสุด
-    function renderNewsLiveCards(dims) {
+    function renderNewsLiveCards(dims, sourceDate) {
       const container = document.getElementById('newsLiveCardsGrid');
       if (!container) return;
 
       if (!dims || dims.length === 0) {
         container.innerHTML = `
-          <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-[#E3DDD2]">
-            <i data-lucide="radio" class="w-8 h-8 text-heritage-muted mx-auto mb-2 opacity-50"></i>
-            <p class="text-xs text-heritage-muted font-medium">ยังไม่มีข้อมูล 5 มิติจาก LINE (กดดึงข้อมูลล่าสุดด้านบน)</p>
+          <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-[#E3DDD2] p-8 space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 mx-auto flex items-center justify-center font-bold">
+              <i data-lucide="radio" class="w-6 h-6"></i>
+            </div>
+            <p class="font-bold text-sm text-heritage-text">ระบบรอบข่าว 5 มิติ (อัปเดตทุกเช้ารอบ 3 วัน)</p>
+            <p class="text-xs text-heritage-muted max-w-md mx-auto leading-relaxed">
+              ขณะนี้ข้อมูลล่าสุดในระบบเป็นรอบค่ำ (สาระวิจัยสากลและบทกลอนพักใจ) ข่าว 5 มิติจะอัปเดตอัตโนมัติในรอบเช้า หรือคุณครูสามารถคลิกดูสาระวิจัยสากลได้ที่เมนู "นวัตกรรมการสอนสากล" ครับ
+            </p>
+            <div class="pt-2 flex justify-center gap-2">
+              <button onclick="switchMainTab('pedagogy')" class="px-4 py-2 bg-heritage-celadon text-white rounded-xl text-xs font-semibold hover:bg-[#4C7556] transition shadow-xs flex items-center gap-1.5">
+                <i data-lucide="graduation-cap" class="w-4 h-4"></i> ดูสาระวิจัยสากลล่าสุด
+              </button>
+            </div>
           </div>
         `;
         lucide.createIcons();
@@ -3704,7 +4187,17 @@
         'ด้านนวัตกรรมการศึกษา': { bg: 'bg-rose-100', text: 'text-rose-800', border: 'border-rose-200', icon: 'graduation-cap' },
       };
 
-      container.innerHTML = dims.map((dim, idx) => {
+      const dateNotice = sourceDate ? `
+        <div class="col-span-full p-3 bg-gradient-to-r from-amber-500/10 via-amber-50 to-transparent rounded-xl border border-amber-200 text-xs text-amber-900 font-medium flex items-center justify-between mb-1">
+          <span class="flex items-center gap-1.5 font-bold">
+            <i data-lucide="sparkles" class="w-4 h-4 text-amber-600"></i>
+            สาระเจาะลึก 5 มิติล่าสุด (ประจำวันที่ ${sourceDate}) — รอบ 3 วัน เพื่อบูรณาการสอนสังคมศึกษา
+          </span>
+          <span class="text-[10px] bg-white px-2 py-0.5 rounded-full border border-amber-200 font-bold text-amber-800">5 มิติครบถ้วน</span>
+        </div>
+      ` : '';
+
+      container.innerHTML = dateNotice + dims.map((dim, idx) => {
         const badge = catBadges[dim.category] || { bg: 'bg-slate-100', text: 'text-slate-800', border: 'border-slate-200', icon: 'globe' };
         return `
           <article id="live-card-news-${idx}" class="bg-white rounded-2xl border border-[#E3DDD2] shadow-xs p-5 flex flex-col justify-between hover:border-heritage-ochre transition">
@@ -3756,32 +4249,53 @@
       lucide.createIcons();
     }
 
-    // เรนเดอร์การ์ดนวัตกรรมการสอนสากลล่าสุด
-    function renderPedagogyLiveCards(peds) {
+    // เรนเดอร์การ์ดนวัตกรรมการสอนสากล & สาระวิจัย (Multi-Category)
+    function renderPedagogyLiveCards(allPedagogies, pedagogyChats) {
       const container = document.getElementById('pedLiveGrid');
       if (!container) return;
 
-      if (!peds || peds.length === 0) {
-        container.innerHTML = `
-          <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-[#E3DDD2]">
-            <i data-lucide="radio" class="w-8 h-8 text-heritage-muted mx-auto mb-2 opacity-50"></i>
-            <p class="text-xs text-heritage-muted font-medium">ยังไม่มีข้อมูลนวัตกรรมการสอนสากลจาก LINE (กดดึงข้อมูลล่าสุดด้านบน)</p>
-          </div>
-        `;
-        lucide.createIcons();
-        return;
-      }
+      window.allPedagogiesList = allPedagogies || [];
+      const filter = window.currentPedCategoryFilter || 'all';
 
-      container.innerHTML = peds.map((ped, idx) => {
+      // Toolbar Category Pills
+      const toolbarHtml = `
+        <div class="col-span-full mb-3 flex items-center gap-2 overflow-x-auto pb-1 text-xs no-scrollbar">
+          <button onclick="filterPedCategory('all')" class="px-3 py-1.5 rounded-xl font-bold transition whitespace-nowrap ${filter === 'all' ? 'bg-heritage-celadon text-white shadow-2xs' : 'bg-white text-heritage-muted border border-[#E3DDD2]'}">
+            🌟 ทั้งหมด (${allPedagogies.length + (pedagogyChats ? pedagogyChats.length : 0)})
+          </button>
+          <button onclick="filterPedCategory('research')" class="px-3 py-1.5 rounded-xl font-bold transition whitespace-nowrap ${filter === 'research' ? 'bg-indigo-600 text-white shadow-2xs' : 'bg-white text-heritage-muted border border-[#E3DDD2]'}">
+            🔬 งานวิจัยสากลรอบ 3 วัน (${allPedagogies.filter(p => p.type === 'research').length})
+          </button>
+          <button onclick="filterPedCategory('trending')" class="px-3 py-1.5 rounded-xl font-bold transition whitespace-nowrap ${filter === 'trending' ? 'bg-emerald-600 text-white shadow-2xs' : 'bg-white text-heritage-muted border border-[#E3DDD2]'}">
+            💡 นวัตกรรม EdTech (${allPedagogies.filter(p => p.type === 'trending' || p.type === 'pedagogy_model').length})
+          </button>
+          <button onclick="filterPedCategory('chat')" class="px-3 py-1.5 rounded-xl font-bold transition whitespace-nowrap ${filter === 'chat' ? 'bg-purple-600 text-white shadow-2xs' : 'bg-white text-heritage-muted border border-[#E3DDD2]'}">
+            📚 ถาม-ตอบการสอนจาก LINE (${pedagogyChats ? pedagogyChats.length : 0})
+          </button>
+        </div>
+      `;
+
+      let cardsHtml = '';
+
+      // 1. Pedagogies & Research Cards
+      const filteredPeds = allPedagogies.filter(p => {
+        if (filter === 'all') return true;
+        if (filter === 'research') return p.type === 'research';
+        if (filter === 'trending') return p.type === 'trending' || p.type === 'pedagogy_model';
+        return false;
+      });
+
+      cardsHtml += filteredPeds.map((ped, idx) => {
+        const isResearch = ped.type === 'research';
         return `
-          <article id="live-card-ped-${idx}" class="bg-white rounded-2xl border border-[#E3DDD2] shadow-xs p-6 flex flex-col justify-between hover:border-heritage-celadon transition">
+          <article id="live-card-ped-${idx}" class="bg-white rounded-2xl border ${isResearch ? 'border-indigo-200 hover:border-indigo-400' : 'border-[#E3DDD2] hover:border-heritage-celadon'} shadow-xs p-6 flex flex-col justify-between transition">
             <div class="space-y-3.5">
               <div class="flex items-center justify-between">
-                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1.5">
-                  <i data-lucide="globe" class="w-3 h-3"></i>
-                  <span>Global Pedagogy Case Study</span>
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${ped.badgeBg || 'bg-emerald-100 text-emerald-800 border-emerald-200'} border flex items-center gap-1.5">
+                  <i data-lucide="${isResearch ? 'graduation-cap' : 'globe'}" class="w-3 h-3"></i>
+                  <span>${ped.category || 'Global Pedagogy'}</span>
                 </span>
-                <span class="text-[10px] font-semibold text-heritage-muted">แนวคิดที่ ${ped.num || (idx+1)}</span>
+                <span class="text-[10px] font-semibold text-heritage-muted">${ped.sourceDate ? 'รอบวันที่ ' + ped.sourceDate : ''}</span>
               </div>
 
               <div>
@@ -3790,15 +4304,16 @@
               </div>
 
               ${ped.essence ? `
-                <div class="p-3 bg-emerald-50/50 rounded-xl border border-emerald-100 text-xs text-[#245233] leading-relaxed">
-                  <span class="font-bold">🔍 แก่นสำคัญ:</span> ${ped.essence}
+                <div class="p-3 ${isResearch ? 'bg-indigo-50/50 border-indigo-100 text-indigo-950' : 'bg-emerald-50/50 border-emerald-100 text-[#245233]'} rounded-xl border text-xs leading-relaxed whitespace-pre-line">
+                  <span class="font-bold">🔍 แก่นสำคัญ / ข้อค้นพบ:</span>
+                  ${ped.essence}
                 </div>
               ` : ''}
 
               ${ped.steps ? `
                 <div class="bg-[#FAF8F5] p-4 rounded-xl border border-[#EDE7DD] text-xs text-heritage-text leading-relaxed whitespace-pre-line">
-                  <div class="font-bold text-heritage-celadon mb-1.5 flex items-center gap-1.5">
-                    <i data-lucide="book-open" class="w-3.5 h-3.5"></i> ไอเดียนำไปสอนจริงในห้องเรียน:
+                  <div class="font-bold ${isResearch ? 'text-indigo-800' : 'text-heritage-celadon'} mb-1.5 flex items-center gap-1.5">
+                    <i data-lucide="book-open" class="w-3.5 h-3.5"></i> ${isResearch ? 'การนำไปใช้สอน & วิจัย ป.โท (เชื่อมโยง ว.PA):' : 'ไอเดียนำไปสอนจริงในห้องเรียน:'}
                   </div>
                   ${ped.steps}
                 </div>
@@ -3816,13 +4331,16 @@
 
             <div class="mt-5 pt-3 border-t border-[#FAF8F5] flex items-center justify-between text-xs text-heritage-muted flex-wrap gap-2">
               ${ped.refUrl ? `
-                <a href="${ped.refUrl}" target="_blank" rel="noopener noreferrer" class="text-heritage-celadon hover:underline font-semibold inline-flex items-center gap-1 text-[11px]">
-                  📖 ${ped.refText} <i data-lucide="external-link" class="w-3 h-3"></i>
+                <a href="${ped.refUrl}" target="_blank" rel="noopener noreferrer" class="${isResearch ? 'text-indigo-700 hover:text-indigo-900' : 'text-heritage-celadon hover:underline'} font-semibold inline-flex items-center gap-1 text-[11px] truncate max-w-[240px]">
+                  📖 ${ped.refText || 'DOI/แหล่งข้อมูลจริง'} <i data-lucide="external-link" class="w-3 h-3 shrink-0"></i>
                 </a>
-              ` : `<span class="text-[11px] text-heritage-muted">📖 ${ped.refText}</span>`}
+              ` : `<span class="text-[11px] text-heritage-muted">📖 ${ped.refText || 'งานวิจัยสากล'}</span>`}
 
               <div class="flex items-center gap-1">
-                <button onclick="copyRawText(\`${(ped.title + '\n' + ped.researchName + '\n\n' + ped.essence + '\n\n' + ped.steps + '\n\n' + ped.mediaGuide).replace(/\`/g, '\\\\`')}\`)" class="p-1.5 text-heritage-muted hover:text-heritage-text rounded-lg" title="คัดลอก">
+                <button onclick="sendResearchToWord(${idx})" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg text-xs font-semibold flex items-center gap-1" title="ส่งไปหน้าเวิร์ด">
+                  <i data-lucide="file-plus" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="copyPedItem(${idx})" class="p-1.5 text-heritage-muted hover:text-heritage-text rounded-lg" title="คัดลอก">
                   <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                 </button>
                 <button onclick="exportCardAsImage('live-card-ped-${idx}', 'pedagogy_global_${idx}')" class="p-1.5 text-amber-700 hover:bg-amber-50 rounded-lg" title="ส่งออกเป็นภาพ">
@@ -3834,6 +4352,49 @@
         `;
       }).join('');
 
+      // 2. Pedagogy Chats from LINE
+      if ((filter === 'all' || filter === 'chat') && pedagogyChats && pedagogyChats.length > 0) {
+        cardsHtml += pedagogyChats.map((c, cIdx) => `
+          <article class="bg-white rounded-2xl border border-purple-200 shadow-xs p-6 flex flex-col justify-between hover:border-purple-400 transition">
+            <div class="space-y-3.5">
+              <div class="flex items-center justify-between">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-200 flex items-center gap-1.5">
+                  <i data-lucide="messages-square" class="w-3 h-3"></i>
+                  <span>กรณีศึกษาถาม-ตอบจาก LINE</span>
+                </span>
+                <span class="text-[10px] text-heritage-muted">${c.timestamp ? new Date(c.timestamp).toLocaleString('th-TH') : ''}</span>
+              </div>
+
+              <div>
+                <h4 class="text-sm font-bold text-heritage-text leading-snug">
+                  💬 คำถามของคุณครู: "${c.question || ''}"
+                </h4>
+              </div>
+
+              <div class="p-3.5 bg-purple-50/40 rounded-xl border border-purple-100 text-xs text-heritage-text leading-relaxed whitespace-pre-line pl-3 border-l-2 border-purple-500">
+                ${makeTextUrlsClickable(c.answer || '')}
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-[#FAF8F5] flex items-center justify-end gap-2 text-xs">
+              <button onclick="copyRawText(\`${(c.question + '\n\n' + c.answer).replace(/`/g, '\\`').replace(/\\/g, '\\\\')}\`)" class="px-2.5 py-1 text-heritage-muted hover:text-heritage-text text-[11px] flex items-center gap-1 rounded-lg border border-[#E3DDD2]">
+                <i data-lucide="copy" class="w-3 h-3"></i> คัดลอก
+              </button>
+            </div>
+          </article>
+        `).join('');
+      }
+
+      if (!cardsHtml) {
+        cardsHtml = `
+          <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-[#E3DDD2]">
+            <i data-lucide="radio" class="w-8 h-8 text-heritage-muted mx-auto mb-2 opacity-50"></i>
+            <p class="text-xs text-heritage-muted font-medium">ยังไม่มีข้อมูลในหมวดนี้จาก LINE (กดดึงข้อมูลล่าสุดด้านบน)</p>
+          </div>
+        `;
+      }
+
+      container.innerHTML = toolbarHtml + cardsHtml;
       lucide.createIcons();
     }
 
@@ -3879,12 +4440,12 @@
       lucide.createIcons();
     };
 
-    // ดึงข้อมูลสรุปและประวัติจาก LINE (Vercel & Firebase)
+    // ดึงข้อมูลสรุปและประวัติจาก LINE (Vercel & Firebase) แบบเรียลไทม์
     window.fetchLineHistoryAndPopulate = async function(force = false) {
       try {
         let base = backendUrl || BACKEND_URL;
         const [resHist, resChats] = await Promise.all([
-          fetch(`${base}/api/get-history`),
+          fetch(`${base}/api/get-history?limit=60`),
           fetch(`${base}/api/get-chats`)
         ]);
 
@@ -3893,8 +4454,6 @@
           if (result.success && Array.isArray(result.data) && result.data.length > 0) {
             window.lineSummariesData = result.data;
             localStorage.setItem('krusos_line_saved_summaries', JSON.stringify(result.data));
-            populateAllLineViews();
-            if (force) showToast(`ดึงข้อมูลสรุปล่าสุดสำเร็จ (${result.data.length} รายการ) 📡`, 'success');
           }
         }
 
@@ -3905,12 +4464,32 @@
             localStorage.setItem('krusos_line_saved_chats', JSON.stringify(chatResult.data));
           }
         }
+
+        // อัปเดตเวลาซิงก์เรียลไทม์บน Badge
+        const now = new Date();
+        const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')} น.`;
+        const timeBadge = document.getElementById('lineLiveSyncTimeText');
+        if (timeBadge) timeBadge.innerText = `ซิงก์เรียลไทม์ล่าสุด: ${timeStr}`;
+
+        // ติดตั้งตัวจับเวลา Real-time polling หากยังไม่ได้เริ่ม
+        if (!window.lineRealtimePollingStarted) {
+          window.lineRealtimePollingStarted = true;
+          setInterval(() => {
+            if (document.visibilityState === 'visible') {
+              fetchLineHistoryAndPopulate(false);
+            }
+          }, 25000);
+          window.addEventListener('focus', () => {
+            fetchLineHistoryAndPopulate(false);
+          });
+        }
+
+        populateAllLineViews();
+        if (force) {
+          showToast(`ดึงข้อมูลล่าสุดเรียบร้อย (${(window.lineSummariesData || []).length} สรุป, ${(window.lineChatsData || []).length} แชต) 📡`, 'success');
+        }
       } catch (e) {
         console.error('Fetch LINE history error:', e);
-      }
-
-      if (window.lineSummariesData && window.lineSummariesData.length > 0) {
-        populateAllLineViews();
       }
     };
 

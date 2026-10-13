@@ -49,10 +49,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 3. ดึงข้อมูล 30 รายการล่าสุด
+    // 3. ดึงข้อมูล 60 รายการล่าสุด (รองรับทั้งรอบเช้าและรอบค่ำ)
+    const limitNum = Math.min(parseInt(req.query?.limit) || 60, 100);
     const snapshot = await db.collection('daily_summaries')
       .orderBy('createdAt', 'desc')
-      .limit(30)
+      .limit(limitNum)
       .get();
 
     const data = snapshot.docs.map(doc => {
