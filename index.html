@@ -1877,7 +1877,15 @@
 
       // อัปเดตสไตล์ Desktop Sidebar
       document.querySelectorAll('.sidebar-item').forEach(btn => {
-        btn.classList.remove('bg-white', 'text-heritage-primary', 'shadow-xs', 'border-heritage-primary', 'border-heritage-terracotta', 'border-heritage-ochre', 'border-heritage-celadon', 'border-heritage-purple', 'border-heritage-rose', 'border-heritage-blue');
+        btn.classList.remove(
+          'bg-white', 'shadow-xs',
+          'text-heritage-primary', 'text-heritage-terracotta', 'text-heritage-ochre',
+          'text-heritage-celadon', 'text-heritage-purple', 'text-heritage-rose', 'text-heritage-blue',
+          'text-blue-600', 'text-emerald-600',
+          'border-heritage-primary', 'border-heritage-terracotta', 'border-heritage-ochre',
+          'border-heritage-celadon', 'border-heritage-purple', 'border-heritage-rose', 'border-heritage-blue',
+          'border-blue-600', 'border-emerald-600'
+        );
         btn.classList.add('text-heritage-muted', 'border-transparent');
       });
 
@@ -2346,8 +2354,9 @@
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
-      return escaped.replace(/(https?:\/\/[^\s\)\"\'\<\>]+)/g, (url) => {
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-heritage-primary underline hover:text-heritage-terracotta inline-flex items-center gap-1 break-all font-semibold font-sans bg-white/70 px-1 py-0.5 rounded border border-[#E3DDD2]/60">${url} <i data-lucide="external-link" class="w-3 h-3 inline shrink-0"></i></a>`;
+      return escaped.replace(/(https?:\/\/[^\s\)\"\'\<\>]+)/g, (rawUrl) => {
+        const cleanUrl = rawUrl.replace(/[\.\,\*\_\)]+$/, '');
+        return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" class="text-heritage-primary underline hover:text-heritage-terracotta inline-flex items-center gap-1 break-all font-semibold font-sans bg-white/70 px-1 py-0.5 rounded border border-[#E3DDD2]/60">${cleanUrl} <i data-lucide="external-link" class="w-3 h-3 inline shrink-0"></i></a>`;
       });
     };
 
@@ -3818,18 +3827,43 @@
           const rawCat = match[2].trim();
           const content = match[3].trim();
           
-          const titleMatch = content.match(/📌\s*หัวข้อข่าว:\s*([^\n]+)/) || content.match(/^([^-\n🔗]+)/);
-          const summaryMatch = content.match(/📝\s*สรุปสาระสำคัญ:\s*([\s\S]*?)(?=(?:\s*ชวนคิดในห้องเรียน:|- 🔗|$))/);
-          const thinkMatch = content.match(/ชวนคิดในห้องเรียน:\s*"?([^\n"]+)"?/);
+          // 1. จัดการหมวดหมู่ให้สะอาด (ลบ ** และจัดคำว่า ด้าน ให้ถูกต้อง)
+          const cleanCat = rawCat.replace(/[\*\_]/g, '').trim();
+          const finalCat = cleanCat.startsWith('ด้าน') ? cleanCat : ('ด้าน' + cleanCat);
+
+          // 2. ดึงหัวข้อข่าว
+          const titleMatch = content.match(/📌\s*(?:\*\*)?หัวข้อข่าว[^\n:]*(?:\*\*)?:?\s*([^\n]+)/) || content.match(/^([^\n🔗]+)/);
+          let cleanTitle = titleMatch ? titleMatch[1].replace(/[\*\_\"]/g, '').trim() : ('ข่าวสาร ' + finalCat);
+          cleanTitle = cleanTitle.replace(/^(?:ด้าน[^\:]+\:\s*)+/, '').trim();
+
+          // 3. ดึงสรุปสาระสำคัญ
+          const summaryMatch = content.match(/📝\s*(?:\*\*)?สรุปสาระสำคัญ[^\n:]*(?:\*\*)?:?\s*([\s\S]*?)(?=(?:\n\s*💡|\n\s*ชวนคิด|\n\s*-?\s*🔗|$))/);
+          let cleanSummary = summaryMatch ? summaryMatch[1].trim() : '';
+          if (!cleanSummary) {
+            cleanSummary = content
+              .replace(/^[^\n]+\n?/, '')
+              .replace(/(?:ชวนคิดในห้องเรียน|💡)[\s\S]*$/, '')
+              .replace(/-?\s*🔗[\s\S]*$/, '')
+              .trim();
+          }
+          if (!cleanSummary) cleanSummary = cleanTitle;
+          cleanSummary = cleanSummary.replace(/\*\*+/g, '').replace(/__(.*?)__/g, '$1').trim();
+
+          // 4. ดึงชวนคิดในห้องเรียน
+          const thinkMatch = content.match(/(?:💡|ชวนคิดในห้องเรียน:?)\s*"?([^\n"]+)"?/);
+          let cleanThink = thinkMatch ? thinkMatch[1].replace(/[\*\_\"]/g, '').trim() : '';
+
+          // 5. ดึงลิงก์ข่าวและทำความสะอาด
           const linkMatch = content.match(/(https?:\/\/[^\s\)\"\'\<\>]+)/);
-          
+          let cleanLink = linkMatch ? linkMatch[1].replace(/[\.\,\*\_\)]+$/, '').trim() : '';
+
           dimensions.push({
             num,
-            category: rawCat.startsWith('ด้าน') ? rawCat : ('ด้าน' + rawCat),
-            title: titleMatch ? titleMatch[1].trim() : ('ข่าวสาร ' + rawCat),
-            summary: summaryMatch ? summaryMatch[1].trim() : content,
-            think: thinkMatch ? thinkMatch[1].trim() : '',
-            link: linkMatch ? linkMatch[1].trim() : ''
+            category: finalCat,
+            title: cleanTitle,
+            summary: cleanSummary,
+            think: cleanThink,
+            link: cleanLink
           });
         }
       }
@@ -4213,7 +4247,7 @@
               <h4 class="text-sm font-bold text-heritage-text leading-snug font-heading mt-1">${dim.title}</h4>
               
               <div class="p-3 bg-[#FAF8F5] rounded-xl border border-[#EDE7DD] text-xs text-heritage-text leading-relaxed whitespace-pre-line">
-                ${dim.summary}
+                ${makeTextUrlsClickable(dim.summary)}
               </div>
 
               ${dim.think ? `
@@ -4227,11 +4261,16 @@
             </div>
 
             <div class="mt-4 pt-3 border-t border-[#FAF8F5] flex items-center justify-between text-xs text-heritage-muted flex-wrap gap-2">
-              ${dim.link ? `
-                <a href="${dim.link}" target="_blank" rel="noopener noreferrer" class="text-heritage-ochre hover:underline font-semibold inline-flex items-center gap-1 text-[11px]">
-                  <i data-lucide="external-link" class="w-3 h-3"></i> แหล่งข้อมูลต้นทาง
+              <div class="flex items-center gap-2 flex-wrap">
+                ${dim.link ? `
+                  <a href="${dim.link}" target="_blank" rel="noopener noreferrer" class="text-heritage-ochre hover:underline font-semibold inline-flex items-center gap-1 text-[11px]">
+                    <i data-lucide="external-link" class="w-3 h-3"></i> แหล่งข้อมูลต้นทาง
+                  </a>
+                ` : '<span class="text-[10px] text-heritage-muted">LINE Daily Sync</span>'}
+                <a href="https://www.google.com/search?q=${encodeURIComponent(dim.title)}" target="_blank" rel="noopener noreferrer" class="text-slate-600 hover:text-slate-900 text-[10px] font-medium inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 px-2 py-0.5 rounded-md transition" title="ค้นหาเพิ่มเติมใน Google">
+                  <i data-lucide="search" class="w-2.5 h-2.5"></i> ค้นหาข่าว
                 </a>
-              ` : '<span class="text-[10px] text-heritage-muted">LINE Daily Sync</span>'}
+              </div>
 
               <div class="flex items-center gap-1">
                 <button onclick="copyRawText(\`${(dim.title + '\n\n' + dim.summary + (dim.think ? '\n\nชวนคิด: ' + dim.think : '')).replace(/\`/g, '\\\\`')}\`)" class="p-1.5 text-heritage-muted hover:text-heritage-text rounded-lg" title="คัดลอก">
@@ -4330,11 +4369,16 @@
             </div>
 
             <div class="mt-5 pt-3 border-t border-[#FAF8F5] flex items-center justify-between text-xs text-heritage-muted flex-wrap gap-2">
-              ${ped.refUrl ? `
-                <a href="${ped.refUrl}" target="_blank" rel="noopener noreferrer" class="${isResearch ? 'text-indigo-700 hover:text-indigo-900' : 'text-heritage-celadon hover:underline'} font-semibold inline-flex items-center gap-1 text-[11px] truncate max-w-[240px]">
-                  📖 ${ped.refText || 'DOI/แหล่งข้อมูลจริง'} <i data-lucide="external-link" class="w-3 h-3 shrink-0"></i>
+              <div class="flex items-center gap-2 flex-wrap">
+                ${ped.refUrl ? `
+                  <a href="${ped.refUrl}" target="_blank" rel="noopener noreferrer" class="${isResearch ? 'text-indigo-700 hover:text-indigo-900' : 'text-heritage-celadon hover:underline'} font-semibold inline-flex items-center gap-1 text-[11px] truncate max-w-[200px]">
+                    📖 ${ped.refText || 'DOI/แหล่งข้อมูลจริง'} <i data-lucide="external-link" class="w-3 h-3 shrink-0"></i>
+                  </a>
+                ` : `<span class="text-[11px] text-heritage-muted">📖 ${ped.refText || 'งานวิจัยสากล'}</span>`}
+                <a href="https://scholar.google.com/scholar?q=${encodeURIComponent(ped.researchName || ped.title)}" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 text-[10px] font-medium inline-flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 rounded-md transition" title="สืบค้นใน Google Scholar">
+                  <i data-lucide="search" class="w-2.5 h-2.5"></i> Scholar
                 </a>
-              ` : `<span class="text-[11px] text-heritage-muted">📖 ${ped.refText || 'งานวิจัยสากล'}</span>`}
+              </div>
 
               <div class="flex items-center gap-1">
                 <button onclick="sendResearchToWord(${idx})" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg text-xs font-semibold flex items-center gap-1" title="ส่งไปหน้าเวิร์ด">
