@@ -3839,11 +3839,11 @@
 
       // 1. ดึงงานวิจัยสากลรอบ 3 วัน (จาก night_research)
       if (rawContent.includes('ชื่องานวิจัย') || rawContent.includes('สาระวิจัยสากล')) {
-        const titleM = rawContent.match(/📖\s*\*\*ชื่องานวิจัย[^\*]*\*\*:?\s*([\s\S]*?)(?=(?:\n\n|\n🎯|\n🔬|\n💡|$))/);
-        const objM = rawContent.match(/🎯\s*\*\*วัตถุประสงค์[^\*]*\*\*:?\s*([\s\S]*?)(?=(?:\n\n|\n🔬|\n💡|\n🏫|$))/);
-        const methodM = rawContent.match(/🔬\s*\*\*ระเบียบวิธี[^\*]*\*\*:?\s*([\s\S]*?)(?=(?:\n\n|\n💡|\n🏫|\n🔗|$))/);
-        const findingsM = rawContent.match(/💡\s*\*\*ข้อค้นพบ[^\*]*\*\*:?\s*([\s\S]*?)(?=(?:\n\n|\n🏫|\n🔗|\n\[SPLIT\]|$))/);
-        const useM = rawContent.match(/🏫\s*\*\*การนำไปใช้[^\*]*\*\*:?\s*([\s\S]*?)(?=(?:\n\n|\n🔗|\n\[SPLIT\]|$))/);
+        const titleM = rawContent.match(/(?:📖|\*\*📖)\s*(?:\*\*)?ชื่องานวิจัย[^\n:]*(?:\*\*)?:?\s*([\s\S]*?)(?=(?:\n\n|\n🎯|\n🔬|\n💡|$))/);
+        const objM = rawContent.match(/(?:🎯|\*\*🎯)\s*(?:\*\*)?วัตถุประสงค์[^\n:]*(?:\*\*)?:?\s*([\s\S]*?)(?=(?:\n\n|\n🔬|\n💡|\n🏫|$))/);
+        const methodM = rawContent.match(/(?:🔬|\*\*🔬)\s*(?:\*\*)?ระเบียบวิธี[^\n:]*(?:\*\*)?:?\s*([\s\S]*?)(?=(?:\n\n|\n💡|\n🏫|\n🔗|$))/);
+        const findingsM = rawContent.match(/(?:💡|\*\*💡)\s*(?:\*\*)?ข้อค้นพบ[^\n:]*(?:\*\*)?:?\s*([\s\S]*?)(?=(?:\n\n|\n🏫|\n🔗|\n\[SPLIT\]|$))/);
+        const useM = rawContent.match(/(?:🏫|\*\*🏫)\s*(?:\*\*)?การนำไปใช้[^\n:]*(?:\*\*)?:?\s*([\s\S]*?)(?=(?:\n\n|\n🔗|\n\[SPLIT\]|$))/);
         const linkM = rawContent.match(/(https?:\/\/[^\s\)\"\'\<\>]+)/);
 
         const paperTitle = titleM ? titleM[1].replace(/[\*\_\"]/g, '').trim() : (summaryDoc.title || 'สาระวิจัยสากล');
