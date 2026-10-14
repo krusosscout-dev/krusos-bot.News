@@ -53,6 +53,7 @@ export default async function handler(req, res) {
 
   const db = getFirestoreDb();
   const now = new Date();
+  const todayDateStr = now.toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' });
   const thaiDateFull = now.toLocaleDateString('th-TH', { 
     timeZone: 'Asia/Bangkok',
     weekday: 'long', 
@@ -60,6 +61,29 @@ export default async function handler(req, res) {
     month: 'long', 
     day: 'numeric' 
   });
+
+  // ระบบป้องกันการส่งซ้ำในเช้าวันเดียวกัน (Anti-Duplicate / Idempotency Guard)
+  const forceRun = req.query && (req.query.force === 'true' || req.query.mode === 'force');
+  if (!forceRun && db) {
+    try {
+      const existingSnap = await db.collection('daily_summaries')
+        .where('date', '==', todayDateStr)
+        .where('type', '==', 'morning_news')
+        .limit(1)
+        .get();
+
+      if (!existingSnap.empty) {
+        console.log(`[Anti-Duplicate] Morning greet for ${todayDateStr} already sent, skipping duplicate push.`);
+        return res.status(200).json({
+          success: true,
+          message: `สรุปข่าวเช้าประจำวันที่ ${todayDateStr} ถูกส่งเข้า LINE สำเร็จไปแล้วก่อนหน้านี้ (ระบบข้ามการส่งซ้ำเพื่อป้องกันข้อความรบกวนคุณครู)`,
+          alreadySent: true
+        });
+      }
+    } catch (checkErr) {
+      console.warn('Anti-duplicate check warning in morning-greet:', checkErr.message);
+    }
+  }
 
   // ตรวจสอบรอบ 3 วัน (3-Day Cycle) หรือบังคับโหมดผ่าน Query ?full=true / ?mode=full
   const daysSinceEpoch = Math.floor(now.getTime() / (1000 * 60 * 60 * 24));
